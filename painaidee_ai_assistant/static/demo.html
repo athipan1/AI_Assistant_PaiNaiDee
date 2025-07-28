@@ -727,6 +727,43 @@
             }
         });
 
+        // Handle URL parameters for model loading from gallery
+        function handleURLParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const modelParam = urlParams.get('model');
+            
+            if (modelParam) {
+                // Find and select the model
+                const modelItems = document.querySelectorAll('.model-item');
+                let modelFound = false;
+                
+                modelItems.forEach(item => {
+                    const modelName = item.querySelector('h4').textContent;
+                    if (modelName === modelParam) {
+                        // Auto-select the model
+                        setTimeout(() => {
+                            item.click();
+                            showSuccess(`🎯 Auto-loaded model from gallery: ${modelParam}`);
+                            // Auto-load after selection
+                            setTimeout(() => {
+                                if (selectedModelData) {
+                                    loadSelectedModel();
+                                }
+                            }, 500);
+                        }, 1000);
+                        modelFound = true;
+                    }
+                });
+                
+                if (!modelFound) {
+                    showError(`Model '${modelParam}' not found`);
+                }
+            }
+        }
+
+        // Initialize URL parameter handling after models are loaded
+        setTimeout(handleURLParameters, 2000);
+
         // Auto-fill demo questions
         function fillDemoQuestion(question) {
             document.getElementById('questionInput').value = question;
