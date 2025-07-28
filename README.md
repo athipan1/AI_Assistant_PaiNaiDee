@@ -13,10 +13,17 @@ PaiNaiDee AI Assistant is an intelligent Thai tourism assistant that now feature
 - **Smart Model Mapping**: AI analyzes keywords and context to select appropriate 3D models
 - **Confidence Scoring**: Each selection includes confidence percentage for transparency
 
+### 🎭 Advanced Emotion Analysis System
+- **Sentiment Analysis**: BERT-based emotion detection from user text input
+- **Emotion-to-Gesture Mapping**: Automatic mapping of 9 emotions to appropriate 3D gestures
+- **Tone Adjustment**: Dynamic tone adjustment based on detected user emotions
+- **Context Awareness**: Considers conversation context for better emotional understanding
+
 ### 🎮 Interactive 3D Viewer
 - **Mouse Controls**: Rotate, zoom, and pan around 3D models
 - **Click Interactions**: Click on models to view detailed information
 - **Real-time Updates**: Seamless model switching based on user queries
+- **Emotion-based Gestures**: Models display appropriate gestures based on user sentiment
 
 ### 📦 Available 3D Models
 - **Man.fbx**: Basic human character model (296 KB)
@@ -27,6 +34,11 @@ PaiNaiDee AI Assistant is an intelligent Thai tourism assistant that now feature
 
 ### 🌐 API Endpoints
 - `POST /ai/select_model` - AI model selection based on questions
+- `POST /ai/select_model_with_emotion` - Enhanced model selection with emotion analysis
+- `POST /emotion/analyze_emotion` - Analyze user emotion from text
+- `POST /emotion/recommend_gesture` - Get gesture recommendations for emotions
+- `POST /emotion/analyze_and_recommend` - Combined emotion analysis and gesture recommendation
+- `GET /emotion/gesture_mappings` - Get all emotion-to-gesture mappings
 - `GET /ai/models` - List all available 3D models
 - `GET /ai/models/{model_name}` - Get specific model information
 - `GET /models/{model_name}` - Download 3D model files
@@ -69,7 +81,7 @@ PaiNaiDee AI Assistant is an intelligent Thai tourism assistant that now feature
 ### Natural Language Queries
 
 ```javascript
-// Example API calls
+// Example API calls for model selection
 const response = await fetch('/ai/select_model', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -79,12 +91,37 @@ const response = await fetch('/ai/select_model', {
     })
 });
 
-// Response:
+// Enhanced model selection with emotion analysis
+const emotionResponse = await fetch('/ai/select_model_with_emotion', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+        question: "I'm excited to see walking animations!",
+        analyze_emotion: true
+    })
+});
+
+// Emotion analysis only
+const emotionOnly = await fetch('/emotion/analyze_emotion', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+        text: "I'm worried about my trip",
+        language: "en" 
+    })
+});
+
+// Response includes emotion and gesture data:
 {
     "model_selection": {
         "selected_model": "Walking.fbx",
         "confidence": 0.8,
         "description": "Character animation showing walking motion"
+    },
+    "emotion_analysis": {
+        "primary_emotion": "excited",
+        "suggested_gesture": "excited_jump",
+        "tone_adjustment": "energetic and enthusiastic"
     },
     "status": "success"
 }
@@ -92,13 +129,13 @@ const response = await fetch('/ai/select_model', {
 
 ### Supported Question Types
 
-| Question Examples | Selected Model | Use Case |
-|------------------|----------------|----------|
-| "Show me a person", "Display a character" | Man.fbx | Basic character representation |
-| "Walking animation", "Show walking" | Walking.fbx | Walking demonstrations |
-| "Running person", "Show running" | Running.fbx | Running/sports content |
-| "Idle pose", "Standing character" | Idle.fbx | Static character display |
-| "Rigged model", "Animation ready" | Man_Rig.fbx | Development/customization |
+| Question Examples | Selected Model | Emotion Detection | Gesture Recommendation |
+|------------------|----------------|-------------------|------------------------|
+| "Show me a person", "Display a character" | Man.fbx | neutral | neutral_idle |
+| "I'm excited to see walking!" | Walking.fbx | excited | excited_jump |
+| "I'm worried about running", "Show running" | Running.fbx | worried | reassuring_gesture |
+| "Calm standing pose", "Peaceful character" | Idle.fbx | calm | calm_standing |
+| "I'm curious about rigged models" | Man_Rig.fbx | curious | thoughtful_pose |
 
 ## 🔧 Technical Architecture
 
@@ -183,9 +220,11 @@ Confidence is calculated based on:
 - [ ] **Advanced AI Models**: Integration with llama.cpp, OpenChat, OpenHermes
 - [ ] **More 3D Formats**: Support for GLB, OBJ, GLTF files
 - [ ] **Animation Controls**: Play/pause/speed controls for animations
-- [ ] **Multi-language Support**: Thai language question processing
-- [ ] **Voice Commands**: Speech-to-text integration
+- [ ] **Multi-language Support**: Thai language question processing and emotion analysis
+- [ ] **Voice Commands**: Speech-to-text integration with emotion detection
 - [ ] **AR/VR Support**: WebXR compatibility
+- [ ] **Enhanced Gestures**: More sophisticated 3D gesture library
+- [ ] **Personalized Emotions**: Learning user emotional preferences
 
 ### Technical Improvements
 - [ ] **Model Caching**: Faster loading for frequently used models
@@ -210,6 +249,19 @@ curl http://localhost:8000/ai/models
 curl -X POST -H "Content-Type: application/json" \
      -d '{"question": "Show me a walking person"}' \
      http://localhost:8000/ai/select_model
+
+# Test emotion analysis
+curl -X POST -H "Content-Type: application/json" \
+     -d '{"text": "I am so excited about my trip!"}' \
+     http://localhost:8000/emotion/analyze_emotion
+
+# Test combined emotion and model selection
+curl -X POST -H "Content-Type: application/json" \
+     -d '{"question": "I am worried about walking alone"}' \
+     http://localhost:8000/ai/select_model_with_emotion
+
+# Get gesture mappings
+curl http://localhost:8000/emotion/gesture_mappings
 ```
 
 ## 📄 License

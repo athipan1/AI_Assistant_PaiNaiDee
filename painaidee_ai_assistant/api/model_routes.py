@@ -29,6 +29,93 @@ def create_model_routes(app):
     model_tags_db = {}
     user_sessions = {}
     
+    # Import emotion analysis agent
+    try:
+        from agents.emotion_analysis import EmotionAnalysisAgent
+        emotion_agent = EmotionAnalysisAgent()
+        has_emotion_agent = True
+    except ImportError:
+        emotion_agent = None
+        has_emotion_agent = False
+    
+    @app.post("/ai/select_model_with_emotion")
+    async def select_model_with_emotion(request: dict):
+        """
+        Enhanced model selection that considers user emotion
+        Combines AI model selection with emotion-based gesture recommendations
+        """
+        try:
+            question = request.get("question", "")
+            language = request.get("language", "en")
+            session_id = request.get("session_id", None)
+            user_id = request.get("user_id", None)
+            analyze_emotion = request.get("analyze_emotion", True)
+            
+            if not question:
+                raise ValueError("Question is required")
+            
+            # Start session if not provided
+            if not session_id and user_id:
+                session_id = model_selector.start_user_session(user_id)
+            elif not session_id:
+                session_id = model_selector.start_user_session()
+            
+            # Get basic model selection
+            model_result = model_selector.analyze_question_comprehensive(question, session_id, user_id)
+            
+            # Add emotion analysis if available
+            emotion_result = None
+            if analyze_emotion and has_emotion_agent and emotion_agent:
+                emotion_result = await emotion_agent.analyze_emotion(question)
+            
+            # Combine results
+            response = {
+                "question": question,
+                "language": language,
+                "session_id": session_id,
+                "model_selection": {
+                    "selected_model": model_result["selected_model"],
+                    "confidence": model_result["confidence"],
+                    "description": model_result["description"],
+                    "model_path": model_result["model_path"],
+                    "reasoning": model_result["comprehensive_reasoning"]
+                },
+                "ai_analysis": {
+                    "intent": model_result["intent_analysis"],
+                    "semantic_results": model_result["semantic_analysis"][:3],
+                    "personalization": model_result["personalization_analysis"][:3] if model_result["personalization_analysis"] else [],
+                    "method": model_result["ai_method"]
+                },
+                "status": "success"
+            }
+            
+            # Add emotion analysis results
+            if emotion_result:
+                response["emotion_analysis"] = {
+                    "primary_emotion": emotion_result.primary_emotion.value,
+                    "confidence": emotion_result.confidence,
+                    "suggested_gesture": emotion_result.suggested_gesture.value,
+                    "tone_adjustment": emotion_result.tone_adjustment,
+                    "model_adjustments": {
+                        "expression": emotion_agent.get_gesture_for_emotion(emotion_result.primary_emotion).model_expression,
+                        "animation_style": emotion_agent.get_gesture_for_emotion(emotion_result.primary_emotion).animation_style,
+                        "recommended_model": "Man_Rig.fbx" if emotion_result.suggested_gesture.value in ["excited_jump", "energetic_movement"] else model_result["selected_model"]
+                    }
+                }
+            else:
+                response["emotion_analysis"] = {
+                    "status": "not_available",
+                    "message": "Emotion analysis service not available"
+                }
+            
+            return response
+            
+        except Exception as e:
+            return {
+                "error": str(e),
+                "status": "error"
+            }
+    
     @app.post("/ai/select_model")
     async def select_model_for_question(request: dict):
         """

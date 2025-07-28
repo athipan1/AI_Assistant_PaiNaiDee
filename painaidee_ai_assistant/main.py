@@ -23,8 +23,10 @@ try:
     from api.admin_routes import create_admin_routes
     from api.upload_routes import create_upload_routes
     from api.tourism_routes import create_tourism_routes
+    from api.emotion_routes import router as emotion_router
     HAS_AI_ROUTES = True
     HAS_TOURISM_ROUTES = True
+    HAS_EMOTION_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
@@ -42,6 +44,13 @@ except ImportError as e:
     except ImportError as tourism_e:
         HAS_TOURISM_ROUTES = False
         print(f"Warning: Tourism enhancement routes not available: {tourism_e}")
+    try:
+        from api.emotion_routes import router as emotion_router
+        HAS_EMOTION_ROUTES = True
+    except ImportError as emotion_e:
+        HAS_EMOTION_ROUTES = False
+        print(f"Warning: Emotion analysis routes not available: {emotion_e}")
+        emotion_router = None
     performance_router = None
 
 # Load environment variables
@@ -66,6 +75,10 @@ app.add_middleware(
 # Include API routes
 if HAS_AI_ROUTES:
     app.include_router(ai_router, prefix="/ai", tags=["AI Assistant"])
+
+# Add emotion analysis routes
+if HAS_EMOTION_ROUTES:
+    app.include_router(emotion_router, prefix="/emotion", tags=["Emotion Analysis"])
 
 # Add model routes
 create_model_routes(app)
@@ -146,10 +159,12 @@ async def root():
             "message": "PaiNaiDee AI Assistant with 3D Models is running!",
             "status": "healthy",
             "version": "1.0.0",
-            "features": ["3D Model Viewer", "AI Model Selection", "Interactive Controls"],
+            "features": ["3D Model Viewer", "AI Model Selection", "Interactive Controls", "Emotion Analysis"],
             "endpoints": {
                 "models": "/ai/models",
                 "select_model": "/ai/select_model",
+                "analyze_emotion": "/emotion/analyze_emotion",
+                "recommend_gesture": "/emotion/recommend_gesture",
                 "viewer": "/static/demo.html"
             }
         }
@@ -170,6 +185,7 @@ async def health_check():
                 "ai_selection": True,
                 "model_serving": True,
                 "interactive_controls": True,
+                "emotion_analysis": HAS_EMOTION_ROUTES,
                 "tourist_interest_graph": HAS_TOURISM_ROUTES,
                 "contextual_recommendations": HAS_TOURISM_ROUTES
             }
