@@ -1,0 +1,36 @@
+# FastAPI and web server dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# AI and ML dependencies
+transformers==4.35.2
+torch==2.1.1
+tokenizers==0.15.0
+accelerate==0.24.1
+
+# Optional LangChain support
+langchain==0.0.340
+langchain-community==0.0.1
+
+# Web scraping and API requests
+requests==2.31.0
+beautifulsoup4==4.12.2
+wikipedia==1.4.0
+
+# Environment and configuration
+python-dotenv==1.0.0
+
+# CORS support
+python-cors==1.7.0
+
+# JSON and data handling
+pydantic==2.5.0
+typing-extensions==4.8.0
+
+# Optional SERP API (uncomment if needed)
+# google-search-results==2.4.2
+
+# Development and testing (optional)
+# pytest==7.4.3
+# pytest-asyncio==0.21.1
