@@ -5,7 +5,7 @@ python-multipart==0.0.6
 
 # AI and ML dependencies
 transformers==4.35.2
-torch==2.1.1
+torch>=2.1.1
 tokenizers==0.15.0
 accelerate==0.24.1
 
