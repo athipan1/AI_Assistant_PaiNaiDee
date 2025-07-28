@@ -1,0 +1,20 @@
+{
+  "Man.fbx": {
+    "location_id": "Man.fbx",
+    "location_name": "Man",
+    "location_type": "model",
+    "associated_interests": [
+      "nature"
+    ],
+    "relevance_scores": {
+      "nature": 0.7
+    },
+    "contextual_factors": {
+      "location_preference": "indoor",
+      "time_preference": "evening",
+      "activity_level": "medium"
+    },
+    "popularity_score": 1.0,
+    "last_updated": "2025-07-28T17:07:03.351547"
+  }
+}

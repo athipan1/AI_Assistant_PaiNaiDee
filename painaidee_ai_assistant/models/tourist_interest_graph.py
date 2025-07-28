@@ -638,7 +638,12 @@ class TouristInterestGraph:
         
         # Weather/season matching (if provided in context)
         weather = context.get('weather', {})
-        if weather.get('condition') == 'rainy':
+        if isinstance(weather, dict):
+            weather_condition = weather.get('condition')
+        else:
+            weather_condition = weather  # Handle string case
+            
+        if weather_condition == 'rainy':
             # Prefer indoor locations during rain
             user_location_prefs = Counter(i.location_preference for i in user_interests)
             if user_location_prefs.get('indoor', 0) > 0:
