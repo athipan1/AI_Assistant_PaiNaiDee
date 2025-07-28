@@ -1,0 +1,21 @@
+{
+  "total_users": 0,
+  "total_interactions": 10,
+  "popular_models": {
+    "Walking.fbx": 7,
+    "Man_Rig.fbx": 1,
+    "Running.fbx": 1,
+    "Idle.fbx": 1
+  },
+  "popular_intents": {
+    "neutral_animation_walking": 2,
+    "neutral_rigged_custom": 1,
+    "neutral_animation_running": 1,
+    "neutral_static_idle": 2,
+    "neutral_static_walking": 1,
+    "neutral_display_running": 1,
+    "neutral_animation_idle": 1,
+    "neutral_rigged_idle": 1
+  },
+  "last_updated": 1753713379.9055796
+}
