@@ -145,6 +145,15 @@ class IntentDisambiguationEngine:
                     "purpose": ModelPurpose.DISPLAY,
                     "motion": ModelMotion.NONE
                 }
+            },
+            "show": {
+                "clarifications": ["What would you like to see?",
+                                 "What type of model interests you?"],
+                "default_intent": {
+                    "style": ModelStyle.NEUTRAL,
+                    "purpose": ModelPurpose.DISPLAY,
+                    "motion": ModelMotion.IDLE
+                }
             }
         }
     
@@ -298,15 +307,17 @@ class IntentDisambiguationEngine:
             if ambiguous_term in query:
                 # Check if there are enough context clues to resolve the ambiguity
                 has_context = False
+                context_count = 0
+                
                 for pattern_list in [self.style_patterns, self.purpose_patterns, self.motion_patterns]:
                     for pattern_info in pattern_list.values():
-                        if any(keyword in query for keyword in pattern_info["keywords"]):
-                            has_context = True
-                            break
-                    if has_context:
-                        break
+                        for keyword in pattern_info["keywords"]:
+                            if keyword in query and keyword != ambiguous_term:
+                                context_count += 1
+                                has_context = True
                 
-                if not has_context:
+                # Only consider it ambiguous if there are very few context clues
+                if context_count < 2:
                     ambiguities.append(ambiguous_term)
         
         return ambiguities

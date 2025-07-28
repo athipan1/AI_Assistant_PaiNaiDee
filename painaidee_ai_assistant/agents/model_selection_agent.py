@@ -35,7 +35,29 @@ class IntegratedModelSelector:
     """
     
     def __init__(self):
-        self.models_dir = Path(__file__).parent.parent.parent / "assets" / "models" / "Fbx"
+        # Try different possible paths for the models directory
+        possible_paths = [
+            Path(__file__).parent.parent.parent / "assets" / "models" / "Fbx",
+            Path(__file__).parent.parent / "assets" / "models" / "Fbx", 
+            Path(__file__).parent / "assets" / "models" / "Fbx",
+            Path("assets") / "models" / "Fbx",
+            Path("../assets/models/Fbx"),
+            Path("../../assets/models/Fbx"),
+            Path("../../../assets/models/Fbx")
+        ]
+        
+        self.models_dir = None
+        for path in possible_paths:
+            if path.exists() and any(path.glob("*.fbx")):
+                self.models_dir = path
+                break
+        
+        if self.models_dir is None:
+            # Create a fallback directory for testing
+            self.models_dir = Path(__file__).parent.parent.parent / "assets" / "models" / "Fbx"
+            print(f"Warning: Models directory not found. Using fallback: {self.models_dir}")
+        
+        print(f"Using models directory: {self.models_dir}")
         
         # Enhanced model descriptions with additional metadata
         self.model_descriptions = {

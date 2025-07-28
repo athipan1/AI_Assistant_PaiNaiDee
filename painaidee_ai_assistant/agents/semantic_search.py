@@ -169,11 +169,11 @@ class SemanticSearchEngine:
                 }
             },
             "Walking.fbx": {
-                "description": "Animated character demonstrating walking motion and movement",
-                "keywords": ["walking", "walk", "moving", "step", "stroll", "animation", "motion", "character"],
+                "description": "Animated character demonstrating walking motion and movement with natural gait",
+                "keywords": ["walking", "walk", "moving", "step", "stroll", "animation", "motion", "character", "gait", "movement"],
                 "metadata": {
                     "style": "neutral",
-                    "motion": "walking",
+                    "motion": "walking", 
                     "purpose": "animation",
                     "complexity": "medium"
                 }
