@@ -17,6 +17,11 @@ try:
     from api.model_routes import create_model_routes, model_selector
     from api.performance_routes import router as performance_router
     from api.versioning_routes import create_versioning_routes
+    from api.cdn_routes import create_cdn_routes
+    from api.lod_routes import create_lod_routes
+    from api.external_routes import create_external_api_routes
+    from api.admin_routes import create_admin_routes
+    from api.upload_routes import create_upload_routes
     HAS_AI_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
@@ -24,6 +29,11 @@ except ImportError as e:
     HAS_AI_ROUTES = False
     from api.model_routes import create_model_routes, model_selector
     from api.versioning_routes import create_versioning_routes
+    from api.cdn_routes import create_cdn_routes
+    from api.lod_routes import create_lod_routes
+    from api.external_routes import create_external_api_routes
+    from api.admin_routes import create_admin_routes
+    from api.upload_routes import create_upload_routes
     performance_router = None
 
 # Load environment variables
@@ -61,6 +71,15 @@ create_cdn_routes(app)
 # Add LOD prediction routes
 create_lod_routes(app)
 
+# Add external API routes
+create_external_api_routes(app)
+
+# Add admin dashboard routes
+create_admin_routes(app)
+
+# Add upload workflow routes
+create_upload_routes(app)
+
 # Add performance optimization routes
 if performance_router:
     app.include_router(performance_router, prefix="/api", tags=["Performance"])
@@ -79,6 +98,25 @@ async def serve_model(model_name: str):
         raise HTTPException(status_code=404, detail="Model not found")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/admin")
+async def admin_dashboard():
+    """Serve the admin dashboard interface"""
+    admin_dashboard_path = "static/admin_dashboard.html"
+    
+    if os.path.exists(admin_dashboard_path):
+        return FileResponse(admin_dashboard_path)
+    else:
+        return {
+            "message": "Admin Dashboard",
+            "status": "available",
+            "endpoints": {
+                "overview": "/admin/dashboard/overview",
+                "analytics": "/admin/analytics/detailed",
+                "moderation": "/admin/content/moderation",
+                "system_health": "/admin/system/health"
+            }
+        }
 
 @app.get("/")
 async def root():

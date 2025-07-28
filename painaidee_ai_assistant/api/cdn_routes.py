@@ -9,7 +9,7 @@ from pydantic import BaseModel
 import os
 import tempfile
 
-from ..models.cdn import cdn_manager
+from models.cdn import cdn_manager
 
 
 # Pydantic models for request/response

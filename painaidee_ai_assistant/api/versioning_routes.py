@@ -10,7 +10,7 @@ import os
 import tempfile
 import json
 
-from ..models.versioning import versioning_manager, ModelVersion
+from models.versioning import versioning_manager, ModelVersion
 
 
 # Pydantic models for request/response

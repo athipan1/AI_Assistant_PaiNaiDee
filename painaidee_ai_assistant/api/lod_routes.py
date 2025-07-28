@@ -8,7 +8,7 @@ from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
 from datetime import datetime
 
-from ..models.lod_prediction import lod_predictor, UserBehavior, LODPrediction
+from models.lod_prediction import lod_predictor, UserBehavior, LODPrediction
 
 
 # Pydantic models for request/response
