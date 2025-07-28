@@ -1,0 +1,29 @@
+{
+  "08726e0bea8d5949524197b150b4bc39": {
+    "original_file": "/home/runner/work/AI_Assistant_PaiNaiDee/AI_Assistant_PaiNaiDee/assets/models/Fbx/Walking.fbx",
+    "cache_level": "medium",
+    "file_size": 760528,
+    "created_at": "2025-07-28T12:38:09.123714",
+    "last_accessed": "2025-07-28T12:38:56.277571",
+    "access_count": 5,
+    "compression_ratio": 0.7
+  },
+  "5d9fb358790bacc899f2c06dc122af35": {
+    "original_file": "/home/runner/work/AI_Assistant_PaiNaiDee/AI_Assistant_PaiNaiDee/assets/models/Fbx/Walking.fbx",
+    "cache_level": "high",
+    "file_size": 760528,
+    "created_at": "2025-07-28T12:38:56.277011",
+    "last_accessed": "2025-07-28T12:38:56.277476",
+    "access_count": 4,
+    "compression_ratio": 0.9
+  },
+  "056328b4f481319422f950fde390996c": {
+    "original_file": "/home/runner/work/AI_Assistant_PaiNaiDee/AI_Assistant_PaiNaiDee/assets/models/Fbx/Walking.fbx",
+    "cache_level": "low",
+    "file_size": 760528,
+    "created_at": "2025-07-28T12:38:56.278588",
+    "last_accessed": "2025-07-28T12:38:56.278588",
+    "access_count": 1,
+    "compression_ratio": 0.5
+  }
+}

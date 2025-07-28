@@ -15,12 +15,14 @@ import uvicorn
 try:
     from api.ai_routes import router as ai_router
     from api.model_routes import create_model_routes, model_selector
+    from api.performance_routes import router as performance_router
     HAS_AI_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
     HAS_AI_ROUTES = False
     from api.model_routes import create_model_routes, model_selector
+    performance_router = None
 
 # Load environment variables
 load_dotenv()
@@ -47,6 +49,10 @@ if HAS_AI_ROUTES:
 
 # Add model routes
 create_model_routes(app)
+
+# Add performance optimization routes
+if performance_router:
+    app.include_router(performance_router, prefix="/api", tags=["Performance"])
 
 # Mount static files for 3D viewer
 app.mount("/static", StaticFiles(directory="static"), name="static")

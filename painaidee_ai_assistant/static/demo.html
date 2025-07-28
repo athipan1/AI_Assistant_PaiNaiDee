@@ -272,6 +272,106 @@
             margin-bottom: 5px;
             color: #ccc;
         }
+
+        .language-selector {
+            margin-bottom: 15px;
+        }
+
+        .language-selector label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ffdd59;
+            font-weight: bold;
+        }
+
+        .language-selector select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 14px;
+        }
+
+        .suggestions-container {
+            background: rgba(255, 221, 89, 0.1);
+            border: 1px solid rgba(255, 221, 89, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            animation: fadeIn 0.3s;
+        }
+
+        .suggestions-container h4 {
+            margin: 0 0 10px 0;
+            color: #ffdd59;
+        }
+
+        .suggestion-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .suggestion-text {
+            color: #ccc;
+            margin-bottom: 8px;
+        }
+
+        .suggestion-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .suggestion-option {
+            background: rgba(255, 221, 89, 0.2);
+            border: 1px solid rgba(255, 221, 89, 0.4);
+            border-radius: 15px;
+            padding: 4px 8px;
+            font-size: 12px;
+            color: #ffdd59;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .suggestion-option:hover {
+            background: rgba(255, 221, 89, 0.3);
+            transform: scale(1.05);
+        }
+
+        .suggestion-examples {
+            margin-top: 8px;
+        }
+
+        .suggestion-example {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            padding: 2px 6px;
+            margin: 2px;
+            display: inline-block;
+            font-size: 11px;
+            color: #ddd;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .suggestion-example:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -291,8 +391,21 @@
                     <textarea id="questionInput" placeholder="e.g., Show me a walking person, Display running animation, Show me a character..." ></textarea>
                 </div>
                 
+                <div class="language-selector">
+                    <label for="languageSelect">Language:</label>
+                    <select id="languageSelect">
+                        <option value="en">English</option>
+                        <option value="th">ไทย</option>
+                    </select>
+                </div>
+                
                 <button class="btn" onclick="analyzeQuestion()" id="analyzeBtn">🔍 Analyze & Select Model</button>
                 <button class="btn" onclick="loadSelectedModel()" id="loadBtn" disabled>📦 Load 3D Model</button>
+                
+                <div class="suggestions-container" id="suggestionsContainer" style="display: none;">
+                    <h4>💡 Suggestions</h4>
+                    <div id="suggestionsList"></div>
+                </div>
             </div>
 
             <div class="model-info" id="modelInfo">
@@ -433,6 +546,7 @@
 
         async function analyzeQuestion() {
             const question = document.getElementById('questionInput').value.trim();
+            const language = document.getElementById('languageSelect').value;
             
             if (!question) {
                 showError('Please enter a question first');
@@ -440,12 +554,13 @@
             }
 
             document.getElementById('analyzeBtn').disabled = true;
+            hideSuggestions(); // Clear previous suggestions
             
             try {
                 const response = await fetch('/ai/select_model', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question: question })
+                    body: JSON.stringify({ question: question, language: language })
                 });
 
                 const data = await response.json();
@@ -461,7 +576,13 @@
                         }
                     });
                     
-                    showSuccess(`AI selected: ${selection.selected_model} (${Math.round(selection.confidence * 100)}% confidence)`);
+                    // Display suggestions if available
+                    if (selection.suggestions && selection.suggestions.length > 0) {
+                        displaySuggestions(selection.suggestions, language);
+                    }
+                    
+                    const confidenceText = `${Math.round(selection.confidence * 100)}% confidence`;
+                    showSuccess(`AI selected: ${selection.selected_model} (${confidenceText})`);
                 } else {
                     throw new Error(data.error || 'Analysis failed');
                 }
@@ -516,6 +637,66 @@
             }
         }
 
+        // Suggestion functions
+        function displaySuggestions(suggestions, language) {
+            const container = document.getElementById('suggestionsContainer');
+            const listEl = document.getElementById('suggestionsList');
+            
+            listEl.innerHTML = '';
+            
+            suggestions.forEach(suggestion => {
+                const suggestionEl = document.createElement('div');
+                suggestionEl.className = 'suggestion-item';
+                
+                if (suggestion.type === 'clarification') {
+                    suggestionEl.innerHTML = `
+                        <div class="suggestion-text">${suggestion.text}</div>
+                        <div class="suggestion-options">
+                            ${suggestion.options.map(option => 
+                                `<span class="suggestion-option" onclick="selectSuggestedModel('${option.model}')">${option.keyword}</span>`
+                            ).join('')}
+                        </div>
+                    `;
+                } else if (suggestion.type === 'examples') {
+                    suggestionEl.innerHTML = `
+                        <div class="suggestion-text">${suggestion.text}</div>
+                        <div class="suggestion-examples">
+                            ${suggestion.examples.map(example => 
+                                `<span class="suggestion-example" onclick="fillSuggestionText('${example.text}')">${example.text}</span>`
+                            ).join('')}
+                        </div>
+                    `;
+                }
+                
+                listEl.appendChild(suggestionEl);
+            });
+            
+            container.style.display = 'block';
+        }
+
+        function hideSuggestions() {
+            document.getElementById('suggestionsContainer').style.display = 'none';
+        }
+
+        function selectSuggestedModel(modelName) {
+            // Find the model in the list and select it
+            const modelItems = document.querySelectorAll('.model-item');
+            modelItems.forEach(item => {
+                if (item.querySelector('h4').textContent === modelName) {
+                    item.click();
+                    hideSuggestions();
+                    showSuccess(`Selected suggested model: ${modelName}`);
+                }
+            });
+        }
+
+        function fillSuggestionText(text) {
+            document.getElementById('questionInput').value = text;
+            hideSuggestions();
+            // Auto-analyze the suggested text
+            setTimeout(() => analyzeQuestion(), 300);
+        }
+
         // Utility functions
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 Bytes';
@@ -545,6 +726,43 @@
                 analyzeQuestion();
             }
         });
+
+        // Handle URL parameters for model loading from gallery
+        function handleURLParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const modelParam = urlParams.get('model');
+            
+            if (modelParam) {
+                // Find and select the model
+                const modelItems = document.querySelectorAll('.model-item');
+                let modelFound = false;
+                
+                modelItems.forEach(item => {
+                    const modelName = item.querySelector('h4').textContent;
+                    if (modelName === modelParam) {
+                        // Auto-select the model
+                        setTimeout(() => {
+                            item.click();
+                            showSuccess(`🎯 Auto-loaded model from gallery: ${modelParam}`);
+                            // Auto-load after selection
+                            setTimeout(() => {
+                                if (selectedModelData) {
+                                    loadSelectedModel();
+                                }
+                            }, 500);
+                        }, 1000);
+                        modelFound = true;
+                    }
+                });
+                
+                if (!modelFound) {
+                    showError(`Model '${modelParam}' not found`);
+                }
+            }
+        }
+
+        // Initialize URL parameter handling after models are loaded
+        setTimeout(handleURLParameters, 2000);
 
         // Auto-fill demo questions
         function fillDemoQuestion(question) {
