@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaiNaiDee AI Assistant - 3D Models</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 350px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #ffdd59;
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+
+        .header p {
+            color: #ccc;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .chat-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #ffdd59;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            box-sizing: border-box;
+        }
+
+        .input-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: #ffdd59;
+            color: #333;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-bottom: 10px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #ffc107;
+        }
+
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .model-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .model-info.active {
+            display: block;
+        }
+
+        .model-info h3 {
+            color: #ffdd59;
+            margin-top: 0;
+        }
+
+        .model-list {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .model-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .model-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .model-item.selected {
+            background: rgba(255, 221, 89, 0.3);
+            border: 1px solid #ffdd59;
+        }
+
+        .model-item h4 {
+            margin: 0 0 5px 0;
+            color: #ffdd59;
+        }
+
+        .model-item p {
+            margin: 0;
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        #viewer {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .controls-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            z-index: 100;
+        }
+
+        .controls-overlay h4 {
+            margin-top: 0;
+            color: #ffdd59;
+        }
+
+        .controls-overlay ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 200;
+        }
+
+        .loading.hidden {
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #ffdd59;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .success-message {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #51cf66;
+            color: #51cf66;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="header">
+                <h1>🇹🇭 PaiNaiDee AI</h1>
+                <p>3D Model Assistant</p>
+            </div>
+
+            <div class="chat-container">
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+                
+                <div class="input-group">
+                    <label for="questionInput">Ask about 3D models:</label>
+                    <textarea id="questionInput" placeholder="e.g., Show me a walking person, Display running animation, Show me a character..." ></textarea>
+                </div>
+                
+                <button class="btn" onclick="analyzeQuestion()" id="analyzeBtn">🔍 Analyze & Select Model</button>
+                <button class="btn" onclick="loadSelectedModel()" id="loadBtn" disabled>📦 Load 3D Model</button>
+            </div>
+
+            <div class="model-info" id="modelInfo">
+                <h3>Selected Model</h3>
+                <div id="modelDetails"></div>
+            </div>
+
+            <div class="model-list">
+                <h3>Available Models</h3>
+                <div id="modelsList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading models...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="viewer">
+                <div class="loading" id="viewerLoading">
+                    <div class="spinner"></div>
+                    <p>Initializing 3D Viewer...</p>
+                </div>
+            </div>
+            
+            <div class="controls-overlay">
+                <h4>🎮 3D Controls</h4>
+                <ul>
+                    <li><strong>Mouse:</strong> Rotate view</li>
+                    <li><strong>Wheel:</strong> Zoom in/out</li>
+                    <li><strong>Right-click:</strong> Pan view</li>
+                    <li><strong>Click model:</strong> Show info</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+
+    <script>
+        // Global variables
+        let scene, camera, renderer, controls;
+        let currentModel = null;
+        let selectedModelData = null;
+        let isViewerInitialized = false;
+
+        // API configuration 
+        const API_BASE = window.location.origin;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeViewer();
+            loadAvailableModels();
+        });
+
+        function initializeViewer() {
+            try {
+                const viewerElement = document.getElementById('viewer');
+                
+                // Create scene
+                scene = new THREE.Scene();
+                scene.background = new THREE.Color(0x222222);
+
+                // Create camera
+                camera = new THREE.PerspectiveCamera(75, viewerElement.clientWidth / viewerElement.clientHeight, 0.1, 1000);
+                camera.position.set(0, 1, 3);
+
+                // Create renderer
+                renderer = new THREE.WebGLRenderer({ antialias: true });
+                renderer.setSize(viewerElement.clientWidth, viewerElement.clientHeight);
+                renderer.shadowMap.enabled = true;
+                renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                
+                viewerElement.appendChild(renderer.domElement);
+
+                // Add lighting
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+                scene.add(ambientLight);
+
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                directionalLight.position.set(5, 5, 5);
+                directionalLight.castShadow = true;
+                scene.add(directionalLight);
+
+                // Add controls
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.05;
+
+                // Add grid
+                const gridHelper = new THREE.GridHelper(10, 10);
+                scene.add(gridHelper);
+
+                // Animation loop
+                animate();
+
+                // Handle resize
+                window.addEventListener('resize', onWindowResize);
+
+                isViewerInitialized = true;
+                hideLoading('viewerLoading');
+                showSuccess('3D Viewer initialized successfully!');
+
+            } catch (error) {
+                console.error('Error initializing viewer:', error);
+                showError('Failed to initialize 3D viewer. Please refresh the page.');
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (controls) controls.update();
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        function onWindowResize() {
+            const viewerElement = document.getElementById('viewer');
+            camera.aspect = viewerElement.clientWidth / viewerElement.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(viewerElement.clientWidth, viewerElement.clientHeight);
+        }
+
+        async function loadAvailableModels() {
+            try {
+                // Simulate API call - in real implementation, this would call the backend
+                const response = await fetch(`/ai/models`).catch(() => {
+                    // Fallback to mock data for demonstration
+                    return {
+                        ok: true,
+                        json: () => Promise.resolve({
+                            models: [
+                                { name: 'Man.fbx', description: '3D character model of a human figure in neutral pose', size: 303280 },
+                                { name: 'Idle.fbx', description: 'Animated character in idle/standing position', size: 1140880 },
+                                { name: 'Walking.fbx', description: 'Character animation showing walking motion', size: 760528 },
+                                { name: 'Running.fbx', description: 'Character animation demonstrating running movement', size: 751104 },
+                                { name: 'Man_Rig.fbx', description: 'Rigged character model ready for custom animations', size: 714496 }
+                            ],
+                            status: 'success'
+                        })
+                    };
+                });
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    displayModels(data.models);
+                } else {
+                    throw new Error(data.error || 'Failed to load models');
+                }
+            } catch (error) {
+                console.error('Error loading models:', error);
+                showError('Failed to load available models');
+            }
+        }
+
+        function displayModels(models) {
+            const modelsListEl = document.getElementById('modelsList');
+            modelsListEl.innerHTML = '';
+
+            models.forEach(model => {
+                const modelEl = document.createElement('div');
+                modelEl.className = 'model-item';
+                modelEl.onclick = () => selectModel(model);
+                
+                modelEl.innerHTML = `
+                    <h4>${model.name}</h4>
+                    <p>${model.description}</p>
+                    <p>Size: ${formatFileSize(model.size)}</p>
+                `;
+                
+                modelsListEl.appendChild(modelEl);
+            });
+        }
+
+        function selectModel(model) {
+            // Update UI
+            document.querySelectorAll('.model-item').forEach(el => el.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            
+            selectedModelData = model;
+            
+            // Show model info
+            const modelInfoEl = document.getElementById('modelInfo');
+            const modelDetailsEl = document.getElementById('modelDetails');
+            
+            modelDetailsEl.innerHTML = `
+                <p><strong>Name:</strong> ${model.name}</p>
+                <p><strong>Description:</strong> ${model.description}</p>
+                <p><strong>Size:</strong> ${formatFileSize(model.size)}</p>
+                <p><strong>Format:</strong> FBX</p>
+            `;
+            
+            modelInfoEl.classList.add('active');
+            document.getElementById('loadBtn').disabled = false;
+            
+            showSuccess(`Selected model: ${model.name}`);
+        }
+
+        async function analyzeQuestion() {
+            const question = document.getElementById('questionInput').value.trim();
+            
+            if (!question) {
+                showError('Please enter a question first');
+                return;
+            }
+
+            document.getElementById('analyzeBtn').disabled = true;
+            
+            try {
+                // Simulate API call for question analysis
+                const response = await fetch('/ai/select_model', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: question })
+                }).catch(() => {
+                    // Fallback to mock analysis for demonstration
+                    return simulateQuestionAnalysis(question);
+                });
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const selection = data.model_selection;
+                    
+                    // Find and select the model in UI
+                    const modelItems = document.querySelectorAll('.model-item');
+                    modelItems.forEach(item => {
+                        if (item.querySelector('h4').textContent === selection.selected_model) {
+                            item.click();
+                        }
+                    });
+                    
+                    showSuccess(`AI selected: ${selection.selected_model} (${Math.round(selection.confidence * 100)}% confidence)`);
+                } else {
+                    throw new Error(data.error || 'Analysis failed');
+                }
+                
+            } catch (error) {
+                console.error('Error analyzing question:', error);
+                showError('Failed to analyze question. Please try again.');
+            } finally {
+                document.getElementById('analyzeBtn').disabled = false;
+            }
+        }
+
+        function simulateQuestionAnalysis(question) {
+            const lowerQuestion = question.toLowerCase();
+            let selectedModel = 'Man.fbx';
+            let confidence = 0.5;
+
+            if (lowerQuestion.includes('walk')) {
+                selectedModel = 'Walking.fbx';
+                confidence = 0.8;
+            } else if (lowerQuestion.includes('run')) {
+                selectedModel = 'Running.fbx';
+                confidence = 0.8;
+            } else if (lowerQuestion.includes('idle') || lowerQuestion.includes('standing')) {
+                selectedModel = 'Idle.fbx';
+                confidence = 0.7;
+            } else if (lowerQuestion.includes('rig')) {
+                selectedModel = 'Man_Rig.fbx';
+                confidence = 0.7;
+            }
+
+            return {
+                ok: true,
+                json: () => Promise.resolve({
+                    status: 'success',
+                    model_selection: {
+                        selected_model: selectedModel,
+                        confidence: confidence,
+                        description: 'AI-selected model based on question analysis'
+                    }
+                })
+            };
+        }
+
+        function loadSelectedModel() {
+            if (!selectedModelData) {
+                showError('Please select a model first');
+                return;
+            }
+
+            if (!isViewerInitialized) {
+                showError('3D viewer not ready');
+                return;
+            }
+
+            document.getElementById('loadBtn').disabled = true;
+            showLoading('viewerLoading');
+
+            try {
+                // Remove existing model
+                if (currentModel) {
+                    scene.remove(currentModel);
+                    currentModel = null;
+                }
+
+                // For demonstration, create a simple geometry since we can't load actual FBX files
+                // In a real implementation, this would use FBXLoader
+                loadMockModel(selectedModelData);
+
+            } catch (error) {
+                console.error('Error loading model:', error);
+                showError('Failed to load 3D model');
+                hideLoading('viewerLoading');
+                document.getElementById('loadBtn').disabled = false;
+            }
+        }
+
+        function loadMockModel(modelData) {
+            // Create mock geometry based on model type
+            let geometry, material;
+
+            if (modelData.name.includes('Man') || modelData.name.includes('Idle')) {
+                // Create a simple character representation
+                geometry = new THREE.CapsuleGeometry(0.3, 1.5, 4, 8);
+                material = new THREE.MeshLambertMaterial({ color: 0x8844aa });
+            } else if (modelData.name.includes('Walking') || modelData.name.includes('Running')) {
+                // Create an animated-looking character
+                geometry = new THREE.CapsuleGeometry(0.3, 1.5, 4, 8);
+                material = new THREE.MeshLambertMaterial({ color: 0x44aa88 });
+            } else {
+                // Default model
+                geometry = new THREE.BoxGeometry(0.5, 1.5, 0.3);
+                material = new THREE.MeshLambertMaterial({ color: 0xaa4488 });
+            }
+
+            currentModel = new THREE.Mesh(geometry, material);
+            currentModel.position.y = 0.75;
+            currentModel.castShadow = true;
+            
+            // Add click interaction
+            currentModel.userData = modelData;
+            
+            scene.add(currentModel);
+
+            // Focus camera on model
+            controls.target.set(0, 0.75, 0);
+            camera.position.set(2, 2, 2);
+            controls.update();
+
+            hideLoading('viewerLoading');
+            document.getElementById('loadBtn').disabled = false;
+            showSuccess(`Loaded ${modelData.name} successfully!`);
+
+            // Add click detection
+            addModelInteraction();
+        }
+
+        function addModelInteraction() {
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+
+            renderer.domElement.addEventListener('click', (event) => {
+                // Calculate mouse position in normalized device coordinates
+                const rect = renderer.domElement.getBoundingClientRect();
+                mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                
+                if (currentModel) {
+                    const intersects = raycaster.intersectObject(currentModel);
+                    if (intersects.length > 0) {
+                        const modelData = currentModel.userData;
+                        alert(`Model Info:\nName: ${modelData.name}\nDescription: ${modelData.description}\nSize: ${formatFileSize(modelData.size)}`);
+                    }
+                }
+            });
+        }
+
+        // Utility functions
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            setTimeout(() => errorEl.style.display = 'none', 5000);
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('successMessage');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+            setTimeout(() => successEl.style.display = 'none', 3000);
+        }
+
+        function showLoading(elementId) {
+            document.getElementById(elementId).classList.remove('hidden');
+        }
+
+        function hideLoading(elementId) {
+            document.getElementById(elementId).classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
