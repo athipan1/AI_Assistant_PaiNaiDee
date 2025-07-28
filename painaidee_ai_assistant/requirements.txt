@@ -21,8 +21,8 @@ wikipedia==1.4.0
 # Environment and configuration
 python-dotenv==1.0.0
 
-# CORS support
-python-cors==1.7.0
+# CORS support is built into FastAPI
+# python-cors==1.7.0  # This package doesn't exist, CORS is handled by FastAPI middleware
 
 # JSON and data handling
 pydantic==2.5.0
