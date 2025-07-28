@@ -22,7 +22,9 @@ try:
     from api.external_routes import create_external_api_routes
     from api.admin_routes import create_admin_routes
     from api.upload_routes import create_upload_routes
+    from api.tourism_routes import create_tourism_routes
     HAS_AI_ROUTES = True
+    HAS_TOURISM_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
@@ -34,6 +36,12 @@ except ImportError as e:
     from api.external_routes import create_external_api_routes
     from api.admin_routes import create_admin_routes
     from api.upload_routes import create_upload_routes
+    try:
+        from api.tourism_routes import create_tourism_routes
+        HAS_TOURISM_ROUTES = True
+    except ImportError as tourism_e:
+        HAS_TOURISM_ROUTES = False
+        print(f"Warning: Tourism enhancement routes not available: {tourism_e}")
     performance_router = None
 
 # Load environment variables
@@ -79,6 +87,10 @@ create_admin_routes(app)
 
 # Add upload workflow routes
 create_upload_routes(app)
+
+# Add tourism enhancement routes
+if HAS_TOURISM_ROUTES:
+    create_tourism_routes(app)
 
 # Add performance optimization routes
 if performance_router:
@@ -157,7 +169,9 @@ async def health_check():
                 "3d_viewer": True,
                 "ai_selection": True,
                 "model_serving": True,
-                "interactive_controls": True
+                "interactive_controls": True,
+                "tourist_interest_graph": HAS_TOURISM_ROUTES,
+                "contextual_recommendations": HAS_TOURISM_ROUTES
             }
         }
     except Exception as e:

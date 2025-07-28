@@ -1,0 +1,24 @@
+{
+  "demo_user": [
+    {
+      "interest_id": "demo_user_demo_session_0",
+      "user_id": "demo_user",
+      "session_id": "demo_session",
+      "interest_type": "nature",
+      "specific_tags": [],
+      "location_preference": "indoor",
+      "time_preference": "evening",
+      "activity_level": "medium",
+      "group_size": "solo",
+      "budget_range": "mid",
+      "interaction_strength": 0.7,
+      "confidence": 0.7,
+      "timestamp": "2025-07-28T17:07:03.351535",
+      "context": {
+        "weather": "rainy",
+        "time": "evening",
+        "scenario": "indoor cafes"
+      }
+    }
+  ]
+}
