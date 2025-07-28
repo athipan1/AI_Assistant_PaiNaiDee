@@ -225,6 +225,33 @@
             font-weight: bold;
         }
 
+        .performance-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .lod-level {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            padding: 3px 6px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .cache-status {
+            background: rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+            padding: 3px 6px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
         .model-actions {
             display: flex;
             gap: 10px;
@@ -473,6 +500,7 @@
         let filteredModels = [];
         let currentSort = 'name';
         let currentFilter = 'all';
+        let performanceConfig = null;
 
         // Model icons mapping
         const modelIcons = {
@@ -485,6 +513,7 @@
 
         // Initialize gallery
         document.addEventListener('DOMContentLoaded', function() {
+            loadPerformanceConfig();
             loadModels();
             setupEventListeners();
         });
@@ -500,6 +529,20 @@
                     closeModal();
                 }
             });
+        }
+
+        async function loadPerformanceConfig() {
+            try {
+                const response = await fetch('/api/performance/config');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    performanceConfig = data.config;
+                    console.log('Performance config loaded:', performanceConfig);
+                }
+            } catch (error) {
+                console.error('Error loading performance config:', error);
+            }
         }
 
         async function loadModels() {
@@ -578,6 +621,10 @@
                         <div class="model-stats">
                             <span class="model-size">${formatFileSize(model.size)}</span>
                             <span class="model-format">${model.format}</span>
+                        </div>
+                        <div class="performance-info">
+                            <span class="lod-level">LOD: ${performanceConfig ? performanceConfig.recommended_lod.toUpperCase() : 'AUTO'}</span>
+                            <span class="cache-status" id="cache-${model.name}">⚡ Optimized</span>
                         </div>
                         <div class="model-actions">
                             <button class="btn btn-primary" onclick="event.stopPropagation(); loadModel('${model.name}')">
@@ -674,6 +721,14 @@
                         <div class="stat-label">AI Score</div>
                         <div class="stat-value">${Math.round(model.confidence * 100)}%</div>
                     </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Recommended LOD</div>
+                        <div class="stat-value">${performanceConfig ? performanceConfig.recommended_lod.toUpperCase() : 'AUTO'}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Performance</div>
+                        <div class="stat-value">⚡ Optimized</div>
+                    </div>
                 </div>
                 
                 <div class="model-actions" style="margin-top: 25px; justify-content: center;">
@@ -694,8 +749,9 @@
         }
 
         function loadModel(modelName) {
-            // Redirect to main viewer with model loaded
-            window.location.href = `/static/demo.html?model=${modelName}`;
+            // Use optimized model loading with performance API
+            const lodLevel = performanceConfig ? performanceConfig.recommended_lod : 'auto';
+            window.location.href = `/static/demo.html?model=${modelName}&lod=${lodLevel}&optimized=true`;
         }
 
         function showError(message) {
