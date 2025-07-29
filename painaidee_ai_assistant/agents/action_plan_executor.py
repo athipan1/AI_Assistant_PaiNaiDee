@@ -16,6 +16,14 @@ from .action_plan_system import (
     ActionType
 )
 
+# Import TTS integration
+try:
+    from .tts_integration import tts_integration, TTSRequest, VoiceStyle
+    HAS_TTS = True
+except ImportError as e:
+    logging.warning(f"TTS integration not available: {e}")
+    HAS_TTS = False
+
 logger = logging.getLogger(__name__)
 
 class ExecutionResult:
@@ -71,19 +79,55 @@ class ActionExecutor:
         self.ui_outputs = []
     
     async def execute_speech_action(self, action: SpeechAction) -> Dict[str, Any]:
-        """Execute a speech action"""
+        """Execute a speech action with TTS integration"""
         try:
-            # Generate speech output data
-            speech_output = {
-                "type": "speech",
-                "text": action.text,
-                "language": action.language,
-                "style": action.style.value,
-                "duration_ms": action.duration_ms or self._estimate_speech_duration(action.text),
-                "voice_params": action.voice_params,
-                "audio_url": self._generate_audio_url(action),
-                "timestamp": datetime.now().isoformat()
-            }
+            # Use TTS integration if available
+            if HAS_TTS:
+                # Map style to TTS voice style
+                voice_style_mapping = {
+                    "friendly": VoiceStyle.FRIENDLY,
+                    "enthusiastic": VoiceStyle.ENTHUSIASTIC,
+                    "calm": VoiceStyle.CALM,
+                    "informative": VoiceStyle.INFORMATIVE,
+                    "formal": VoiceStyle.FORMAL
+                }
+                
+                tts_request = TTSRequest(
+                    text=action.text,
+                    language=action.language,
+                    voice_style=voice_style_mapping.get(action.style.value, VoiceStyle.FRIENDLY),
+                    speaking_rate=action.voice_params.get("speaking_rate", 1.0),
+                    pitch=action.voice_params.get("pitch", 1.0),
+                    volume=action.voice_params.get("volume", 1.0)
+                )
+                
+                tts_response = await tts_integration.synthesize_speech(tts_request)
+                
+                speech_output = {
+                    "type": "speech",
+                    "text": action.text,
+                    "language": action.language,
+                    "style": action.style.value,
+                    "duration_ms": tts_response.duration_ms,
+                    "voice_params": action.voice_params,
+                    "audio_url": tts_response.audio_url,
+                    "ssml": tts_response.ssml,
+                    "provider": tts_response.provider,
+                    "cached": tts_response.cached,
+                    "timestamp": datetime.now().isoformat()
+                }
+            else:
+                # Fallback without TTS
+                speech_output = {
+                    "type": "speech",
+                    "text": action.text,
+                    "language": action.language,
+                    "style": action.style.value,
+                    "duration_ms": action.duration_ms or self._estimate_speech_duration(action.text),
+                    "voice_params": action.voice_params,
+                    "audio_url": self._generate_audio_url(action),
+                    "timestamp": datetime.now().isoformat()
+                }
             
             self.speech_outputs.append(speech_output)
             logger.info(f"Executed speech action: {action.text[:50]}...")

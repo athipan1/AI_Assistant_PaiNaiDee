@@ -1,0 +1,7 @@
+{
+  "audio_url": "/tts/audio/debaecade165f0459ca3c286921fc190.mp3",
+  "duration_ms": 3577,
+  "text": "ลองไปภูชี้ฟ้าดูไหมครับ?",
+  "ssml": "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xml:lang=\"th-TH\">\n    <voice name=\"th-TH-NiwatNeural\">\n        <prosody rate=\"fast\" pitch=\"+10%\" volume=\"100%\">\n            <emphasis level=\"strong\">ลองไป</emphasis>ภูชี้ฟ้า<emphasis level=\"moderate\">ดูไหม</emphasis>ครับ?\n        </prosody>\n    </voice>\n</speak>",
+  "provider": "web_speech_api"
+}

@@ -37,6 +37,13 @@ class GestureAnimation(Enum):
     THINKING_POSE = "thinking_pose"
     EXCITED_GESTURE = "excited_gesture"
     REASSURING_NOD = "reassuring_nod"
+    # Enhanced animations from problem statement
+    POINT_RIGHT_THEN_SMILE = "point_right_then_smile"
+    POINT_MAP_LEFT = "point_map_left"
+    EXCITED_JUMP = "excited_jump"
+    INVITE_FORWARD = "invite_forward"
+    POINT_UPWARD = "point_upward"
+    SMILE_AND_WAVE = "smile_and_wave"
 
 class SceneInteractionType(Enum):
     """Types of 3D scene interactions"""
@@ -53,6 +60,13 @@ class UIComponentType(Enum):
     INFO_PANEL = "info_panel"
     MAP_OVERLAY = "map_overlay"
     RATING_DISPLAY = "rating_display"
+    # Enhanced UI components from problem statement
+    SHOW_LOCATION_POPUP = "show_location_popup"
+    MAP_PIN_MARKER = "map_pin_marker"
+    REVIEW_PANEL = "review_panel"
+    ROUTE_PANEL = "route_panel"
+    IMAGE_GALLERY = "image_gallery"
+    BILLBOARD = "billboard"
 
 @dataclass
 class SpeechAction:
@@ -133,6 +147,20 @@ class ActionRegistry:
             "confirmation": SpeechAction(
                 text="เข้าใจแล้วครับ",
                 style=SpeechStyle.CALM
+            ),
+            # Enhanced speech templates from problem statement
+            "phu_chi_fa_suggest": SpeechAction(
+                text="ลองไปภูชี้ฟ้าดูไหมครับ?",
+                style=SpeechStyle.ENTHUSIASTIC,
+                duration_ms=3000
+            ),
+            "weather_nature_suggest": SpeechAction(
+                text="อากาศแบบนี้ เหมาะไปป่ามาก",
+                style=SpeechStyle.ENTHUSIASTIC
+            ),
+            "excited_expression": SpeechAction(
+                text="ดีใจจัง",
+                style=SpeechStyle.ENTHUSIASTIC
             )
         })
         
@@ -156,6 +184,37 @@ class ActionRegistry:
             "suggest_nod_point": GestureAction(
                 animation=GestureAnimation.NOD_AND_POINT,
                 facial_expression="encouraging",
+                duration_ms=3000
+            ),
+            # Enhanced gesture templates from problem statement
+            "point_right_then_smile": GestureAction(
+                animation=GestureAnimation.POINT_RIGHT_THEN_SMILE,
+                facial_expression="friendly",
+                duration_ms=3500
+            ),
+            "thinking_pose": GestureAction(
+                animation=GestureAnimation.THINKING_POSE,
+                facial_expression="contemplative",
+                duration_ms=2500
+            ),
+            "point_map_left": GestureAction(
+                animation=GestureAnimation.POINT_MAP_LEFT,
+                facial_expression="informative",
+                duration_ms=2500
+            ),
+            "excited_jump": GestureAction(
+                animation=GestureAnimation.EXCITED_JUMP,
+                facial_expression="excited",
+                duration_ms=2000
+            ),
+            "invite_forward": GestureAction(
+                animation=GestureAnimation.INVITE_FORWARD,
+                facial_expression="welcoming",
+                duration_ms=2500
+            ),
+            "smile_and_wave": GestureAction(
+                animation=GestureAnimation.SMILE_AND_WAVE,
+                facial_expression="joyful",
                 duration_ms=3000
             )
         })
@@ -199,13 +258,43 @@ class ActionRegistry:
                 },
                 position="overlay"
             ),
-            "place_info": UIComponentAction(
-                component_type=UIComponentType.INFO_PANEL,
+            # Enhanced UI templates from problem statement
+            "location_popup": UIComponentAction(
+                component_type=UIComponentType.SHOW_LOCATION_POPUP,
                 content={
-                    "title": "ข้อมูลสถานที่",
-                    "fields": ["name", "description", "rating", "hours"]
+                    "name": "สถานที่ท่องเที่ยว",
+                    "img": "placeholder.jpg",
+                    "buttons": ["เปิดแผนที่", "ดูรีวิว"]
+                },
+                position="overlay",
+                interaction_enabled=True
+            ),
+            "map_pin_display": UIComponentAction(
+                component_type=UIComponentType.MAP_PIN_MARKER,
+                content={
+                    "location": {"lat": 0, "lng": 0},
+                    "title": "สถานที่ท่องเที่ยว",
+                    "animation": "blink"
+                },
+                position="scene"
+            ),
+            "review_display": UIComponentAction(
+                component_type=UIComponentType.REVIEW_PANEL,
+                content={
+                    "reviews": [],
+                    "rating": 4.5,
+                    "total_reviews": 0
                 },
                 position="sidebar"
+            ),
+            "route_display": UIComponentAction(
+                component_type=UIComponentType.ROUTE_PANEL,
+                content={
+                    "from": "ตำแหน่งปัจจุบัน",
+                    "to": "สถานที่ท่องเที่ยว",
+                    "buttons": ["เริ่มนำทาง", "ดูรายละเอียด"]
+                },
+                position="overlay"
             )
         })
         
@@ -213,21 +302,28 @@ class ActionRegistry:
         self._composite_templates.update({
             "suggest_place_full": {
                 "speech": ["suggest_place"],
-                "gesture": ["suggest_nod_point"],
+                "gesture": ["point_right_then_smile"],
                 "scene": ["focus_map_pin", "zoom_to_location"],
-                "ui": ["place_photo", "action_buttons"]
+                "ui": ["location_popup", "map_pin_display"]
             },
             "cultural_place_suggestion": {
                 "speech": ["cultural_suggestion"],
                 "gesture": ["friendly_nod"],
                 "scene": ["focus_map_pin"],
-                "ui": ["place_photo", "action_buttons", "place_info"]
+                "ui": ["location_popup", "review_display"]
             },
             "greeting_welcome": {
                 "speech": ["greeting"],
                 "gesture": ["welcoming_wave"],
                 "scene": [],
                 "ui": []
+            },
+            # Enhanced composite from problem statement
+            "phu_chi_fa_suggestion": {
+                "speech": ["phu_chi_fa_suggest"],
+                "gesture": ["point_right_then_smile"],
+                "scene": ["focus_map_pin"],
+                "ui": ["location_popup"]
             }
         })
     
@@ -342,6 +438,45 @@ class IntentMapper:
                 self._add_templates_to_plan(plan, action_type, mapping[template_key], merged_params)
         
         return plan
+    
+    def generate_problem_statement_format(self, intent: str, parameters: Dict[str, Any] = None) -> Dict[str, Any]:
+        """
+        Generate action plan in the exact format specified in the problem statement
+        Example: {"intent": "suggest_place", "spoken_text": "...", "animation": "...", "ui_action": {...}}
+        """
+        plan = self.get_action_plan(intent, parameters)
+        
+        # Extract primary speech text
+        spoken_text = ""
+        if plan.speech_actions:
+            spoken_text = plan.speech_actions[0].text
+            
+        # Extract primary animation
+        animation = ""
+        if plan.gesture_actions:
+            animation = plan.gesture_actions[0].animation.value
+            
+        # Extract UI action data
+        ui_action = {}
+        if plan.ui_actions:
+            ui_component = plan.ui_actions[0]
+            if ui_component.component_type == UIComponentType.SHOW_LOCATION_POPUP:
+                ui_action = {
+                    "type": "show_location_popup",
+                    "data": ui_component.content
+                }
+            else:
+                ui_action = {
+                    "type": ui_component.component_type.value,
+                    "data": ui_component.content
+                }
+        
+        return {
+            "intent": intent,
+            "spoken_text": spoken_text,
+            "animation": animation,
+            "ui_action": ui_action
+        }
     
     def _build_from_composite(self, plan: ActionPlan, composite: Dict[str, List[str]], 
                             parameters: Dict[str, Any]) -> ActionPlan:
