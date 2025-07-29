@@ -8,6 +8,13 @@ transformers==4.35.2
 torch>=2.1.1
 tokenizers==0.15.0
 accelerate==0.24.1
+scikit-learn>=1.3.0
+joblib>=1.3.0
+
+# Computer Vision and Gesture Recognition
+opencv-python-headless>=4.8.0
+mediapipe>=0.10.0
+pillow>=10.0.0
 
 # Additional models for emotion analysis
 sentencepiece>=0.1.99

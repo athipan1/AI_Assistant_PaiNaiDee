@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced 3D Gesture Recognition - PaiNaiDee AI Assistant</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #threejs-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #gesture-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        #hand-canvas {
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+
+        #ui-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 200;
+            max-width: 350px;
+        }
+
+        #gesture-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 200;
+            min-width: 250px;
+        }
+
+        #performance-stats {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 200;
+        }
+
+        .button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .gesture-active {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .gesture-confidence {
+            font-size: 12px;
+            color: #ffeb3b;
+        }
+
+        #webcam-container {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 150px;
+            border: 2px solid white;
+            border-radius: 10px;
+            overflow: hidden;
+            z-index: 200;
+        }
+
+        #webcam {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-active { background-color: #4CAF50; }
+        .status-inactive { background-color: #f44336; }
+        .status-warning { background-color: #ff9800; }
+
+        #webxr-controls {
+            margin-top: 10px;
+        }
+
+        .webxr-button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+        }
+
+        .training-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            z-index: 300;
+            max-width: 400px;
+            display: none;
+        }
+
+        .training-panel h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <!-- 3D Scene Container -->
+        <div id="threejs-container"></div>
+
+        <!-- Hand Tracking Overlay -->
+        <div id="gesture-overlay">
+            <canvas id="hand-canvas"></canvas>
+        </div>
+
+        <!-- UI Control Panel -->
+        <div id="ui-panel">
+            <h3>🎯 3D Gesture Recognition</h3>
+            
+            <div id="camera-controls">
+                <span class="status-indicator status-inactive" id="camera-status"></span>
+                <span>Camera</span>
+                <button class="button" id="start-camera">Start Camera</button>
+                <button class="button" id="stop-camera" disabled>Stop Camera</button>
+            </div>
+
+            <div id="gesture-controls">
+                <span class="status-indicator status-inactive" id="gesture-status"></span>
+                <span>Gesture Recognition</span>
+                <button class="button" id="start-gesture">Start Tracking</button>
+                <button class="button" id="stop-gesture" disabled>Stop Tracking</button>
+            </div>
+
+            <div id="model-controls">
+                <button class="button" id="load-model">Load 3D Model</button>
+                <button class="button" id="reset-view">Reset View</button>
+            </div>
+
+            <div id="webxr-controls">
+                <button class="button webxr-button" id="enter-vr">Enter VR</button>
+                <button class="button webxr-button" id="enter-ar">Enter AR</button>
+            </div>
+
+            <div id="training-controls">
+                <button class="button" id="train-gesture">Train Custom Gesture</button>
+                <button class="button" id="list-gestures">List Gestures</button>
+            </div>
+        </div>
+
+        <!-- Gesture Information Panel -->
+        <div id="gesture-info">
+            <h4>🤏 Detected Gestures</h4>
+            <div id="detected-gestures">
+                <p>No gestures detected</p>
+            </div>
+            <div id="hand-landmarks">
+                <p><strong>Hand Landmarks:</strong> 0/21</p>
+            </div>
+        </div>
+
+        <!-- Performance Statistics -->
+        <div id="performance-stats">
+            <h4>⚡ Performance</h4>
+            <div id="fps">FPS: 0</div>
+            <div id="gesture-latency">Gesture Latency: 0ms</div>
+            <div id="target-met">Target Met: 0%</div>
+        </div>
+
+        <!-- Webcam Preview -->
+        <div id="webcam-container" style="display: none;">
+            <video id="webcam" autoplay muted playsinline></video>
+        </div>
+
+        <!-- Custom Gesture Training Panel -->
+        <div id="training-panel" class="training-panel">
+            <h3>Train Custom Gesture</h3>
+            <input type="text" id="gesture-name" placeholder="Gesture Name" style="width: 100%; padding: 10px; margin: 10px 0; border: none; border-radius: 5px;">
+            <textarea id="gesture-description" placeholder="Description (optional)" style="width: 100%; padding: 10px; margin: 10px 0; border: none; border-radius: 5px; height: 60px; resize: none;"></textarea>
+            <div class="progress-bar">
+                <div class="progress-fill" id="training-progress"></div>
+            </div>
+            <p id="training-status">Position your hand and click Start Recording</p>
+            <div>
+                <button class="button" id="start-recording">Start Recording</button>
+                <button class="button" id="save-gesture" disabled>Save Gesture</button>
+                <button class="button" id="cancel-training">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js and WebXR Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/webxr/VRButton.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/webxr/ARButton.js"></script>
+
+    <script>
+        // Global variables
+        let scene, camera, renderer, controls;
+        let currentModel = null;
+        let gestureRecognitionActive = false;
+        let cameraStream = null;
+        let handCanvas, handContext;
+        let performanceStats = { fps: 0, gestureLatency: 0, targetMet: 0 };
+        let lastFrameTime = Date.now();
+        let isTrainingMode = false;
+        let trainingData = [];
+
+        // WebXR support
+        let xrSession = null;
+        let xrRefSpace = null;
+
+        // Initialize the application
+        async function init() {
+            initThreeJS();
+            initHandCanvas();
+            initEventListeners();
+            await checkWebXRSupport();
+            loadDefaultModel();
+        }
+
+        function initThreeJS() {
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x222222);
+
+            // Camera setup
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 5);
+
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.xr.enabled = true;
+
+            document.getElementById('threejs-container').appendChild(renderer.domElement);
+
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 10, 5);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+
+            // Grid helper for reference
+            const gridHelper = new THREE.GridHelper(10, 10);
+            scene.add(gridHelper);
+
+            // Start render loop
+            animate();
+        }
+
+        function initHandCanvas() {
+            handCanvas = document.getElementById('hand-canvas');
+            handContext = handCanvas.getContext('2d');
+            
+            // Set canvas size
+            handCanvas.width = window.innerWidth;
+            handCanvas.height = window.innerHeight;
+        }
+
+        function initEventListeners() {
+            // Camera controls
+            document.getElementById('start-camera').addEventListener('click', startCamera);
+            document.getElementById('stop-camera').addEventListener('click', stopCamera);
+
+            // Gesture controls
+            document.getElementById('start-gesture').addEventListener('click', startGestureRecognition);
+            document.getElementById('stop-gesture').addEventListener('click', stopGestureRecognition);
+
+            // Model controls
+            document.getElementById('load-model').addEventListener('click', loadRandomModel);
+            document.getElementById('reset-view').addEventListener('click', resetCameraView);
+
+            // WebXR controls
+            document.getElementById('enter-vr').addEventListener('click', enterVR);
+            document.getElementById('enter-ar').addEventListener('click', enterAR);
+
+            // Training controls
+            document.getElementById('train-gesture').addEventListener('click', openTrainingPanel);
+            document.getElementById('list-gestures').addEventListener('click', listCustomGestures);
+
+            // Training panel controls
+            document.getElementById('start-recording').addEventListener('click', startGestureRecording);
+            document.getElementById('save-gesture').addEventListener('click', saveCustomGesture);
+            document.getElementById('cancel-training').addEventListener('click', closeTrainingPanel);
+
+            // Window resize
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        async function checkWebXRSupport() {
+            if ('xr' in navigator) {
+                const vrSupported = await navigator.xr.isSessionSupported('immersive-vr');
+                const arSupported = await navigator.xr.isSessionSupported('immersive-ar');
+
+                document.getElementById('enter-vr').disabled = !vrSupported;
+                document.getElementById('enter-ar').disabled = !arSupported;
+
+                if (vrSupported || arSupported) {
+                    console.log('WebXR supported:', { vr: vrSupported, ar: arSupported });
+                }
+            } else {
+                document.getElementById('enter-vr').disabled = true;
+                document.getElementById('enter-ar').disabled = true;
+                console.log('WebXR not supported');
+            }
+        }
+
+        async function startCamera() {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 640, height: 480, facingMode: 'user' }
+                });
+
+                const video = document.getElementById('webcam');
+                video.srcObject = cameraStream;
+                
+                document.getElementById('webcam-container').style.display = 'block';
+                document.getElementById('camera-status').className = 'status-indicator status-active';
+                document.getElementById('start-camera').disabled = true;
+                document.getElementById('stop-camera').disabled = false;
+
+                console.log('Camera started successfully');
+            } catch (error) {
+                console.error('Camera access failed:', error);
+                alert('Failed to access camera: ' + error.message);
+            }
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+
+            document.getElementById('webcam-container').style.display = 'none';
+            document.getElementById('camera-status').className = 'status-indicator status-inactive';
+            document.getElementById('start-camera').disabled = false;
+            document.getElementById('stop-camera').disabled = true;
+
+            if (gestureRecognitionActive) {
+                stopGestureRecognition();
+            }
+        }
+
+        async function startGestureRecognition() {
+            if (!cameraStream) {
+                alert('Please start the camera first');
+                return;
+            }
+
+            gestureRecognitionActive = true;
+            document.getElementById('gesture-status').className = 'status-indicator status-active';
+            document.getElementById('start-gesture').disabled = true;
+            document.getElementById('stop-gesture').disabled = false;
+
+            // Start gesture recognition loop
+            processGestureFrame();
+            console.log('Gesture recognition started');
+        }
+
+        function stopGestureRecognition() {
+            gestureRecognitionActive = false;
+            document.getElementById('gesture-status').className = 'status-indicator status-inactive';
+            document.getElementById('start-gesture').disabled = false;
+            document.getElementById('stop-gesture').disabled = true;
+
+            // Clear hand canvas
+            handContext.clearRect(0, 0, handCanvas.width, handCanvas.height);
+            
+            // Clear gesture info
+            document.getElementById('detected-gestures').innerHTML = '<p>No gestures detected</p>';
+            document.getElementById('hand-landmarks').innerHTML = '<p><strong>Hand Landmarks:</strong> 0/21</p>';
+        }
+
+        async function processGestureFrame() {
+            if (!gestureRecognitionActive || !cameraStream) return;
+
+            const startTime = Date.now();
+
+            try {
+                // Capture frame from video
+                const video = document.getElementById('webcam');
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0);
+
+                // Convert to base64
+                const imageData = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+
+                // Send to gesture recognition API
+                const response = await fetch('/gesture/recognize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image_data: imageData,
+                        image_format: 'jpeg',
+                        detect_hands: true,
+                        classify_gestures: true,
+                        return_landmarks: true
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayGestureResults(result);
+                    drawHandLandmarks(result.gesture_results);
+                    
+                    // Store training data if in training mode
+                    if (isTrainingMode && result.gesture_results.length > 0) {
+                        trainingData.push(result.gesture_results[0]);
+                        updateTrainingProgress();
+                    }
+                }
+
+                // Update performance stats
+                const processingTime = Date.now() - startTime;
+                updatePerformanceStats(processingTime);
+
+            } catch (error) {
+                console.error('Gesture processing error:', error);
+            }
+
+            // Continue processing if still active
+            if (gestureRecognitionActive) {
+                requestAnimationFrame(processGestureFrame);
+            }
+        }
+
+        function displayGestureResults(result) {
+            const gesturesDiv = document.getElementById('detected-gestures');
+            const landmarksDiv = document.getElementById('hand-landmarks');
+
+            if (result.gesture_results.length === 0) {
+                gesturesDiv.innerHTML = '<p>No gestures detected</p>';
+                landmarksDiv.innerHTML = '<p><strong>Hand Landmarks:</strong> 0/21</p>';
+                return;
+            }
+
+            // Display detected gestures
+            let gesturesHTML = '';
+            result.gesture_results.forEach((gesture, index) => {
+                gesturesHTML += `
+                    <div class="gesture-active">
+                        ${gesture.hand_type} Hand: ${gesture.gesture_type}
+                        <div class="gesture-confidence">${(gesture.confidence * 100).toFixed(1)}% confidence</div>
+                    </div>
+                `;
+            });
+            gesturesDiv.innerHTML = gesturesHTML;
+
+            // Display landmark count
+            const totalLandmarks = result.gesture_results.reduce((sum, gesture) => sum + gesture.hand_landmarks.length, 0);
+            landmarksDiv.innerHTML = `<p><strong>Hand Landmarks:</strong> ${totalLandmarks}/42</p>`;
+        }
+
+        function drawHandLandmarks(gestureResults) {
+            // Clear canvas
+            handContext.clearRect(0, 0, handCanvas.width, handCanvas.height);
+
+            gestureResults.forEach(gesture => {
+                // Draw bounding box
+                const [x, y, width, height] = gesture.bounding_box;
+                const canvasX = x * handCanvas.width;
+                const canvasY = y * handCanvas.height;
+                const canvasWidth = width * handCanvas.width;
+                const canvasHeight = height * handCanvas.height;
+
+                handContext.strokeStyle = gesture.hand_type === 'Right' ? '#4CAF50' : '#2196F3';
+                handContext.lineWidth = 2;
+                handContext.strokeRect(canvasX, canvasY, canvasWidth, canvasHeight);
+
+                // Draw landmarks
+                handContext.fillStyle = gesture.hand_type === 'Right' ? '#4CAF50' : '#2196F3';
+                gesture.hand_landmarks.forEach(landmark => {
+                    const lmX = landmark.x * handCanvas.width;
+                    const lmY = landmark.y * handCanvas.height;
+                    
+                    handContext.beginPath();
+                    handContext.arc(lmX, lmY, 3, 0, 2 * Math.PI);
+                    handContext.fill();
+                });
+
+                // Draw hand type label
+                handContext.fillStyle = 'white';
+                handContext.font = '16px Arial';
+                handContext.fillText(
+                    `${gesture.hand_type}: ${gesture.gesture_type}`,
+                    canvasX, canvasY - 10
+                );
+            });
+        }
+
+        function updatePerformanceStats(processingTime) {
+            const currentTime = Date.now();
+            const fps = Math.round(1000 / (currentTime - lastFrameTime));
+            lastFrameTime = currentTime;
+
+            performanceStats.fps = fps;
+            performanceStats.gestureLatency = processingTime;
+            performanceStats.targetMet = processingTime < 100 ? 100 : 0;
+
+            document.getElementById('fps').textContent = `FPS: ${fps}`;
+            document.getElementById('gesture-latency').textContent = `Gesture Latency: ${processingTime}ms`;
+            document.getElementById('target-met').textContent = `Target Met: ${performanceStats.targetMet}%`;
+        }
+
+        async function loadDefaultModel() {
+            try {
+                // Load a default 3D model
+                const response = await fetch('/ai/models');
+                const models = await response.json();
+                
+                if (models.available_models && models.available_models.length > 0) {
+                    const defaultModel = models.available_models[0];
+                    await loadModel(defaultModel.name);
+                }
+            } catch (error) {
+                console.error('Failed to load default model:', error);
+                // Create a simple cube as fallback
+                createFallbackModel();
+            }
+        }
+
+        async function loadModel(modelName) {
+            try {
+                // Remove existing model
+                if (currentModel) {
+                    scene.remove(currentModel);
+                }
+
+                // Create a simple colored cube as a placeholder for the 3D model
+                const geometry = new THREE.BoxGeometry(2, 2, 2);
+                const material = new THREE.MeshPhongMaterial({ 
+                    color: 0x667eea,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                currentModel = new THREE.Mesh(geometry, material);
+                currentModel.castShadow = true;
+                currentModel.receiveShadow = true;
+                
+                scene.add(currentModel);
+                console.log(`Loaded model: ${modelName}`);
+            } catch (error) {
+                console.error('Model loading error:', error);
+                createFallbackModel();
+            }
+        }
+
+        function createFallbackModel() {
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshPhongMaterial({ color: 0x764ba2 });
+            currentModel = new THREE.Mesh(geometry, material);
+            scene.add(currentModel);
+        }
+
+        async function loadRandomModel() {
+            try {
+                const response = await fetch('/ai/models');
+                const models = await response.json();
+                
+                if (models.available_models && models.available_models.length > 0) {
+                    const randomModel = models.available_models[Math.floor(Math.random() * models.available_models.length)];
+                    await loadModel(randomModel.name);
+                }
+            } catch (error) {
+                console.error('Failed to load random model:', error);
+            }
+        }
+
+        function resetCameraView() {
+            camera.position.set(0, 0, 5);
+            controls.reset();
+        }
+
+        async function enterVR() {
+            try {
+                if (xrSession) {
+                    await xrSession.end();
+                    return;
+                }
+
+                xrSession = await navigator.xr.requestSession('immersive-vr', {
+                    requiredFeatures: ['local-floor'],
+                    optionalFeatures: ['hand-tracking']
+                });
+
+                await setupXRSession(xrSession);
+                console.log('Entered VR mode');
+            } catch (error) {
+                console.error('VR entry failed:', error);
+                alert('Failed to enter VR: ' + error.message);
+            }
+        }
+
+        async function enterAR() {
+            try {
+                if (xrSession) {
+                    await xrSession.end();
+                    return;
+                }
+
+                xrSession = await navigator.xr.requestSession('immersive-ar', {
+                    requiredFeatures: ['local-floor'],
+                    optionalFeatures: ['hand-tracking', 'hit-test']
+                });
+
+                await setupXRSession(xrSession);
+                console.log('Entered AR mode');
+            } catch (error) {
+                console.error('AR entry failed:', error);
+                alert('Failed to enter AR: ' + error.message);
+            }
+        }
+
+        async function setupXRSession(session) {
+            xrRefSpace = await session.requestReferenceSpace('local-floor');
+            
+            session.addEventListener('end', () => {
+                xrSession = null;
+                xrRefSpace = null;
+                console.log('XR session ended');
+            });
+
+            renderer.xr.setSession(session);
+        }
+
+        function openTrainingPanel() {
+            document.getElementById('training-panel').style.display = 'block';
+        }
+
+        function closeTrainingPanel() {
+            document.getElementById('training-panel').style.display = 'none';
+            isTrainingMode = false;
+            trainingData = [];
+            updateTrainingProgress();
+        }
+
+        function startGestureRecording() {
+            if (!gestureRecognitionActive) {
+                alert('Please start gesture recognition first');
+                return;
+            }
+
+            isTrainingMode = true;
+            trainingData = [];
+            document.getElementById('training-status').textContent = 'Recording gesture... Perform your gesture now!';
+            document.getElementById('start-recording').disabled = true;
+            
+            // Record for 5 seconds
+            setTimeout(() => {
+                isTrainingMode = false;
+                document.getElementById('training-status').textContent = `Recorded ${trainingData.length} samples. Click Save to store this gesture.`;
+                document.getElementById('save-gesture').disabled = false;
+                document.getElementById('start-recording').disabled = false;
+            }, 5000);
+        }
+
+        function updateTrainingProgress() {
+            const progress = isTrainingMode ? Math.min((trainingData.length / 30) * 100, 100) : 0;
+            document.getElementById('training-progress').style.width = progress + '%';
+        }
+
+        async function saveCustomGesture() {
+            const name = document.getElementById('gesture-name').value.trim();
+            const description = document.getElementById('gesture-description').value.trim();
+
+            if (!name) {
+                alert('Please enter a gesture name');
+                return;
+            }
+
+            if (trainingData.length === 0) {
+                alert('No training data recorded');
+                return;
+            }
+
+            try {
+                const response = await fetch('/gesture/custom/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: name,
+                        description: description,
+                        keypoints_sequence: trainingData.map(gesture => gesture.hand_landmarks),
+                        confidence_threshold: 0.8
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`Custom gesture "${name}" saved successfully!`);
+                    closeTrainingPanel();
+                } else {
+                    alert('Failed to save gesture: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Save gesture error:', error);
+                alert('Failed to save gesture: ' + error.message);
+            }
+        }
+
+        async function listCustomGestures() {
+            try {
+                const response = await fetch('/gesture/custom/list');
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (result.gestures.length === 0) {
+                        alert('No custom gestures found. Create some using the training feature!');
+                    } else {
+                        const gestureList = result.gestures.map(g => 
+                            `• ${g.name} (${g.training_samples} samples, ${(g.confidence_threshold * 100).toFixed(0)}% threshold)`
+                        ).join('\n');
+                        alert(`Custom Gestures (${result.total_count}):\n\n${gestureList}`);
+                    }
+                } else {
+                    alert('Failed to load custom gestures: ' + result.message);
+                }
+            } catch (error) {
+                console.error('List gestures error:', error);
+                alert('Failed to load gestures: ' + error.message);
+            }
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            handCanvas.width = window.innerWidth;
+            handCanvas.height = window.innerHeight;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Update controls
+            controls.update();
+
+            // Rotate model based on detected gestures (example interaction)
+            if (currentModel && gestureRecognitionActive) {
+                currentModel.rotation.y += 0.01;
+            }
+
+            // Render scene
+            renderer.render(scene, camera);
+        }
+
+        // Initialize the application when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
