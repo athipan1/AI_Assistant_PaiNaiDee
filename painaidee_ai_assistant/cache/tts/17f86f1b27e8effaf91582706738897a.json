@@ -1,0 +1,7 @@
+{
+  "audio_url": "/tts/audio/17f86f1b27e8effaf91582706738897a.mp3",
+  "duration_ms": 4355,
+  "text": "Hello! Welcome to PaiNaiDee!",
+  "ssml": "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xml:lang=\"en-US\">\n    <voice name=\"en-US-JennyNeural\">\n        <prosody rate=\"medium\" pitch=\"+5%\" volume=\"100%\">\n            Hello! Welcome to PaiNaiDee!\n        </prosody>\n    </voice>\n</speak>",
+  "provider": "web_speech_api"
+}

@@ -63,6 +63,31 @@ class TemplateRegistrationRequest(BaseModel):
     template: Dict[str, Any]
     description: Optional[str] = ""
 
+@router.post("/generate_enhanced_plan")
+async def generate_enhanced_action_plan(request: ActionPlanRequest):
+    """
+    Generate a multimodal action plan in the format specified in the problem statement.
+    Returns the exact JSON format: {"intent": "...", "spoken_text": "...", "animation": "...", "ui_action": {...}}
+    """
+    try:
+        logger.info(f"Generating enhanced action plan for intent: {request.intent}")
+        
+        # Generate enhanced format action plan
+        enhanced_plan = intent_mapper.generate_problem_statement_format(
+            intent=request.intent,
+            parameters=request.parameters
+        )
+        
+        logger.info(f"Generated enhanced action plan: {enhanced_plan}")
+        return enhanced_plan
+        
+    except Exception as e:
+        logger.error(f"Error generating enhanced action plan: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to generate enhanced action plan: {str(e)}"
+        )
+
 @router.post("/generate_plan", response_model=ActionPlanResponse)
 async def generate_action_plan(request: ActionPlanRequest):
     """

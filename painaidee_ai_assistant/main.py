@@ -26,11 +26,13 @@ try:
     from api.emotion_routes import router as emotion_router
     from api.gesture_routes import create_gesture_api_routes
     from api.action_plan_routes import router as action_plan_router
+    from api.tts_routes import create_tts_routes
     HAS_AI_ROUTES = True
     HAS_TOURISM_ROUTES = True
     HAS_EMOTION_ROUTES = True
     HAS_GESTURE_ROUTES = True
     HAS_ACTION_PLAN_ROUTES = True
+    HAS_TTS_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
@@ -68,6 +70,12 @@ except ImportError as e:
         HAS_ACTION_PLAN_ROUTES = False
         print(f"Warning: Action plan routes not available: {action_e}")
         action_plan_router = None
+    try:
+        from api.tts_routes import create_tts_routes
+        HAS_TTS_ROUTES = True
+    except ImportError as tts_e:
+        HAS_TTS_ROUTES = False
+        print(f"Warning: TTS routes not available: {tts_e}")
     performance_router = None
 
 # Load environment variables
@@ -129,6 +137,10 @@ if HAS_TOURISM_ROUTES:
 # Add gesture recognition routes
 if HAS_GESTURE_ROUTES:
     create_gesture_api_routes(app)
+
+# Add TTS routes
+if HAS_TTS_ROUTES:
+    create_tts_routes(app)
 
 # Add performance optimization routes
 if performance_router:

@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced PaiNaiDee AI Assistant - Multimodal Interactions</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .control-panel {
+            width: 400px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .main-view {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2a2a2a;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #ffdd59;
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+
+        .intent-section {
+            margin-bottom: 25px;
+        }
+
+        .intent-section h3 {
+            color: #4ecdc4;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .intent-form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ddd;
+            font-size: 14px;
+        }
+
+        .form-group input, 
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #ccc;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        }
+
+        .btn.secondary:hover {
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+
+        /* Location Popup Component */
+        .location-popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            color: #333;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            min-width: 300px;
+            max-width: 400px;
+            display: none;
+        }
+
+        .location-popup.show {
+            display: block;
+            animation: popupAppear 0.5s ease-out;
+        }
+
+        @keyframes popupAppear {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .location-popup h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 22px;
+        }
+
+        .location-popup img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .popup-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .popup-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .popup-btn.secondary {
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .popup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Map Pin Animation */
+        .map-pin {
+            position: absolute;
+            top: 40%;
+            left: 60%;
+            width: 30px;
+            height: 30px;
+            background: #ff6b6b;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            display: none;
+            z-index: 500;
+        }
+
+        .map-pin.show {
+            display: block;
+            animation: pinBlink 2s infinite;
+        }
+
+        .map-pin::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        @keyframes pinBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* AI Assistant Avatar */
+        .ai-avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            margin: 0 auto;
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        .ai-avatar.speaking {
+            animation: avatarSpeak 0.5s ease-in-out infinite alternate;
+        }
+
+        .ai-avatar.gesturing {
+            animation: avatarGesture 2s ease-in-out;
+        }
+
+        @keyframes avatarSpeak {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        @keyframes avatarGesture {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        /* Speech Bubble */
+        .speech-bubble {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            color: #333;
+            padding: 15px 20px;
+            border-radius: 20px;
+            max-width: 250px;
+            display: none;
+            font-size: 14px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .speech-bubble.show {
+            display: block;
+            animation: bubbleAppear 0.3s ease-out;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 10px solid transparent;
+            border-top-color: white;
+        }
+
+        @keyframes bubbleAppear {
+            from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* Response Display */
+        .response-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .response-section h4 {
+            color: #ffdd59;
+            margin-top: 0;
+        }
+
+        .response-content {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Action Timeline */
+        .action-timeline {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+
+        .timeline-item.active {
+            background: rgba(255, 221, 89, 0.2);
+            border-left: 3px solid #ffdd59;
+        }
+
+        .timeline-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .timeline-icon.speech { background: #ff6b6b; }
+        .timeline-icon.gesture { background: #4ecdc4; }
+        .timeline-icon.ui { background: #667eea; }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="header">
+                <h1>🤖 PaiNaiDee AI</h1>
+                <p>Enhanced Multimodal Assistant</p>
+            </div>
+
+            <!-- Intent Testing Section -->
+            <div class="intent-section">
+                <h3>🎯 Test Intent Actions</h3>
+                
+                <div class="intent-form">
+                    <div class="form-group">
+                        <label>Intent:</label>
+                        <select id="intentSelect">
+                            <option value="suggest_place">Suggest Place</option>
+                            <option value="suggest_cultural_place">Suggest Cultural Place</option>
+                            <option value="greet_user">Greet User</option>
+                            <option value="confirm_action">Confirm Action</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Place Name (for suggestions):</label>
+                        <input type="text" id="placeNameInput" placeholder="e.g., ภูชี้ฟ้า" value="ภูชี้ฟ้า">
+                    </div>
+                    
+                    <button class="btn" onclick="generateActionPlan()">
+                        <span id="generateBtnText">Generate Action Plan</span>
+                        <span id="generateLoading" class="loading" style="display: none;"></span>
+                    </button>
+                    
+                    <button class="btn secondary" onclick="executeActionPlan()">
+                        Execute Actions
+                    </button>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="intent-form">
+                    <h4 style="color: #4ecdc4; margin-bottom: 10px;">🚀 Quick Actions</h4>
+                    <button class="btn" onclick="quickAction('suggest_place', {place_name: 'ภูชี้ฟ้า'})">
+                        Suggest Phu Chi Fa
+                    </button>
+                    <button class="btn" onclick="quickAction('greet_user', {})">
+                        Greeting Demo
+                    </button>
+                    <button class="btn" onclick="quickAction('suggest_cultural_place', {})">
+                        Cultural Place Demo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Timeline -->
+            <div class="action-timeline">
+                <h4 style="color: #ffdd59; margin-bottom: 10px;">⏱️ Action Timeline</h4>
+                <div id="actionTimeline">
+                    <p style="color: #ccc; font-style: italic;">Generate an action plan to see timeline</p>
+                </div>
+            </div>
+
+            <!-- Response Display -->
+            <div class="response-section">
+                <h4>📄 API Response</h4>
+                <div id="responseContent" class="response-content">
+                    Click "Generate Action Plan" to see response...
+                </div>
+            </div>
+        </div>
+
+        <!-- Main View -->
+        <div class="main-view">
+            <!-- AI Avatar -->
+            <div class="ai-avatar" id="aiAvatar">
+                🤖
+                <div class="speech-bubble" id="speechBubble">
+                    Hello! I'm your AI assistant.
+                </div>
+            </div>
+
+            <!-- Map Pin -->
+            <div class="map-pin" id="mapPin"></div>
+
+            <!-- Location Popup -->
+            <div class="location-popup" id="locationPopup">
+                <h3 id="popupTitle">สถานที่ท่องเที่ยว</h3>
+                <img id="popupImage" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzY2N2VlYSIvPgogIDx0ZXh0IHg9IjIwMCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+UGh1IENoaSBGYTwvdGV4dD4KICA8dGV4dCB4PSIyMDAiIHk9IjEzMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuC4oOC4t+C4iOC4teC5ieC4n+C4sSDguKDguLnguYjguYDguIrguLXguYnguK3guKPguLU8L3RleHQ+Cjwvc3ZnPgo=" alt="Place Image">
+                <p id="popupDescription">Beautiful mountain peak with stunning sunrise views</p>
+                <div class="popup-buttons">
+                    <button class="popup-btn primary" onclick="handlePopupAction('map')">เปิดแผนที่</button>
+                    <button class="popup-btn secondary" onclick="handlePopupAction('reviews')">ดูรีวิว</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentActionPlan = null;
+
+        async function generateActionPlan() {
+            const intent = document.getElementById('intentSelect').value;
+            const placeName = document.getElementById('placeNameInput').value;
+            
+            // Show loading
+            document.getElementById('generateBtnText').style.display = 'none';
+            document.getElementById('generateLoading').style.display = 'inline-block';
+            
+            try {
+                const response = await fetch('/action/generate_enhanced_plan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        intent: intent,
+                        parameters: {
+                            place_name: placeName
+                        }
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                currentActionPlan = data;
+                
+                // Display response
+                document.getElementById('responseContent').textContent = JSON.stringify(data, null, 2);
+                
+                // Update timeline
+                updateActionTimeline(data);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('responseContent').textContent = `Error: ${error.message}`;
+            } finally {
+                // Hide loading
+                document.getElementById('generateBtnText').style.display = 'inline';
+                document.getElementById('generateLoading').style.display = 'none';
+            }
+        }
+
+        async function executeActionPlan() {
+            if (!currentActionPlan) {
+                alert('Please generate an action plan first!');
+                return;
+            }
+            
+            // Execute speech
+            if (currentActionPlan.spoken_text) {
+                await executeSpeech(currentActionPlan.spoken_text);
+            }
+            
+            // Execute gesture
+            if (currentActionPlan.animation) {
+                await executeGesture(currentActionPlan.animation);
+            }
+            
+            // Execute UI action
+            if (currentActionPlan.ui_action) {
+                await executeUIAction(currentActionPlan.ui_action);
+            }
+        }
+
+        async function executeSpeech(text) {
+            const avatar = document.getElementById('aiAvatar');
+            const bubble = document.getElementById('speechBubble');
+            
+            // Show speech bubble
+            bubble.textContent = text;
+            bubble.classList.add('show');
+            avatar.classList.add('speaking');
+            
+            // Simulate speech duration
+            setTimeout(() => {
+                bubble.classList.remove('show');
+                avatar.classList.remove('speaking');
+            }, 3000);
+        }
+
+        async function executeGesture(animation) {
+            const avatar = document.getElementById('aiAvatar');
+            
+            avatar.classList.add('gesturing');
+            
+            // Different gestures
+            if (animation.includes('point')) {
+                // Point animation
+                avatar.style.transform = 'rotate(10deg)';
+                setTimeout(() => {
+                    avatar.style.transform = 'rotate(0deg)';
+                }, 1000);
+            }
+            
+            setTimeout(() => {
+                avatar.classList.remove('gesturing');
+            }, 2000);
+        }
+
+        async function executeUIAction(uiAction) {
+            if (uiAction.type === 'show_location_popup') {
+                showLocationPopup(uiAction.data);
+            }
+            
+            // Show map pin
+            const pin = document.getElementById('mapPin');
+            pin.classList.add('show');
+            
+            setTimeout(() => {
+                pin.classList.remove('show');
+            }, 5000);
+        }
+
+        function showLocationPopup(data) {
+            const popup = document.getElementById('locationPopup');
+            const title = document.getElementById('popupTitle');
+            const description = document.getElementById('popupDescription');
+            
+            title.textContent = data.name || 'สถานที่ท่องเที่ยว';
+            description.textContent = `สถานที่ท่องเที่ยวที่น่าสนใจ: ${data.name}`;
+            
+            popup.classList.add('show');
+            
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 10000);
+        }
+
+        function handlePopupAction(action) {
+            const popup = document.getElementById('locationPopup');
+            popup.classList.remove('show');
+            
+            if (action === 'map') {
+                alert('เปิดแผนที่... (ในแอปพลิเคชันจริงจะเปิด Google Maps)');
+            } else if (action === 'reviews') {
+                alert('แสดงรีวิว... (ในแอปพลิเคชันจริงจะแสดงรีวิวจากผู้ใช้)');
+            }
+        }
+
+        async function quickAction(intent, parameters) {
+            // Set form values
+            document.getElementById('intentSelect').value = intent;
+            if (parameters.place_name) {
+                document.getElementById('placeNameInput').value = parameters.place_name;
+            }
+            
+            // Generate and execute
+            await generateActionPlan();
+            setTimeout(() => {
+                executeActionPlan();
+            }, 1000);
+        }
+
+        function updateActionTimeline(actionPlan) {
+            const timeline = document.getElementById('actionTimeline');
+            timeline.innerHTML = '';
+            
+            const actions = [];
+            
+            if (actionPlan.spoken_text) {
+                actions.push({
+                    type: 'speech',
+                    content: actionPlan.spoken_text,
+                    duration: '3s'
+                });
+            }
+            
+            if (actionPlan.animation) {
+                actions.push({
+                    type: 'gesture',
+                    content: actionPlan.animation,
+                    duration: '2s'
+                });
+            }
+            
+            if (actionPlan.ui_action) {
+                actions.push({
+                    type: 'ui',
+                    content: actionPlan.ui_action.type,
+                    duration: '5s'
+                });
+            }
+            
+            actions.forEach((action, index) => {
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                
+                item.innerHTML = `
+                    <div class="timeline-icon ${action.type}"></div>
+                    <div>
+                        <strong>${action.type.toUpperCase()}</strong><br>
+                        <small>${action.content} (${action.duration})</small>
+                    </div>
+                `;
+                
+                timeline.appendChild(item);
+            });
+        }
+
+        // Initialize with greeting
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                quickAction('greet_user', {});
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
