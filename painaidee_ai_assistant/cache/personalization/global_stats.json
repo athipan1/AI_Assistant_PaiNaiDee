@@ -1,21 +1,21 @@
 {
   "total_users": 0,
-  "total_interactions": 26,
+  "total_interactions": 42,
   "popular_models": {
-    "Walking.fbx": 17,
+    "Walking.fbx": 27,
     "Man_Rig.fbx": 1,
     "Running.fbx": 1,
-    "Idle.fbx": 7
+    "Idle.fbx": 13
   },
   "popular_intents": {
-    "neutral_animation_walking": 5,
+    "neutral_animation_walking": 8,
     "neutral_rigged_custom": 1,
     "neutral_animation_running": 1,
-    "neutral_static_idle": 6,
-    "neutral_static_walking": 7,
-    "neutral_display_running": 2,
-    "neutral_animation_idle": 2,
-    "neutral_rigged_idle": 2
+    "neutral_static_idle": 10,
+    "neutral_static_walking": 13,
+    "neutral_display_running": 3,
+    "neutral_animation_idle": 3,
+    "neutral_rigged_idle": 3
   },
-  "last_updated": 1753713706.7865536
+  "last_updated": 1753792146.8497326
 }
