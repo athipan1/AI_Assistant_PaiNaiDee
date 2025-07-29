@@ -1,0 +1,498 @@
+{
+  "timestamp": "2025-07-29T12:42:43.169467",
+  "performance_statistics": {
+    "total_requests": 11,
+    "error_count": 0,
+    "error_rate": 0.0,
+    "response_times": {
+      "count": 11,
+      "average": 0.0047213814475319605,
+      "median": 0.004658222198486328,
+      "min": 0.004039764404296875,
+      "max": 0.006238222122192383
+    },
+    "sync_delays": {
+      "count": 11,
+      "average": 0.7566391338001598,
+      "median": 0.8019869327545166,
+      "min": 0.7019901275634766,
+      "max": 0.8022415637969971
+    }
+  },
+  "sync_events": [
+    {
+      "type": "ai_response",
+      "timestamp": 1753792899.786753,
+      "datetime": "2025-07-29T12:41:39.786753",
+      "details": {
+        "success": true,
+        "response_time": 0.006238222122192383,
+        "model_selected": "Walking.fbx",
+        "confidence": 0.46395253406346393,
+        "ai_analysis_time": 0.006238222122192383,
+        "timestamp": 1753792899.786753
+      }
+    },
+    {
+      "type": "model_loaded",
+      "timestamp": 1753792899.793147,
+      "datetime": "2025-07-29T12:41:39.793147",
+      "details": {
+        "success": true,
+        "model_name": "Walking.fbx",
+        "load_time": 0.7022619247436523,
+        "estimated_time": 0.7,
+        "accessible": true,
+        "timestamp": 1753792899.793147
+      }
+    },
+    {
+      "type": "e2e_sync_test",
+      "timestamp": 1753792899.786753,
+      "datetime": "2025-07-29T12:41:39.786753",
+      "details": {
+        "success": true,
+        "sync_acceptable": true,
+        "query": "Show me a walking person",
+        "ai_response_time": 0.006238222122192383,
+        "model_load_time": 0.7022619247436523,
+        "total_time": 0.7085001468658447,
+        "sync_delay": 0.7022619247436523,
+        "model_selected": "Walking.fbx",
+        "confidence": 0.46395253406346393,
+        "timestamp": 1753792899.786753
+      }
+    },
+    {
+      "type": "ai_response",
+      "timestamp": 1753792905.495984,
+      "datetime": "2025-07-29T12:41:45.495984",
+      "details": {
+        "success": true,
+        "response_time": 0.0041522979736328125,
+        "model_selected": "Running.fbx",
+        "confidence": 0.5658224195308894,
+        "ai_analysis_time": 0.0041522979736328125,
+        "timestamp": 1753792905.495984
+      }
+    },
+    {
+      "type": "model_loaded",
+      "timestamp": 1753792905.5002735,
+      "datetime": "2025-07-29T12:41:45.500273",
+      "details": {
+        "success": true,
+        "model_name": "Running.fbx",
+        "load_time": 0.7019901275634766,
+        "estimated_time": 0.7,
+        "accessible": true,
+        "timestamp": 1753792905.5002735
+      }
+    },
+    {
+      "type": "e2e_sync_test",
+      "timestamp": 1753792905.495984,
+      "datetime": "2025-07-29T12:41:45.495984",
+      "details": {
+        "success": true,
+        "sync_acceptable": true,
+        "query": "Display running animation",
+        "ai_response_time": 0.0041522979736328125,
+        "model_load_time": 0.7019901275634766,
+        "total_time": 0.7061424255371094,
+        "sync_delay": 0.7019901275634766,
+        "model_selected": "Running.fbx",
+        "confidence": 0.5658224195308894,
+        "timestamp": 1753792905.495984
+      }
+    },
+    {
+      "type": "ai_response",
+      "timestamp": 1753792911.2027686,
+      "datetime": "2025-07-29T12:41:51.202769",
+      "details": {
+        "success": true,
+        "response_time": 0.004583597183227539,
+        "model_selected": "Idle.fbx",
+        "confidence": 0.48398278463671746,
+        "ai_analysis_time": 0.004583597183227539,
+        "timestamp": 1753792911.2027686
+      }
+    },
+    {
+      "type": "model_loaded",
+      "timestamp": 1753792911.207486,
+      "datetime": "2025-07-29T12:41:51.207486",
+      "details": {
+        "success": true,
+        "model_name": "Idle.fbx",
+        "load_time": 0.8022415637969971,
+        "estimated_time": 0.8,
+        "accessible": true,
+        "timestamp": 1753792911.207486
+      }
+    },
+    {
+      "type": "e2e_sync_test",
+      "timestamp": 1753792911.2027686,
+      "datetime": "2025-07-29T12:41:51.202769",
+      "details": {
+        "success": true,
+        "sync_acceptable": true,
+        "query": "I want to see someone standing",
+        "ai_response_time": 0.004583597183227539,
+        "model_load_time": 0.8022415637969971,
+        "total_time": 0.8068251609802246,
+        "sync_delay": 0.8022415637969971,
+        "model_selected": "Idle.fbx",
+        "confidence": 0.48398278463671746,
+        "timestamp": 1753792911.2027686
+      }
+    },
+    {
+      "type": "ai_response",
+      "timestamp": 1753792917.0102482,
+      "datetime": "2025-07-29T12:41:57.010248",
+      "details": {
+        "success": true,
+        "response_time": 0.004658222198486328,
+        "model_selected": "Idle.fbx",
+        "confidence": 0.44282262563941327,
+        "ai_analysis_time": 0.004658222198486328,
+        "timestamp": 1753792917.0102482
+      }
+    },
+    {
+      "type": "model_loaded",
+      "timestamp": 1753792917.0150847,
+      "datetime": "2025-07-29T12:41:57.015085",
+      "details": {
+        "success": true,
+        "model_name": "Idle.fbx",
+        "load_time": 0.802001953125,
+        "estimated_time": 0.8,
+        "accessible": true,
+        "timestamp": 1753792917.0150847
+      }
+    },
+    {
+      "type": "e2e_sync_test",
+      "timestamp": 1753792917.0102482,
+      "datetime": "2025-07-29T12:41:57.010248",
+      "details": {
+        "success": true,
+        "sync_acceptable": true,
+        "query": "Show basic character model",
+        "ai_response_time": 0.004658222198486328,
+        "model_load_time": 0.802001953125,
+        "total_time": 0.8066601753234863,
+        "sync_delay": 0.802001953125,
+        "model_selected": "Idle.fbx",
+        "confidence": 0.44282262563941327,
+        "timestamp": 1753792917.0102482
+      }
+    },
+    {
+      "type": "ai_response",
+      "timestamp": 1753792922.8176043,
+      "datetime": "2025-07-29T12:42:02.817604",
+      "details": {
+        "success": true,
+        "response_time": 0.004393100738525391,
+        "model_selected": "Idle.fbx",
+        "confidence": 0.5231875724807071,
+        "ai_analysis_time": 0.004393100738525391,
+        "timestamp": 1753792922.8176043
+      }
+    },
+    {
+      "type": "model_loaded",
+      "timestamp": 1753792922.8221474,
+      "datetime": "2025-07-29T12:42:02.822147",
+      "details": {
+        "success": true,
+        "model_name": "Idle.fbx",
+        "load_time": 0.8019869327545166,
+        "estimated_time": 0.8,
+        "accessible": true,
+        "timestamp": 1753792922.8221474
+      }
+    },
+    {
+      "type": "e2e_sync_test",
+      "timestamp": 1753792922.8176043,
+      "datetime": "2025-07-29T12:42:02.817604",
+      "details": {
+        "success": true,
+        "sync_acceptable": true,
+        "query": "Demonstrate idle pose",
+        "ai_response_time": 0.004393100738525391,
+        "model_load_time": 0.8019869327545166,
+        "total_time": 0.806380033493042,
+        "sync_delay": 0.8019869327545166,
+        "model_selected": "Idle.fbx",
+        "confidence": 0.5231875724807071,
+        "timestamp": 1753792922.8176043
+      }
+    },
+    {
+      "type": "ai_response",
+      "timestamp": 1753792928.624682,
+      "datetime": "2025-07-29T12:42:08.624682",
+      "details": {
+        "success": true,
+        "response_time": 0.0049457550048828125,
+        "model_selected": "Walking.fbx",
+        "confidence": 0.4624961624376008,
+        "ai_analysis_time": 0.0049457550048828125,
+        "timestamp": 1753792928.624682
+      }
+    },
+    {
+      "type": "model_loaded",
+      "timestamp": 1753792928.6297698,
+      "datetime": "2025-07-29T12:42:08.629770",
+      "details": {
+        "success": true,
+        "model_name": "Walking.fbx",
+        "load_time": 0.7021393775939941,
+        "estimated_time": 0.7,
+        "accessible": true,
+        "timestamp": 1753792928.6297698
+      }
+    },
+    {
+      "type": "e2e_sync_test",
+      "timestamp": 1753792928.624682,
+      "datetime": "2025-07-29T12:42:08.624682",
+      "details": {
+        "success": true,
+        "sync_acceptable": true,
+        "query": "Show me a walking person",
+        "ai_response_time": 0.0049457550048828125,
+        "model_load_time": 0.7021393775939941,
+        "total_time": 0.707085132598877,
+        "sync_delay": 0.7021393775939941,
+        "model_selected": "Walking.fbx",
+        "confidence": 0.4624961624376008,
+        "timestamp": 1753792928.624682
+      }
+    },
+    {
+      "type": "ai_response",
+      "timestamp": 1753792934.3324656,
+      "datetime": "2025-07-29T12:42:14.332466",
+      "details": {
+        "success": true,
+        "response_time": 0.004412651062011719,
+        "model_selected": "Running.fbx",
+        "confidence": 0.5663072680157379,
+        "ai_analysis_time": 0.004412651062011719,
+        "timestamp": 1753792934.3324656
+      }
+    },
+    {
+      "type": "model_loaded",
+      "timestamp": 1753792934.3370433,
+      "datetime": "2025-07-29T12:42:14.337043",
+      "details": {
+        "success": true,
+        "model_name": "Running.fbx",
+        "load_time": 0.7021894454956055,
+        "estimated_time": 0.7,
+        "accessible": true,
+        "timestamp": 1753792934.3370433
+      }
+    },
+    {
+      "type": "e2e_sync_test",
+      "timestamp": 1753792934.3324656,
+      "datetime": "2025-07-29T12:42:14.332466",
+      "details": {
+        "success": true,
+        "sync_acceptable": true,
+        "query": "Display running animation",
+        "ai_response_time": 0.004412651062011719,
+        "model_load_time": 0.7021894454956055,
+        "total_time": 0.7066020965576172,
+        "sync_delay": 0.7021894454956055,
+        "model_selected": "Running.fbx",
+        "confidence": 0.5663072680157379,
+        "timestamp": 1753792934.3324656
+      }
+    },
+    {
+      "type": "ai_response",
+      "timestamp": 1753792940.0397942,
+      "datetime": "2025-07-29T12:42:20.039794",
+      "details": {
+        "success": true,
+        "response_time": 0.004782915115356445,
+        "model_selected": "Idle.fbx",
+        "confidence": 0.4850132296015886,
+        "ai_analysis_time": 0.004782915115356445,
+        "timestamp": 1753792940.0397942
+      }
+    },
+    {
+      "type": "model_loaded",
+      "timestamp": 1753792940.0447133,
+      "datetime": "2025-07-29T12:42:20.044713",
+      "details": {
+        "success": true,
+        "model_name": "Idle.fbx",
+        "load_time": 0.8020331859588623,
+        "estimated_time": 0.8,
+        "accessible": true,
+        "timestamp": 1753792940.0447133
+      }
+    },
+    {
+      "type": "e2e_sync_test",
+      "timestamp": 1753792940.0397942,
+      "datetime": "2025-07-29T12:42:20.039794",
+      "details": {
+        "success": true,
+        "sync_acceptable": true,
+        "query": "I want to see someone standing",
+        "ai_response_time": 0.004782915115356445,
+        "model_load_time": 0.8020331859588623,
+        "total_time": 0.8068161010742188,
+        "sync_delay": 0.8020331859588623,
+        "model_selected": "Idle.fbx",
+        "confidence": 0.4850132296015886,
+        "timestamp": 1753792940.0397942
+      }
+    },
+    {
+      "type": "ai_response",
+      "timestamp": 1753792945.8472815,
+      "datetime": "2025-07-29T12:42:25.847281",
+      "details": {
+        "success": true,
+        "response_time": 0.004978179931640625,
+        "model_selected": "Idle.fbx",
+        "confidence": 0.44379602688446135,
+        "ai_analysis_time": 0.004978179931640625,
+        "timestamp": 1753792945.8472815
+      }
+    },
+    {
+      "type": "model_loaded",
+      "timestamp": 1753792945.852414,
+      "datetime": "2025-07-29T12:42:25.852414",
+      "details": {
+        "success": true,
+        "model_name": "Idle.fbx",
+        "load_time": 0.8021278381347656,
+        "estimated_time": 0.8,
+        "accessible": true,
+        "timestamp": 1753792945.852414
+      }
+    },
+    {
+      "type": "e2e_sync_test",
+      "timestamp": 1753792945.8472815,
+      "datetime": "2025-07-29T12:42:25.847281",
+      "details": {
+        "success": true,
+        "sync_acceptable": true,
+        "query": "Show basic character model",
+        "ai_response_time": 0.004978179931640625,
+        "model_load_time": 0.8021278381347656,
+        "total_time": 0.8071060180664062,
+        "sync_delay": 0.8021278381347656,
+        "model_selected": "Idle.fbx",
+        "confidence": 0.44379602688446135,
+        "timestamp": 1753792945.8472815
+      }
+    },
+    {
+      "type": "ai_response",
+      "timestamp": 1753792951.6550834,
+      "datetime": "2025-07-29T12:42:31.655083",
+      "details": {
+        "success": true,
+        "response_time": 0.004039764404296875,
+        "model_selected": "Idle.fbx",
+        "confidence": 0.5241071127105922,
+        "ai_analysis_time": 0.004039764404296875,
+        "timestamp": 1753792951.6550834
+      }
+    },
+    {
+      "type": "model_loaded",
+      "timestamp": 1753792951.6592598,
+      "datetime": "2025-07-29T12:42:31.659260",
+      "details": {
+        "success": true,
+        "model_name": "Idle.fbx",
+        "load_time": 0.8020467758178711,
+        "estimated_time": 0.8,
+        "accessible": true,
+        "timestamp": 1753792951.6592598
+      }
+    },
+    {
+      "type": "e2e_sync_test",
+      "timestamp": 1753792951.6550834,
+      "datetime": "2025-07-29T12:42:31.655083",
+      "details": {
+        "success": true,
+        "sync_acceptable": true,
+        "query": "Demonstrate idle pose",
+        "ai_response_time": 0.004039764404296875,
+        "model_load_time": 0.8020467758178711,
+        "total_time": 0.806086540222168,
+        "sync_delay": 0.8020467758178711,
+        "model_selected": "Idle.fbx",
+        "confidence": 0.5241071127105922,
+        "timestamp": 1753792951.6550834
+      }
+    },
+    {
+      "type": "ai_response",
+      "timestamp": 1753792957.4618232,
+      "datetime": "2025-07-29T12:42:37.461823",
+      "details": {
+        "success": true,
+        "response_time": 0.004750490188598633,
+        "model_selected": "Walking.fbx",
+        "confidence": 0.46126734887827875,
+        "ai_analysis_time": 0.004750490188598633,
+        "timestamp": 1753792957.4618232
+      }
+    },
+    {
+      "type": "model_loaded",
+      "timestamp": 1753792957.4667113,
+      "datetime": "2025-07-29T12:42:37.466711",
+      "details": {
+        "success": true,
+        "model_name": "Walking.fbx",
+        "load_time": 0.7020113468170166,
+        "estimated_time": 0.7,
+        "accessible": true,
+        "timestamp": 1753792957.4667113
+      }
+    },
+    {
+      "type": "e2e_sync_test",
+      "timestamp": 1753792957.4618232,
+      "datetime": "2025-07-29T12:42:37.461823",
+      "details": {
+        "success": true,
+        "sync_acceptable": true,
+        "query": "Show me a walking person",
+        "ai_response_time": 0.004750490188598633,
+        "model_load_time": 0.7020113468170166,
+        "total_time": 0.7067618370056152,
+        "sync_delay": 0.7020113468170166,
+        "model_selected": "Walking.fbx",
+        "confidence": 0.46126734887827875,
+        "timestamp": 1753792957.4618232
+      }
+    }
+  ],
+  "monitoring_active": false
+}

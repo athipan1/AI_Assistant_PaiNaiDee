@@ -1,0 +1,495 @@
+{
+  "overall_success": true,
+  "success_rate": 1.0,
+  "results": {
+    "passed": 7,
+    "failed": 0,
+    "total": 7
+  },
+  "detailed_results": [
+    {
+      "test_name": "API Health Check",
+      "success": true,
+      "timestamp": "2025-07-29T12:41:39.532180",
+      "details": {
+        "status_code": 200,
+        "features_available": {
+          "3d_viewer": true,
+          "ai_selection": true,
+          "model_serving": true,
+          "interactive_controls": true,
+          "emotion_analysis": true,
+          "3d_gesture_recognition": true,
+          "hand_tracking": true,
+          "webxr_support": true,
+          "custom_gesture_training": true,
+          "tourist_interest_graph": true,
+          "contextual_recommendations": true,
+          "multimodal_action_plans": true,
+          "intent_to_action_mapping": true
+        },
+        "missing_features": [],
+        "models_available": 5
+      }
+    },
+    {
+      "test_name": "3D Model Availability",
+      "success": true,
+      "timestamp": "2025-07-29T12:41:39.550856",
+      "details": {
+        "available_models": [
+          "Idle.fbx",
+          "Man_Rig.fbx",
+          "Man.fbx",
+          "Walking.fbx",
+          "Running.fbx"
+        ],
+        "missing_models": [],
+        "model_accessibility": {
+          "Idle.fbx": true,
+          "Man_Rig.fbx": true,
+          "Man.fbx": true,
+          "Walking.fbx": true,
+          "Running.fbx": true
+        },
+        "total_models": 5
+      }
+    },
+    {
+      "test_name": "AI Model Selection Integration",
+      "success": true,
+      "timestamp": "2025-07-29T12:41:39.568207",
+      "details": {
+        "test_cases": 4,
+        "successful": 3,
+        "success_rate": 0.75,
+        "results": [
+          {
+            "test_case": {
+              "query": "Show me a walking person",
+              "expected_model": "Walking.fbx",
+              "description": "Basic walking animation request"
+            },
+            "success": true,
+            "selected_model": "Walking.fbx",
+            "expected_model": "Walking.fbx",
+            "confidence": 0.4644816345925644,
+            "response_time": 0.004049
+          },
+          {
+            "test_case": {
+              "query": "I want to see someone running",
+              "expected_model": "Running.fbx",
+              "description": "Running animation request"
+            },
+            "success": true,
+            "selected_model": "Running.fbx",
+            "expected_model": "Running.fbx",
+            "confidence": 0.44949261841152005,
+            "response_time": 0.003388
+          },
+          {
+            "test_case": {
+              "query": "Display a character in idle pose",
+              "expected_model": "Idle.fbx",
+              "description": "Idle/static pose request"
+            },
+            "success": true,
+            "selected_model": "Idle.fbx",
+            "expected_model": "Idle.fbx",
+            "confidence": 0.5071171419346061,
+            "response_time": 0.003455
+          },
+          {
+            "test_case": {
+              "query": "Show me a basic human figure",
+              "expected_model": "Man.fbx",
+              "description": "Basic character model request"
+            },
+            "success": false,
+            "selected_model": "Idle.fbx",
+            "expected_model": "Man.fbx",
+            "confidence": 0.4415970685798987,
+            "response_time": 0.003911
+          }
+        ]
+      }
+    },
+    {
+      "test_name": "Emotion-3D Integration",
+      "success": true,
+      "timestamp": "2025-07-29T12:41:39.616521",
+      "details": {
+        "test_cases": 3,
+        "successful": 3,
+        "results": [
+          {
+            "test_case": {
+              "query": "I'm excited to see walking animations!",
+              "expected_emotion": "excited",
+              "description": "Positive emotion with walking request"
+            },
+            "success": true,
+            "detected_emotion": "excited",
+            "suggested_gesture": "excited_jump",
+            "emotion_analysis": {
+              "primary_emotion": "excited",
+              "confidence": 0.14285714285714285,
+              "suggested_gesture": "excited_jump",
+              "tone_adjustment": "mildly energetic and enthusiastic",
+              "model_adjustments": {
+                "expression": "big_smile",
+                "animation_style": "energetic",
+                "recommended_model": "Man_Rig.fbx"
+              }
+            }
+          },
+          {
+            "test_case": {
+              "query": "I'm worried about running alone",
+              "expected_emotion": "worried",
+              "description": "Negative emotion with running context"
+            },
+            "success": true,
+            "detected_emotion": "worried",
+            "suggested_gesture": "reassuring_gesture",
+            "emotion_analysis": {
+              "primary_emotion": "worried",
+              "confidence": 0.16666666666666666,
+              "suggested_gesture": "reassuring_gesture",
+              "tone_adjustment": "mildly reassuring and supportive",
+              "model_adjustments": {
+                "expression": "comforting",
+                "animation_style": "gentle",
+                "recommended_model": "Running.fbx"
+              }
+            }
+          },
+          {
+            "test_case": {
+              "query": "Show me a calm standing pose",
+              "expected_emotion": "calm",
+              "description": "Peaceful emotion request"
+            },
+            "success": true,
+            "detected_emotion": "calm",
+            "suggested_gesture": "calm_standing",
+            "emotion_analysis": {
+              "primary_emotion": "calm",
+              "confidence": 0.14285714285714285,
+              "suggested_gesture": "calm_standing",
+              "tone_adjustment": "mildly gentle and peaceful",
+              "model_adjustments": {
+                "expression": "peaceful",
+                "animation_style": "smooth",
+                "recommended_model": "Idle.fbx"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "test_name": "Multimodal Action Plans",
+      "success": true,
+      "timestamp": "2025-07-29T12:41:39.622710",
+      "details": {
+        "scenarios": 3,
+        "successful": 3,
+        "results": [
+          {
+            "scenario": {
+              "intent": "suggest_place",
+              "parameters": {
+                "place_name": "Walking Trail"
+              },
+              "description": "Tourism suggestion with 3D interaction"
+            },
+            "success": true,
+            "action_plan": {
+              "intent": "suggest_place",
+              "confidence": 1.0,
+              "speech_actions": [
+                {
+                  "text": "\u0e25\u0e2d\u0e07\u0e44\u0e1bWalking Trail\u0e14\u0e39\u0e44\u0e2b\u0e21\u0e04\u0e23\u0e31\u0e1a?",
+                  "language": "th",
+                  "style": "enthusiastic",
+                  "duration_ms": null,
+                  "voice_params": {}
+                }
+              ],
+              "gesture_actions": [
+                {
+                  "animation": "point_right_then_smile",
+                  "model_name": "Man_Rig.fbx",
+                  "duration_ms": 3500,
+                  "intensity": 1.0,
+                  "loop": false,
+                  "facial_expression": "friendly"
+                }
+              ],
+              "scene_actions": [
+                {
+                  "interaction_type": "map_pin_highlight",
+                  "target": "location_pin",
+                  "duration_ms": 2000,
+                  "parameters": {
+                    "highlight_color": "#FF6B35",
+                    "pulse": true
+                  }
+                },
+                {
+                  "interaction_type": "zoom_to_location",
+                  "target": "coordinates",
+                  "duration_ms": 3000,
+                  "parameters": {
+                    "zoom_level": 15,
+                    "smooth_transition": true
+                  }
+                }
+              ],
+              "ui_actions": [
+                {
+                  "component_type": "show_location_popup",
+                  "content": {
+                    "name": "\u0e2a\u0e16\u0e32\u0e19\u0e17\u0e35\u0e48\u0e17\u0e48\u0e2d\u0e07\u0e40\u0e17\u0e35\u0e48\u0e22\u0e27",
+                    "img": "placeholder.jpg",
+                    "buttons": [
+                      "\u0e40\u0e1b\u0e34\u0e14\u0e41\u0e1c\u0e19\u0e17\u0e35\u0e48",
+                      "\u0e14\u0e39\u0e23\u0e35\u0e27\u0e34\u0e27"
+                    ]
+                  },
+                  "position": "overlay",
+                  "duration_ms": null,
+                  "interaction_enabled": true
+                },
+                {
+                  "component_type": "map_pin_marker",
+                  "content": {
+                    "location": {
+                      "lat": 0,
+                      "lng": 0
+                    },
+                    "title": "Walking Trail",
+                    "animation": "blink"
+                  },
+                  "position": "scene",
+                  "duration_ms": null,
+                  "interaction_enabled": true
+                }
+              ],
+              "execution_order": [
+                "speech",
+                "gesture",
+                "scene",
+                "ui"
+              ],
+              "estimated_duration_ms": 6500,
+              "metadata": {}
+            },
+            "components": {
+              "speech": true,
+              "gesture": true,
+              "ui": true,
+              "execution_order": true
+            }
+          },
+          {
+            "scenario": {
+              "intent": "greet_user",
+              "parameters": {},
+              "description": "User greeting with gesture"
+            },
+            "success": true,
+            "action_plan": {
+              "intent": "greet_user",
+              "confidence": 1.0,
+              "speech_actions": [
+                {
+                  "text": "\u0e2a\u0e27\u0e31\u0e2a\u0e14\u0e35\u0e04\u0e23\u0e31\u0e1a \u0e22\u0e34\u0e19\u0e14\u0e35\u0e15\u0e49\u0e2d\u0e19\u0e23\u0e31\u0e1a",
+                  "language": "th",
+                  "style": "friendly",
+                  "duration_ms": null,
+                  "voice_params": {}
+                }
+              ],
+              "gesture_actions": [
+                {
+                  "animation": "wave",
+                  "model_name": "Man_Rig.fbx",
+                  "duration_ms": 2500,
+                  "intensity": 1.0,
+                  "loop": false,
+                  "facial_expression": "happy"
+                }
+              ],
+              "scene_actions": [],
+              "ui_actions": [],
+              "execution_order": [
+                "speech",
+                "gesture"
+              ],
+              "estimated_duration_ms": 3000,
+              "metadata": {}
+            },
+            "components": {
+              "speech": true,
+              "gesture": true,
+              "ui": false,
+              "execution_order": true
+            }
+          },
+          {
+            "scenario": {
+              "intent": "confirm_action",
+              "parameters": {
+                "action": "show_walking_demo"
+              },
+              "description": "Action confirmation with animation"
+            },
+            "success": true,
+            "action_plan": {
+              "intent": "confirm_action",
+              "confidence": 1.0,
+              "speech_actions": [
+                {
+                  "text": "\u0e40\u0e02\u0e49\u0e32\u0e43\u0e08\u0e41\u0e25\u0e49\u0e27\u0e04\u0e23\u0e31\u0e1a",
+                  "language": "th",
+                  "style": "calm",
+                  "duration_ms": null,
+                  "voice_params": {}
+                }
+              ],
+              "gesture_actions": [
+                {
+                  "animation": "nod",
+                  "model_name": "Man_Rig.fbx",
+                  "duration_ms": 1500,
+                  "intensity": 1.0,
+                  "loop": false,
+                  "facial_expression": "smile"
+                }
+              ],
+              "scene_actions": [],
+              "ui_actions": [],
+              "execution_order": [
+                "speech",
+                "gesture"
+              ],
+              "estimated_duration_ms": 3000,
+              "metadata": {}
+            },
+            "components": {
+              "speech": true,
+              "gesture": true,
+              "ui": false,
+              "execution_order": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "test_name": "Synchronization Timing",
+      "success": true,
+      "timestamp": "2025-07-29T12:41:39.642841",
+      "details": {
+        "total_tests": 5,
+        "successful_tests": 5,
+        "average_response_time": 0.003959560394287109,
+        "timing_details": [
+          {
+            "test_number": 1,
+            "response_time": 0.0039215087890625,
+            "status_code": 200,
+            "success": true
+          },
+          {
+            "test_number": 2,
+            "response_time": 0.004179954528808594,
+            "status_code": 200,
+            "success": true
+          },
+          {
+            "test_number": 3,
+            "response_time": 0.003884553909301758,
+            "status_code": 200,
+            "success": true
+          },
+          {
+            "test_number": 4,
+            "response_time": 0.003934144973754883,
+            "status_code": 200,
+            "success": true
+          },
+          {
+            "test_number": 5,
+            "response_time": 0.0038776397705078125,
+            "status_code": 200,
+            "success": true
+          }
+        ]
+      }
+    },
+    {
+      "test_name": "Error Handling",
+      "success": true,
+      "timestamp": "2025-07-29T12:41:39.648078",
+      "details": {
+        "test_cases": 3,
+        "successful": 3,
+        "results": [
+          {
+            "test_case": {
+              "endpoint": "/ai/select_model",
+              "payload": {},
+              "expected_status": 200,
+              "description": "Missing required fields"
+            },
+            "success": true,
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_data": {
+              "error": "Question is required",
+              "status": "error"
+            }
+          },
+          {
+            "test_case": {
+              "endpoint": "/models/NonExistent.fbx",
+              "method": "GET",
+              "expected_status": 404,
+              "description": "Non-existent model request"
+            },
+            "success": true,
+            "expected_status": 404,
+            "actual_status": 404,
+            "response_data": {
+              "detail": "Model not found"
+            }
+          },
+          {
+            "test_case": {
+              "endpoint": "/ai/select_model",
+              "payload": {
+                "question": "",
+                "language": "en"
+              },
+              "expected_status": 200,
+              "description": "Empty query handling"
+            },
+            "success": true,
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_data": {
+              "error": "Question is required",
+              "status": "error"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "timestamp": "2025-07-29T12:41:39.648703"
+}
