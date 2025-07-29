@@ -44,3 +44,6 @@ typing-extensions==4.8.0
 # Development and testing (optional)
 # pytest==7.4.3
 # pytest-asyncio==0.21.1
+
+# LLaMA CPP Python for advanced AI models
+llama-cpp-python>=0.2.0
