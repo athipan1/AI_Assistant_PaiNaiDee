@@ -14,6 +14,7 @@ import uvicorn
 # Import API routes
 try:
     from api.ai_routes import router as ai_router
+    from api.advanced_ai_routes import router as advanced_ai_router
     from api.model_routes import create_model_routes, model_selector
     from api.performance_routes import router as performance_router
     from api.versioning_routes import create_versioning_routes
@@ -28,6 +29,7 @@ try:
     from api.action_plan_routes import router as action_plan_router
     from api.tts_routes import create_tts_routes
     HAS_AI_ROUTES = True
+    HAS_ADVANCED_AI_ROUTES = True
     HAS_TOURISM_ROUTES = True
     HAS_EMOTION_ROUTES = True
     HAS_GESTURE_ROUTES = True
@@ -37,6 +39,7 @@ except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
     HAS_AI_ROUTES = False
+    HAS_ADVANCED_AI_ROUTES = False
     from api.model_routes import create_model_routes, model_selector
     from api.versioning_routes import create_versioning_routes
     from api.cdn_routes import create_cdn_routes
@@ -44,6 +47,13 @@ except ImportError as e:
     from api.external_routes import create_external_api_routes
     from api.admin_routes import create_admin_routes
     from api.upload_routes import create_upload_routes
+    try:
+        from api.advanced_ai_routes import router as advanced_ai_router
+        HAS_ADVANCED_AI_ROUTES = True
+    except ImportError as advanced_ai_e:
+        HAS_ADVANCED_AI_ROUTES = False
+        print(f"Warning: Advanced AI routes not available: {advanced_ai_e}")
+        advanced_ai_router = None
     try:
         from api.tourism_routes import create_tourism_routes
         HAS_TOURISM_ROUTES = True
@@ -100,6 +110,10 @@ app.add_middleware(
 # Include API routes
 if HAS_AI_ROUTES:
     app.include_router(ai_router, prefix="/ai", tags=["AI Assistant"])
+
+# Add advanced AI routes
+if HAS_ADVANCED_AI_ROUTES:
+    app.include_router(advanced_ai_router, prefix="/advanced_ai", tags=["Advanced AI Models"])
 
 # Add emotion analysis routes
 if HAS_EMOTION_ROUTES:
@@ -226,6 +240,11 @@ async def root():
                 "action_plans": "/action/generate_plan",
                 "execute_plan": "/action/execute_plan",
                 "quick_action": "/action/quick_action",
+                "advanced_ai_generate": "/advanced_ai/generate",
+                "advanced_ai_models": "/advanced_ai/models",
+                "tourism_advisor": "/advanced_ai/tourism_advisor",
+                "conversation": "/advanced_ai/conversation",
+                "question_answering": "/advanced_ai/question_answering",
                 "viewer": "/static/demo.html"
             }
         }
@@ -254,7 +273,12 @@ async def health_check():
                 "tourist_interest_graph": HAS_TOURISM_ROUTES,
                 "contextual_recommendations": HAS_TOURISM_ROUTES,
                 "multimodal_action_plans": HAS_ACTION_PLAN_ROUTES,
-                "intent_to_action_mapping": HAS_ACTION_PLAN_ROUTES
+                "intent_to_action_mapping": HAS_ACTION_PLAN_ROUTES,
+                "advanced_ai_models": HAS_ADVANCED_AI_ROUTES,
+                "llama_cpp_support": HAS_ADVANCED_AI_ROUTES,
+                "openchat_integration": HAS_ADVANCED_AI_ROUTES,
+                "openhermes_integration": HAS_ADVANCED_AI_ROUTES,
+                "tourism_ai_advisor": HAS_ADVANCED_AI_ROUTES
             }
         }
     except Exception as e:

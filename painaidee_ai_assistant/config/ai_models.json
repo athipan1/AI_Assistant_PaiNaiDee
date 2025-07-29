@@ -1,0 +1,67 @@
+{
+  "llama-2-7b-chat": {
+    "name": "llama-2-7b-chat",
+    "model_type": "llama_cpp",
+    "model_path": "models/llama-2-7b-chat.gguf",
+    "capabilities": ["conversation", "question_answering", "text_generation", "tourism_advice"],
+    "language_support": ["en", "th"],
+    "max_tokens": 2048,
+    "temperature": 0.7,
+    "is_local": true,
+    "requires_gpu": false,
+    "load_in_8bit": false,
+    "priority": 2
+  },
+  "openchat-3.5": {
+    "name": "openchat-3.5",
+    "model_type": "openchat",
+    "model_path": "openchat/openchat-3.5-1210",
+    "capabilities": ["conversation", "question_answering", "text_generation"],
+    "language_support": ["en", "th"],
+    "max_tokens": 4096,
+    "temperature": 0.7,
+    "is_local": true,
+    "requires_gpu": true,
+    "load_in_8bit": true,
+    "priority": 3
+  },
+  "openhermes-2.5": {
+    "name": "openhermes-2.5",
+    "model_type": "openhermes",
+    "model_path": "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO",
+    "capabilities": ["conversation", "question_answering", "text_generation", "tourism_advice"],
+    "language_support": ["en", "th"],
+    "max_tokens": 4096,
+    "temperature": 0.7,
+    "is_local": true,
+    "requires_gpu": true,
+    "load_in_8bit": true,
+    "priority": 4
+  },
+  "llama-3-8b-instruct": {
+    "name": "llama-3-8b-instruct",
+    "model_type": "llama_cpp",
+    "model_path": "models/llama-3-8b-instruct.gguf",
+    "capabilities": ["conversation", "question_answering", "text_generation", "tourism_advice"],
+    "language_support": ["en", "th"],
+    "max_tokens": 4096,
+    "temperature": 0.7,
+    "is_local": true,
+    "requires_gpu": false,
+    "load_in_8bit": false,
+    "priority": 5
+  },
+  "openchat-3.6": {
+    "name": "openchat-3.6",
+    "model_type": "openchat", 
+    "model_path": "openchat/openchat-3.6-8b",
+    "capabilities": ["conversation", "question_answering", "text_generation"],
+    "language_support": ["en", "th"],
+    "max_tokens": 8192,
+    "temperature": 0.7,
+    "is_local": true,
+    "requires_gpu": true,
+    "load_in_8bit": true,
+    "priority": 6
+  }
+}

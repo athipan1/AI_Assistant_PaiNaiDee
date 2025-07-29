@@ -19,6 +19,10 @@ pillow>=10.0.0
 # Additional models for emotion analysis
 sentencepiece>=0.1.99
 
+# Advanced AI Models Integration
+llama-cpp-python>=0.2.82
+bitsandbytes>=0.41.0
+
 # Optional LangChain support
 langchain==0.0.340
 langchain-community==0.0.1
