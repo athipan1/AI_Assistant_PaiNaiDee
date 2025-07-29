@@ -24,9 +24,11 @@ try:
     from api.upload_routes import create_upload_routes
     from api.tourism_routes import create_tourism_routes
     from api.emotion_routes import router as emotion_router
+    from api.gesture_routes import create_gesture_api_routes
     HAS_AI_ROUTES = True
     HAS_TOURISM_ROUTES = True
     HAS_EMOTION_ROUTES = True
+    HAS_GESTURE_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
@@ -51,6 +53,12 @@ except ImportError as e:
         HAS_EMOTION_ROUTES = False
         print(f"Warning: Emotion analysis routes not available: {emotion_e}")
         emotion_router = None
+    try:
+        from api.gesture_routes import create_gesture_api_routes
+        HAS_GESTURE_ROUTES = True
+    except ImportError as gesture_e:
+        HAS_GESTURE_ROUTES = False
+        print(f"Warning: Gesture recognition routes not available: {gesture_e}")
     performance_router = None
 
 # Load environment variables
@@ -105,6 +113,10 @@ create_upload_routes(app)
 if HAS_TOURISM_ROUTES:
     create_tourism_routes(app)
 
+# Add gesture recognition routes
+if HAS_GESTURE_ROUTES:
+    create_gesture_api_routes(app)
+
 # Add performance optimization routes
 if performance_router:
     app.include_router(performance_router, prefix="/api", tags=["Performance"])
@@ -143,6 +155,25 @@ async def admin_dashboard():
             }
         }
 
+@app.get("/gesture")
+async def gesture_viewer():
+    """Serve the enhanced 3D gesture recognition viewer"""
+    gesture_viewer_path = "static/gesture_viewer.html"
+    
+    if os.path.exists(gesture_viewer_path):
+        return FileResponse(gesture_viewer_path)
+    else:
+        return {
+            "message": "Enhanced 3D Gesture Recognition Viewer",
+            "status": "available",
+            "endpoints": {
+                "gesture_recognize": "/gesture/recognize",
+                "gesture_config": "/gesture/config",
+                "custom_gestures": "/gesture/custom/list",
+                "performance_stats": "/gesture/performance"
+            }
+        }
+
 @app.get("/")
 async def root():
     """Serve the 3D model viewer interface"""
@@ -159,12 +190,14 @@ async def root():
             "message": "PaiNaiDee AI Assistant with 3D Models is running!",
             "status": "healthy",
             "version": "1.0.0",
-            "features": ["3D Model Viewer", "AI Model Selection", "Interactive Controls", "Emotion Analysis"],
+            "features": ["3D Model Viewer", "AI Model Selection", "Interactive Controls", "Emotion Analysis", "3D Gesture Recognition"],
             "endpoints": {
                 "models": "/ai/models",
                 "select_model": "/ai/select_model",
                 "analyze_emotion": "/emotion/analyze_emotion",
                 "recommend_gesture": "/emotion/recommend_gesture",
+                "gesture_recognition": "/gesture/recognize",
+                "gesture_viewer": "/gesture",
                 "viewer": "/static/demo.html"
             }
         }
@@ -186,6 +219,10 @@ async def health_check():
                 "model_serving": True,
                 "interactive_controls": True,
                 "emotion_analysis": HAS_EMOTION_ROUTES,
+                "3d_gesture_recognition": HAS_GESTURE_ROUTES,
+                "hand_tracking": HAS_GESTURE_ROUTES,
+                "webxr_support": HAS_GESTURE_ROUTES,
+                "custom_gesture_training": HAS_GESTURE_ROUTES,
                 "tourist_interest_graph": HAS_TOURISM_ROUTES,
                 "contextual_recommendations": HAS_TOURISM_ROUTES
             }
@@ -202,9 +239,10 @@ if __name__ == "__main__":
     host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", 8000))
     
-    print("🚀 Starting PaiNaiDee AI Assistant with 3D Models...")
+    print("🚀 Starting PaiNaiDee AI Assistant with Enhanced 3D Gesture Recognition...")
     print(f"📡 Server: http://{host}:{port}")
     print(f"🎲 3D Viewer: http://{host}:{port}/static/demo.html")
+    print(f"🤏 Gesture Recognition: http://{host}:{port}/gesture")
     print(f"📚 API Docs: http://{host}:{port}/docs")
     print("=" * 60)
     
