@@ -25,10 +25,12 @@ try:
     from api.tourism_routes import create_tourism_routes
     from api.emotion_routes import router as emotion_router
     from api.gesture_routes import create_gesture_api_routes
+    from api.action_plan_routes import router as action_plan_router
     HAS_AI_ROUTES = True
     HAS_TOURISM_ROUTES = True
     HAS_EMOTION_ROUTES = True
     HAS_GESTURE_ROUTES = True
+    HAS_ACTION_PLAN_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
@@ -59,6 +61,13 @@ except ImportError as e:
     except ImportError as gesture_e:
         HAS_GESTURE_ROUTES = False
         print(f"Warning: Gesture recognition routes not available: {gesture_e}")
+    try:
+        from api.action_plan_routes import router as action_plan_router
+        HAS_ACTION_PLAN_ROUTES = True
+    except ImportError as action_e:
+        HAS_ACTION_PLAN_ROUTES = False
+        print(f"Warning: Action plan routes not available: {action_e}")
+        action_plan_router = None
     performance_router = None
 
 # Load environment variables
@@ -87,6 +96,10 @@ if HAS_AI_ROUTES:
 # Add emotion analysis routes
 if HAS_EMOTION_ROUTES:
     app.include_router(emotion_router, prefix="/emotion", tags=["Emotion Analysis"])
+
+# Add action plan routes
+if HAS_ACTION_PLAN_ROUTES:
+    app.include_router(action_plan_router, prefix="/action", tags=["Action Plans"])
 
 # Add model routes
 create_model_routes(app)
@@ -198,6 +211,9 @@ async def root():
                 "recommend_gesture": "/emotion/recommend_gesture",
                 "gesture_recognition": "/gesture/recognize",
                 "gesture_viewer": "/gesture",
+                "action_plans": "/action/generate_plan",
+                "execute_plan": "/action/execute_plan",
+                "quick_action": "/action/quick_action",
                 "viewer": "/static/demo.html"
             }
         }
@@ -224,7 +240,9 @@ async def health_check():
                 "webxr_support": HAS_GESTURE_ROUTES,
                 "custom_gesture_training": HAS_GESTURE_ROUTES,
                 "tourist_interest_graph": HAS_TOURISM_ROUTES,
-                "contextual_recommendations": HAS_TOURISM_ROUTES
+                "contextual_recommendations": HAS_TOURISM_ROUTES,
+                "multimodal_action_plans": HAS_ACTION_PLAN_ROUTES,
+                "intent_to_action_mapping": HAS_ACTION_PLAN_ROUTES
             }
         }
     except Exception as e:
