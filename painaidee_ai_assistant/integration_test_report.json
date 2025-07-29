@@ -1,0 +1,1137 @@
+{
+  "timestamp": "2025-07-29T12:41:39.416702",
+  "test_results": {
+    "integration_verification": {
+      "overall_success": true,
+      "success_rate": 1.0,
+      "results": {
+        "passed": 7,
+        "failed": 0,
+        "total": 7
+      },
+      "detailed_results": [
+        {
+          "test_name": "API Health Check",
+          "success": true,
+          "timestamp": "2025-07-29T12:41:39.532180",
+          "details": {
+            "status_code": 200,
+            "features_available": {
+              "3d_viewer": true,
+              "ai_selection": true,
+              "model_serving": true,
+              "interactive_controls": true,
+              "emotion_analysis": true,
+              "3d_gesture_recognition": true,
+              "hand_tracking": true,
+              "webxr_support": true,
+              "custom_gesture_training": true,
+              "tourist_interest_graph": true,
+              "contextual_recommendations": true,
+              "multimodal_action_plans": true,
+              "intent_to_action_mapping": true
+            },
+            "missing_features": [],
+            "models_available": 5
+          }
+        },
+        {
+          "test_name": "3D Model Availability",
+          "success": true,
+          "timestamp": "2025-07-29T12:41:39.550856",
+          "details": {
+            "available_models": [
+              "Idle.fbx",
+              "Man_Rig.fbx",
+              "Man.fbx",
+              "Walking.fbx",
+              "Running.fbx"
+            ],
+            "missing_models": [],
+            "model_accessibility": {
+              "Idle.fbx": true,
+              "Man_Rig.fbx": true,
+              "Man.fbx": true,
+              "Walking.fbx": true,
+              "Running.fbx": true
+            },
+            "total_models": 5
+          }
+        },
+        {
+          "test_name": "AI Model Selection Integration",
+          "success": true,
+          "timestamp": "2025-07-29T12:41:39.568207",
+          "details": {
+            "test_cases": 4,
+            "successful": 3,
+            "success_rate": 0.75,
+            "results": [
+              {
+                "test_case": {
+                  "query": "Show me a walking person",
+                  "expected_model": "Walking.fbx",
+                  "description": "Basic walking animation request"
+                },
+                "success": true,
+                "selected_model": "Walking.fbx",
+                "expected_model": "Walking.fbx",
+                "confidence": 0.4644816345925644,
+                "response_time": 0.004049
+              },
+              {
+                "test_case": {
+                  "query": "I want to see someone running",
+                  "expected_model": "Running.fbx",
+                  "description": "Running animation request"
+                },
+                "success": true,
+                "selected_model": "Running.fbx",
+                "expected_model": "Running.fbx",
+                "confidence": 0.44949261841152005,
+                "response_time": 0.003388
+              },
+              {
+                "test_case": {
+                  "query": "Display a character in idle pose",
+                  "expected_model": "Idle.fbx",
+                  "description": "Idle/static pose request"
+                },
+                "success": true,
+                "selected_model": "Idle.fbx",
+                "expected_model": "Idle.fbx",
+                "confidence": 0.5071171419346061,
+                "response_time": 0.003455
+              },
+              {
+                "test_case": {
+                  "query": "Show me a basic human figure",
+                  "expected_model": "Man.fbx",
+                  "description": "Basic character model request"
+                },
+                "success": false,
+                "selected_model": "Idle.fbx",
+                "expected_model": "Man.fbx",
+                "confidence": 0.4415970685798987,
+                "response_time": 0.003911
+              }
+            ]
+          }
+        },
+        {
+          "test_name": "Emotion-3D Integration",
+          "success": true,
+          "timestamp": "2025-07-29T12:41:39.616521",
+          "details": {
+            "test_cases": 3,
+            "successful": 3,
+            "results": [
+              {
+                "test_case": {
+                  "query": "I'm excited to see walking animations!",
+                  "expected_emotion": "excited",
+                  "description": "Positive emotion with walking request"
+                },
+                "success": true,
+                "detected_emotion": "excited",
+                "suggested_gesture": "excited_jump",
+                "emotion_analysis": {
+                  "primary_emotion": "excited",
+                  "confidence": 0.14285714285714285,
+                  "suggested_gesture": "excited_jump",
+                  "tone_adjustment": "mildly energetic and enthusiastic",
+                  "model_adjustments": {
+                    "expression": "big_smile",
+                    "animation_style": "energetic",
+                    "recommended_model": "Man_Rig.fbx"
+                  }
+                }
+              },
+              {
+                "test_case": {
+                  "query": "I'm worried about running alone",
+                  "expected_emotion": "worried",
+                  "description": "Negative emotion with running context"
+                },
+                "success": true,
+                "detected_emotion": "worried",
+                "suggested_gesture": "reassuring_gesture",
+                "emotion_analysis": {
+                  "primary_emotion": "worried",
+                  "confidence": 0.16666666666666666,
+                  "suggested_gesture": "reassuring_gesture",
+                  "tone_adjustment": "mildly reassuring and supportive",
+                  "model_adjustments": {
+                    "expression": "comforting",
+                    "animation_style": "gentle",
+                    "recommended_model": "Running.fbx"
+                  }
+                }
+              },
+              {
+                "test_case": {
+                  "query": "Show me a calm standing pose",
+                  "expected_emotion": "calm",
+                  "description": "Peaceful emotion request"
+                },
+                "success": true,
+                "detected_emotion": "calm",
+                "suggested_gesture": "calm_standing",
+                "emotion_analysis": {
+                  "primary_emotion": "calm",
+                  "confidence": 0.14285714285714285,
+                  "suggested_gesture": "calm_standing",
+                  "tone_adjustment": "mildly gentle and peaceful",
+                  "model_adjustments": {
+                    "expression": "peaceful",
+                    "animation_style": "smooth",
+                    "recommended_model": "Idle.fbx"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "test_name": "Multimodal Action Plans",
+          "success": true,
+          "timestamp": "2025-07-29T12:41:39.622710",
+          "details": {
+            "scenarios": 3,
+            "successful": 3,
+            "results": [
+              {
+                "scenario": {
+                  "intent": "suggest_place",
+                  "parameters": {
+                    "place_name": "Walking Trail"
+                  },
+                  "description": "Tourism suggestion with 3D interaction"
+                },
+                "success": true,
+                "action_plan": {
+                  "intent": "suggest_place",
+                  "confidence": 1.0,
+                  "speech_actions": [
+                    {
+                      "text": "\u0e25\u0e2d\u0e07\u0e44\u0e1bWalking Trail\u0e14\u0e39\u0e44\u0e2b\u0e21\u0e04\u0e23\u0e31\u0e1a?",
+                      "language": "th",
+                      "style": "enthusiastic",
+                      "duration_ms": null,
+                      "voice_params": {}
+                    }
+                  ],
+                  "gesture_actions": [
+                    {
+                      "animation": "point_right_then_smile",
+                      "model_name": "Man_Rig.fbx",
+                      "duration_ms": 3500,
+                      "intensity": 1.0,
+                      "loop": false,
+                      "facial_expression": "friendly"
+                    }
+                  ],
+                  "scene_actions": [
+                    {
+                      "interaction_type": "map_pin_highlight",
+                      "target": "location_pin",
+                      "duration_ms": 2000,
+                      "parameters": {
+                        "highlight_color": "#FF6B35",
+                        "pulse": true
+                      }
+                    },
+                    {
+                      "interaction_type": "zoom_to_location",
+                      "target": "coordinates",
+                      "duration_ms": 3000,
+                      "parameters": {
+                        "zoom_level": 15,
+                        "smooth_transition": true
+                      }
+                    }
+                  ],
+                  "ui_actions": [
+                    {
+                      "component_type": "show_location_popup",
+                      "content": {
+                        "name": "\u0e2a\u0e16\u0e32\u0e19\u0e17\u0e35\u0e48\u0e17\u0e48\u0e2d\u0e07\u0e40\u0e17\u0e35\u0e48\u0e22\u0e27",
+                        "img": "placeholder.jpg",
+                        "buttons": [
+                          "\u0e40\u0e1b\u0e34\u0e14\u0e41\u0e1c\u0e19\u0e17\u0e35\u0e48",
+                          "\u0e14\u0e39\u0e23\u0e35\u0e27\u0e34\u0e27"
+                        ]
+                      },
+                      "position": "overlay",
+                      "duration_ms": null,
+                      "interaction_enabled": true
+                    },
+                    {
+                      "component_type": "map_pin_marker",
+                      "content": {
+                        "location": {
+                          "lat": 0,
+                          "lng": 0
+                        },
+                        "title": "Walking Trail",
+                        "animation": "blink"
+                      },
+                      "position": "scene",
+                      "duration_ms": null,
+                      "interaction_enabled": true
+                    }
+                  ],
+                  "execution_order": [
+                    "speech",
+                    "gesture",
+                    "scene",
+                    "ui"
+                  ],
+                  "estimated_duration_ms": 6500,
+                  "metadata": {}
+                },
+                "components": {
+                  "speech": true,
+                  "gesture": true,
+                  "ui": true,
+                  "execution_order": true
+                }
+              },
+              {
+                "scenario": {
+                  "intent": "greet_user",
+                  "parameters": {},
+                  "description": "User greeting with gesture"
+                },
+                "success": true,
+                "action_plan": {
+                  "intent": "greet_user",
+                  "confidence": 1.0,
+                  "speech_actions": [
+                    {
+                      "text": "\u0e2a\u0e27\u0e31\u0e2a\u0e14\u0e35\u0e04\u0e23\u0e31\u0e1a \u0e22\u0e34\u0e19\u0e14\u0e35\u0e15\u0e49\u0e2d\u0e19\u0e23\u0e31\u0e1a",
+                      "language": "th",
+                      "style": "friendly",
+                      "duration_ms": null,
+                      "voice_params": {}
+                    }
+                  ],
+                  "gesture_actions": [
+                    {
+                      "animation": "wave",
+                      "model_name": "Man_Rig.fbx",
+                      "duration_ms": 2500,
+                      "intensity": 1.0,
+                      "loop": false,
+                      "facial_expression": "happy"
+                    }
+                  ],
+                  "scene_actions": [],
+                  "ui_actions": [],
+                  "execution_order": [
+                    "speech",
+                    "gesture"
+                  ],
+                  "estimated_duration_ms": 3000,
+                  "metadata": {}
+                },
+                "components": {
+                  "speech": true,
+                  "gesture": true,
+                  "ui": false,
+                  "execution_order": true
+                }
+              },
+              {
+                "scenario": {
+                  "intent": "confirm_action",
+                  "parameters": {
+                    "action": "show_walking_demo"
+                  },
+                  "description": "Action confirmation with animation"
+                },
+                "success": true,
+                "action_plan": {
+                  "intent": "confirm_action",
+                  "confidence": 1.0,
+                  "speech_actions": [
+                    {
+                      "text": "\u0e40\u0e02\u0e49\u0e32\u0e43\u0e08\u0e41\u0e25\u0e49\u0e27\u0e04\u0e23\u0e31\u0e1a",
+                      "language": "th",
+                      "style": "calm",
+                      "duration_ms": null,
+                      "voice_params": {}
+                    }
+                  ],
+                  "gesture_actions": [
+                    {
+                      "animation": "nod",
+                      "model_name": "Man_Rig.fbx",
+                      "duration_ms": 1500,
+                      "intensity": 1.0,
+                      "loop": false,
+                      "facial_expression": "smile"
+                    }
+                  ],
+                  "scene_actions": [],
+                  "ui_actions": [],
+                  "execution_order": [
+                    "speech",
+                    "gesture"
+                  ],
+                  "estimated_duration_ms": 3000,
+                  "metadata": {}
+                },
+                "components": {
+                  "speech": true,
+                  "gesture": true,
+                  "ui": false,
+                  "execution_order": true
+                }
+              }
+            ]
+          }
+        },
+        {
+          "test_name": "Synchronization Timing",
+          "success": true,
+          "timestamp": "2025-07-29T12:41:39.642841",
+          "details": {
+            "total_tests": 5,
+            "successful_tests": 5,
+            "average_response_time": 0.003959560394287109,
+            "timing_details": [
+              {
+                "test_number": 1,
+                "response_time": 0.0039215087890625,
+                "status_code": 200,
+                "success": true
+              },
+              {
+                "test_number": 2,
+                "response_time": 0.004179954528808594,
+                "status_code": 200,
+                "success": true
+              },
+              {
+                "test_number": 3,
+                "response_time": 0.003884553909301758,
+                "status_code": 200,
+                "success": true
+              },
+              {
+                "test_number": 4,
+                "response_time": 0.003934144973754883,
+                "status_code": 200,
+                "success": true
+              },
+              {
+                "test_number": 5,
+                "response_time": 0.0038776397705078125,
+                "status_code": 200,
+                "success": true
+              }
+            ]
+          }
+        },
+        {
+          "test_name": "Error Handling",
+          "success": true,
+          "timestamp": "2025-07-29T12:41:39.648078",
+          "details": {
+            "test_cases": 3,
+            "successful": 3,
+            "results": [
+              {
+                "test_case": {
+                  "endpoint": "/ai/select_model",
+                  "payload": {},
+                  "expected_status": 200,
+                  "description": "Missing required fields"
+                },
+                "success": true,
+                "expected_status": 200,
+                "actual_status": 200,
+                "response_data": {
+                  "error": "Question is required",
+                  "status": "error"
+                }
+              },
+              {
+                "test_case": {
+                  "endpoint": "/models/NonExistent.fbx",
+                  "method": "GET",
+                  "expected_status": 404,
+                  "description": "Non-existent model request"
+                },
+                "success": true,
+                "expected_status": 404,
+                "actual_status": 404,
+                "response_data": {
+                  "detail": "Model not found"
+                }
+              },
+              {
+                "test_case": {
+                  "endpoint": "/ai/select_model",
+                  "payload": {
+                    "question": "",
+                    "language": "en"
+                  },
+                  "expected_status": 200,
+                  "description": "Empty query handling"
+                },
+                "success": true,
+                "expected_status": 200,
+                "actual_status": 200,
+                "response_data": {
+                  "error": "Question is required",
+                  "status": "error"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "errors": [],
+      "timestamp": "2025-07-29T12:41:39.648703"
+    },
+    "synchronization_monitoring": {
+      "timestamp": "2025-07-29T12:42:43.169467",
+      "performance_statistics": {
+        "total_requests": 11,
+        "error_count": 0,
+        "error_rate": 0.0,
+        "response_times": {
+          "count": 11,
+          "average": 0.0047213814475319605,
+          "median": 0.004658222198486328,
+          "min": 0.004039764404296875,
+          "max": 0.006238222122192383
+        },
+        "sync_delays": {
+          "count": 11,
+          "average": 0.7566391338001598,
+          "median": 0.8019869327545166,
+          "min": 0.7019901275634766,
+          "max": 0.8022415637969971
+        }
+      },
+      "sync_events": [
+        {
+          "type": "ai_response",
+          "timestamp": 1753792899.786753,
+          "datetime": "2025-07-29T12:41:39.786753",
+          "details": {
+            "success": true,
+            "response_time": 0.006238222122192383,
+            "model_selected": "Walking.fbx",
+            "confidence": 0.46395253406346393,
+            "ai_analysis_time": 0.006238222122192383,
+            "timestamp": 1753792899.786753
+          }
+        },
+        {
+          "type": "model_loaded",
+          "timestamp": 1753792899.793147,
+          "datetime": "2025-07-29T12:41:39.793147",
+          "details": {
+            "success": true,
+            "model_name": "Walking.fbx",
+            "load_time": 0.7022619247436523,
+            "estimated_time": 0.7,
+            "accessible": true,
+            "timestamp": 1753792899.793147
+          }
+        },
+        {
+          "type": "e2e_sync_test",
+          "timestamp": 1753792899.786753,
+          "datetime": "2025-07-29T12:41:39.786753",
+          "details": {
+            "success": true,
+            "sync_acceptable": true,
+            "query": "Show me a walking person",
+            "ai_response_time": 0.006238222122192383,
+            "model_load_time": 0.7022619247436523,
+            "total_time": 0.7085001468658447,
+            "sync_delay": 0.7022619247436523,
+            "model_selected": "Walking.fbx",
+            "confidence": 0.46395253406346393,
+            "timestamp": 1753792899.786753
+          }
+        },
+        {
+          "type": "ai_response",
+          "timestamp": 1753792905.495984,
+          "datetime": "2025-07-29T12:41:45.495984",
+          "details": {
+            "success": true,
+            "response_time": 0.0041522979736328125,
+            "model_selected": "Running.fbx",
+            "confidence": 0.5658224195308894,
+            "ai_analysis_time": 0.0041522979736328125,
+            "timestamp": 1753792905.495984
+          }
+        },
+        {
+          "type": "model_loaded",
+          "timestamp": 1753792905.5002735,
+          "datetime": "2025-07-29T12:41:45.500273",
+          "details": {
+            "success": true,
+            "model_name": "Running.fbx",
+            "load_time": 0.7019901275634766,
+            "estimated_time": 0.7,
+            "accessible": true,
+            "timestamp": 1753792905.5002735
+          }
+        },
+        {
+          "type": "e2e_sync_test",
+          "timestamp": 1753792905.495984,
+          "datetime": "2025-07-29T12:41:45.495984",
+          "details": {
+            "success": true,
+            "sync_acceptable": true,
+            "query": "Display running animation",
+            "ai_response_time": 0.0041522979736328125,
+            "model_load_time": 0.7019901275634766,
+            "total_time": 0.7061424255371094,
+            "sync_delay": 0.7019901275634766,
+            "model_selected": "Running.fbx",
+            "confidence": 0.5658224195308894,
+            "timestamp": 1753792905.495984
+          }
+        },
+        {
+          "type": "ai_response",
+          "timestamp": 1753792911.2027686,
+          "datetime": "2025-07-29T12:41:51.202769",
+          "details": {
+            "success": true,
+            "response_time": 0.004583597183227539,
+            "model_selected": "Idle.fbx",
+            "confidence": 0.48398278463671746,
+            "ai_analysis_time": 0.004583597183227539,
+            "timestamp": 1753792911.2027686
+          }
+        },
+        {
+          "type": "model_loaded",
+          "timestamp": 1753792911.207486,
+          "datetime": "2025-07-29T12:41:51.207486",
+          "details": {
+            "success": true,
+            "model_name": "Idle.fbx",
+            "load_time": 0.8022415637969971,
+            "estimated_time": 0.8,
+            "accessible": true,
+            "timestamp": 1753792911.207486
+          }
+        },
+        {
+          "type": "e2e_sync_test",
+          "timestamp": 1753792911.2027686,
+          "datetime": "2025-07-29T12:41:51.202769",
+          "details": {
+            "success": true,
+            "sync_acceptable": true,
+            "query": "I want to see someone standing",
+            "ai_response_time": 0.004583597183227539,
+            "model_load_time": 0.8022415637969971,
+            "total_time": 0.8068251609802246,
+            "sync_delay": 0.8022415637969971,
+            "model_selected": "Idle.fbx",
+            "confidence": 0.48398278463671746,
+            "timestamp": 1753792911.2027686
+          }
+        },
+        {
+          "type": "ai_response",
+          "timestamp": 1753792917.0102482,
+          "datetime": "2025-07-29T12:41:57.010248",
+          "details": {
+            "success": true,
+            "response_time": 0.004658222198486328,
+            "model_selected": "Idle.fbx",
+            "confidence": 0.44282262563941327,
+            "ai_analysis_time": 0.004658222198486328,
+            "timestamp": 1753792917.0102482
+          }
+        },
+        {
+          "type": "model_loaded",
+          "timestamp": 1753792917.0150847,
+          "datetime": "2025-07-29T12:41:57.015085",
+          "details": {
+            "success": true,
+            "model_name": "Idle.fbx",
+            "load_time": 0.802001953125,
+            "estimated_time": 0.8,
+            "accessible": true,
+            "timestamp": 1753792917.0150847
+          }
+        },
+        {
+          "type": "e2e_sync_test",
+          "timestamp": 1753792917.0102482,
+          "datetime": "2025-07-29T12:41:57.010248",
+          "details": {
+            "success": true,
+            "sync_acceptable": true,
+            "query": "Show basic character model",
+            "ai_response_time": 0.004658222198486328,
+            "model_load_time": 0.802001953125,
+            "total_time": 0.8066601753234863,
+            "sync_delay": 0.802001953125,
+            "model_selected": "Idle.fbx",
+            "confidence": 0.44282262563941327,
+            "timestamp": 1753792917.0102482
+          }
+        },
+        {
+          "type": "ai_response",
+          "timestamp": 1753792922.8176043,
+          "datetime": "2025-07-29T12:42:02.817604",
+          "details": {
+            "success": true,
+            "response_time": 0.004393100738525391,
+            "model_selected": "Idle.fbx",
+            "confidence": 0.5231875724807071,
+            "ai_analysis_time": 0.004393100738525391,
+            "timestamp": 1753792922.8176043
+          }
+        },
+        {
+          "type": "model_loaded",
+          "timestamp": 1753792922.8221474,
+          "datetime": "2025-07-29T12:42:02.822147",
+          "details": {
+            "success": true,
+            "model_name": "Idle.fbx",
+            "load_time": 0.8019869327545166,
+            "estimated_time": 0.8,
+            "accessible": true,
+            "timestamp": 1753792922.8221474
+          }
+        },
+        {
+          "type": "e2e_sync_test",
+          "timestamp": 1753792922.8176043,
+          "datetime": "2025-07-29T12:42:02.817604",
+          "details": {
+            "success": true,
+            "sync_acceptable": true,
+            "query": "Demonstrate idle pose",
+            "ai_response_time": 0.004393100738525391,
+            "model_load_time": 0.8019869327545166,
+            "total_time": 0.806380033493042,
+            "sync_delay": 0.8019869327545166,
+            "model_selected": "Idle.fbx",
+            "confidence": 0.5231875724807071,
+            "timestamp": 1753792922.8176043
+          }
+        },
+        {
+          "type": "ai_response",
+          "timestamp": 1753792928.624682,
+          "datetime": "2025-07-29T12:42:08.624682",
+          "details": {
+            "success": true,
+            "response_time": 0.0049457550048828125,
+            "model_selected": "Walking.fbx",
+            "confidence": 0.4624961624376008,
+            "ai_analysis_time": 0.0049457550048828125,
+            "timestamp": 1753792928.624682
+          }
+        },
+        {
+          "type": "model_loaded",
+          "timestamp": 1753792928.6297698,
+          "datetime": "2025-07-29T12:42:08.629770",
+          "details": {
+            "success": true,
+            "model_name": "Walking.fbx",
+            "load_time": 0.7021393775939941,
+            "estimated_time": 0.7,
+            "accessible": true,
+            "timestamp": 1753792928.6297698
+          }
+        },
+        {
+          "type": "e2e_sync_test",
+          "timestamp": 1753792928.624682,
+          "datetime": "2025-07-29T12:42:08.624682",
+          "details": {
+            "success": true,
+            "sync_acceptable": true,
+            "query": "Show me a walking person",
+            "ai_response_time": 0.0049457550048828125,
+            "model_load_time": 0.7021393775939941,
+            "total_time": 0.707085132598877,
+            "sync_delay": 0.7021393775939941,
+            "model_selected": "Walking.fbx",
+            "confidence": 0.4624961624376008,
+            "timestamp": 1753792928.624682
+          }
+        },
+        {
+          "type": "ai_response",
+          "timestamp": 1753792934.3324656,
+          "datetime": "2025-07-29T12:42:14.332466",
+          "details": {
+            "success": true,
+            "response_time": 0.004412651062011719,
+            "model_selected": "Running.fbx",
+            "confidence": 0.5663072680157379,
+            "ai_analysis_time": 0.004412651062011719,
+            "timestamp": 1753792934.3324656
+          }
+        },
+        {
+          "type": "model_loaded",
+          "timestamp": 1753792934.3370433,
+          "datetime": "2025-07-29T12:42:14.337043",
+          "details": {
+            "success": true,
+            "model_name": "Running.fbx",
+            "load_time": 0.7021894454956055,
+            "estimated_time": 0.7,
+            "accessible": true,
+            "timestamp": 1753792934.3370433
+          }
+        },
+        {
+          "type": "e2e_sync_test",
+          "timestamp": 1753792934.3324656,
+          "datetime": "2025-07-29T12:42:14.332466",
+          "details": {
+            "success": true,
+            "sync_acceptable": true,
+            "query": "Display running animation",
+            "ai_response_time": 0.004412651062011719,
+            "model_load_time": 0.7021894454956055,
+            "total_time": 0.7066020965576172,
+            "sync_delay": 0.7021894454956055,
+            "model_selected": "Running.fbx",
+            "confidence": 0.5663072680157379,
+            "timestamp": 1753792934.3324656
+          }
+        },
+        {
+          "type": "ai_response",
+          "timestamp": 1753792940.0397942,
+          "datetime": "2025-07-29T12:42:20.039794",
+          "details": {
+            "success": true,
+            "response_time": 0.004782915115356445,
+            "model_selected": "Idle.fbx",
+            "confidence": 0.4850132296015886,
+            "ai_analysis_time": 0.004782915115356445,
+            "timestamp": 1753792940.0397942
+          }
+        },
+        {
+          "type": "model_loaded",
+          "timestamp": 1753792940.0447133,
+          "datetime": "2025-07-29T12:42:20.044713",
+          "details": {
+            "success": true,
+            "model_name": "Idle.fbx",
+            "load_time": 0.8020331859588623,
+            "estimated_time": 0.8,
+            "accessible": true,
+            "timestamp": 1753792940.0447133
+          }
+        },
+        {
+          "type": "e2e_sync_test",
+          "timestamp": 1753792940.0397942,
+          "datetime": "2025-07-29T12:42:20.039794",
+          "details": {
+            "success": true,
+            "sync_acceptable": true,
+            "query": "I want to see someone standing",
+            "ai_response_time": 0.004782915115356445,
+            "model_load_time": 0.8020331859588623,
+            "total_time": 0.8068161010742188,
+            "sync_delay": 0.8020331859588623,
+            "model_selected": "Idle.fbx",
+            "confidence": 0.4850132296015886,
+            "timestamp": 1753792940.0397942
+          }
+        },
+        {
+          "type": "ai_response",
+          "timestamp": 1753792945.8472815,
+          "datetime": "2025-07-29T12:42:25.847281",
+          "details": {
+            "success": true,
+            "response_time": 0.004978179931640625,
+            "model_selected": "Idle.fbx",
+            "confidence": 0.44379602688446135,
+            "ai_analysis_time": 0.004978179931640625,
+            "timestamp": 1753792945.8472815
+          }
+        },
+        {
+          "type": "model_loaded",
+          "timestamp": 1753792945.852414,
+          "datetime": "2025-07-29T12:42:25.852414",
+          "details": {
+            "success": true,
+            "model_name": "Idle.fbx",
+            "load_time": 0.8021278381347656,
+            "estimated_time": 0.8,
+            "accessible": true,
+            "timestamp": 1753792945.852414
+          }
+        },
+        {
+          "type": "e2e_sync_test",
+          "timestamp": 1753792945.8472815,
+          "datetime": "2025-07-29T12:42:25.847281",
+          "details": {
+            "success": true,
+            "sync_acceptable": true,
+            "query": "Show basic character model",
+            "ai_response_time": 0.004978179931640625,
+            "model_load_time": 0.8021278381347656,
+            "total_time": 0.8071060180664062,
+            "sync_delay": 0.8021278381347656,
+            "model_selected": "Idle.fbx",
+            "confidence": 0.44379602688446135,
+            "timestamp": 1753792945.8472815
+          }
+        },
+        {
+          "type": "ai_response",
+          "timestamp": 1753792951.6550834,
+          "datetime": "2025-07-29T12:42:31.655083",
+          "details": {
+            "success": true,
+            "response_time": 0.004039764404296875,
+            "model_selected": "Idle.fbx",
+            "confidence": 0.5241071127105922,
+            "ai_analysis_time": 0.004039764404296875,
+            "timestamp": 1753792951.6550834
+          }
+        },
+        {
+          "type": "model_loaded",
+          "timestamp": 1753792951.6592598,
+          "datetime": "2025-07-29T12:42:31.659260",
+          "details": {
+            "success": true,
+            "model_name": "Idle.fbx",
+            "load_time": 0.8020467758178711,
+            "estimated_time": 0.8,
+            "accessible": true,
+            "timestamp": 1753792951.6592598
+          }
+        },
+        {
+          "type": "e2e_sync_test",
+          "timestamp": 1753792951.6550834,
+          "datetime": "2025-07-29T12:42:31.655083",
+          "details": {
+            "success": true,
+            "sync_acceptable": true,
+            "query": "Demonstrate idle pose",
+            "ai_response_time": 0.004039764404296875,
+            "model_load_time": 0.8020467758178711,
+            "total_time": 0.806086540222168,
+            "sync_delay": 0.8020467758178711,
+            "model_selected": "Idle.fbx",
+            "confidence": 0.5241071127105922,
+            "timestamp": 1753792951.6550834
+          }
+        },
+        {
+          "type": "ai_response",
+          "timestamp": 1753792957.4618232,
+          "datetime": "2025-07-29T12:42:37.461823",
+          "details": {
+            "success": true,
+            "response_time": 0.004750490188598633,
+            "model_selected": "Walking.fbx",
+            "confidence": 0.46126734887827875,
+            "ai_analysis_time": 0.004750490188598633,
+            "timestamp": 1753792957.4618232
+          }
+        },
+        {
+          "type": "model_loaded",
+          "timestamp": 1753792957.4667113,
+          "datetime": "2025-07-29T12:42:37.466711",
+          "details": {
+            "success": true,
+            "model_name": "Walking.fbx",
+            "load_time": 0.7020113468170166,
+            "estimated_time": 0.7,
+            "accessible": true,
+            "timestamp": 1753792957.4667113
+          }
+        },
+        {
+          "type": "e2e_sync_test",
+          "timestamp": 1753792957.4618232,
+          "datetime": "2025-07-29T12:42:37.461823",
+          "details": {
+            "success": true,
+            "sync_acceptable": true,
+            "query": "Show me a walking person",
+            "ai_response_time": 0.004750490188598633,
+            "model_load_time": 0.7020113468170166,
+            "total_time": 0.7067618370056152,
+            "sync_delay": 0.7020113468170166,
+            "model_selected": "Walking.fbx",
+            "confidence": 0.46126734887827875,
+            "timestamp": 1753792957.4618232
+          }
+        }
+      ],
+      "monitoring_active": false
+    },
+    "user_interaction_simulation": [
+      {
+        "success": true,
+        "user_input": "Show me something",
+        "selected_model": "Idle.fbx",
+        "confidence": 0.45696710754472064,
+        "detected_emotion": "neutral",
+        "expected_emotion": null,
+        "suggested_gesture": "neutral_idle",
+        "response_time": 0.01269221305847168,
+        "context": null,
+        "emotion_appropriate": true,
+        "model_relevant": true,
+        "gesture_appropriate": true,
+        "edge_case": {
+          "description": "Ambiguous query",
+          "query": "Show me something",
+          "expected_behavior": "should_select_default_or_ask_clarification"
+        },
+        "handled_appropriately": true
+      },
+      {
+        "success": true,
+        "user_input": "Show me \u0e2a\u0e27\u0e22\u0e46 walking \u0e14\u0e35\u0e46",
+        "selected_model": "Walking.fbx",
+        "confidence": 0.49391212884993535,
+        "detected_emotion": "neutral",
+        "expected_emotion": null,
+        "suggested_gesture": "neutral_idle",
+        "response_time": 0.023688554763793945,
+        "context": null,
+        "emotion_appropriate": true,
+        "model_relevant": true,
+        "gesture_appropriate": true,
+        "edge_case": {
+          "description": "Non-English mixed query",
+          "query": "Show me \u0e2a\u0e27\u0e22\u0e46 walking \u0e14\u0e35\u0e46",
+          "expected_behavior": "should_handle_mixed_language"
+        },
+        "handled_appropriately": true
+      },
+      {
+        "success": true,
+        "user_input": "I want to see a very detailed and specific walking animation that shows someone moving through a beautiful landscape with mountains and trees and rivers and all kinds of wonderful scenery",
+        "selected_model": "Walking.fbx",
+        "confidence": 0.4728562570396914,
+        "detected_emotion": "curious",
+        "expected_emotion": null,
+        "suggested_gesture": "thoughtful_pose",
+        "response_time": 0.017386674880981445,
+        "context": null,
+        "emotion_appropriate": true,
+        "model_relevant": true,
+        "gesture_appropriate": true,
+        "edge_case": {
+          "description": "Very long query",
+          "query": "I want to see a very detailed and specific walking animation that shows someone moving through a beautiful landscape with mountains and trees and rivers and all kinds of wonderful scenery",
+          "expected_behavior": "should_extract_key_concepts"
+        },
+        "handled_appropriately": true
+      },
+      {
+        "success": true,
+        "user_input": "Purple monkey dishwasher running elephant",
+        "selected_model": "Running.fbx",
+        "confidence": 0.4840961549165614,
+        "detected_emotion": "neutral",
+        "expected_emotion": null,
+        "suggested_gesture": "neutral_idle",
+        "response_time": 0.010880231857299805,
+        "context": null,
+        "emotion_appropriate": true,
+        "model_relevant": true,
+        "gesture_appropriate": true,
+        "edge_case": {
+          "description": "Nonsensical query",
+          "query": "Purple monkey dishwasher running elephant",
+          "expected_behavior": "should_handle_gracefully"
+        },
+        "handled_appropriately": true
+      },
+      {
+        "success": false,
+        "user_input": "",
+        "selected_model": null,
+        "confidence": 0,
+        "detected_emotion": null,
+        "expected_emotion": null,
+        "suggested_gesture": null,
+        "response_time": 0.0017800331115722656,
+        "context": null,
+        "emotion_appropriate": true,
+        "model_relevant": false,
+        "gesture_appropriate": false,
+        "edge_case": {
+          "description": "Empty query",
+          "query": "",
+          "expected_behavior": "should_return_error_or_default"
+        },
+        "handled_appropriately": true
+      },
+      {
+        "success": true,
+        "user_input": "Show me the FBX model with the highest polygon count",
+        "selected_model": "Idle.fbx",
+        "confidence": 0.4363789344166559,
+        "detected_emotion": "neutral",
+        "expected_emotion": null,
+        "suggested_gesture": "neutral_idle",
+        "response_time": 0.015466928482055664,
+        "context": null,
+        "emotion_appropriate": true,
+        "model_relevant": true,
+        "gesture_appropriate": true,
+        "edge_case": {
+          "description": "Technical query",
+          "query": "Show me the FBX model with the highest polygon count",
+          "expected_behavior": "should_understand_technical_terms"
+        },
+        "handled_appropriately": true
+      }
+    ],
+    "diagnostic_analysis": {
+      "error": "Extra data: line 1 column 5 (char 4)"
+    }
+  },
+  "overall_assessment": {
+    "integration_status": "excellent",
+    "critical_issues": [],
+    "strengths": [
+      "Core integration tests pass consistently",
+      "Excellent response times for AI processing",
+      "Excellent edge case handling"
+    ],
+    "recommendations": [
+      "Consider implementing automated monitoring for production",
+      "Add more comprehensive error recovery mechanisms"
+    ],
+    "score": 1.0
+  }
+}
