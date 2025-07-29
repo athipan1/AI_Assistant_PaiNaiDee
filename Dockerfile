@@ -4,6 +4,20 @@ FROM python:3.10-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
+# Set C/C++ compiler environment variables for llama-cpp-python
+ENV CC=gcc
+ENV CXX=g++
+
+# Install build dependencies for llama-cpp-python and OpenCV
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    cmake \
+    build-essential \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy the entire project to /app
 COPY . /app
 

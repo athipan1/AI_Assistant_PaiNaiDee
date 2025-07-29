@@ -45,5 +45,6 @@ typing-extensions==4.8.0
 # pytest==7.4.3
 # pytest-asyncio==0.21.1
 
-# LLaMA CPP Python for advanced AI models
-llama-cpp-python>=0.2.0
+# Advanced AI Models (uncomment when needed)
+# NOTE: Requires C/C++ compiler setup in Dockerfile for successful installation
+# llama-cpp-python>=0.2.0
