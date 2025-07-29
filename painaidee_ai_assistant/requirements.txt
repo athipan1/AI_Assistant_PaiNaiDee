@@ -9,6 +9,9 @@ torch>=2.1.1
 tokenizers==0.15.0
 accelerate==0.24.1
 
+# Additional models for emotion analysis
+sentencepiece>=0.1.99
+
 # Optional LangChain support
 langchain==0.0.340
 langchain-community==0.0.1
