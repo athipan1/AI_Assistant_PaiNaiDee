@@ -9,5 +9,6 @@ from .core import RAGSystem
 from .retriever import DocumentRetriever
 from .crawler import TourismCrawler
 from .vector_store import SimpleVectorStore
+from .scheduler import RAGScheduler, start_background_updates, stop_background_updates
 
-__all__ = ['RAGSystem', 'DocumentRetriever', 'TourismCrawler', 'SimpleVectorStore']
+__all__ = ['RAGSystem', 'DocumentRetriever', 'TourismCrawler', 'SimpleVectorStore', 'RAGScheduler', 'start_background_updates', 'stop_background_updates']

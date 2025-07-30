@@ -31,6 +31,10 @@ models/transformers/
 models/*.bin
 models/*.safetensors
 
+# RAG cache and vector stores
+cache/
+painaidee_ai_assistant/cache/
+
 # Logs
 *.log
 logs/

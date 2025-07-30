@@ -13,6 +13,7 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
 from pydantic import BaseModel, Field
 
 from rag.core import RAGSystem
+from rag.scheduler import get_scheduler, start_background_updates, stop_background_updates
 
 logger = logging.getLogger(__name__)
 
@@ -329,6 +330,81 @@ async def add_sample_data(rag: RAGSystem = Depends(get_rag_system)):
         
     except Exception as e:
         logger.error(f"Error adding sample data: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+# Scheduler endpoints
+@router.post("/scheduler/start")
+async def start_scheduler(interval_hours: int = 6, rag: RAGSystem = Depends(get_rag_system)):
+    """
+    Start the background scheduler for automatic knowledge base updates.
+    """
+    try:
+        scheduler = start_background_updates(rag, interval_hours)
+        return {
+            "status": "success",
+            "message": f"Background scheduler started with {interval_hours}h interval",
+            "scheduler_status": scheduler.get_status()
+        }
+    except Exception as e:
+        logger.error(f"Error starting scheduler: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+@router.post("/scheduler/stop")
+async def stop_scheduler():
+    """
+    Stop the background scheduler.
+    """
+    try:
+        stop_background_updates()
+        return {
+            "status": "success",
+            "message": "Background scheduler stopped"
+        }
+    except Exception as e:
+        logger.error(f"Error stopping scheduler: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+@router.get("/scheduler/status")
+async def get_scheduler_status():
+    """
+    Get the status of the background scheduler.
+    """
+    try:
+        scheduler = get_scheduler()
+        if scheduler is None:
+            return {
+                "status": "not_initialized",
+                "message": "Scheduler has not been started"
+            }
+        
+        return {
+            "status": "success",
+            "scheduler": scheduler.get_status()
+        }
+    except Exception as e:
+        logger.error(f"Error getting scheduler status: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+@router.post("/scheduler/trigger_update")
+async def trigger_manual_update(rag: RAGSystem = Depends(get_rag_system)):
+    """
+    Manually trigger a knowledge base update outside the schedule.
+    """
+    try:
+        scheduler = get_scheduler(rag)
+        if scheduler is None:
+            # Create a temporary update if no scheduler exists
+            result = await rag.update_knowledge_base()
+        else:
+            result = await scheduler.trigger_manual_update()
+        
+        return {
+            "status": "success", 
+            "message": "Manual update completed",
+            "update_result": result
+        }
+    except Exception as e:
+        logger.error(f"Error in manual update: {e}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 # Make router creation function for main.py
