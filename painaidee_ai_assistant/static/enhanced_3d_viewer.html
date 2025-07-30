@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaiNaiDee AI Assistant - Enhanced 3D with AR/VR & Thai Gestures</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 400px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #ffdd59;
+            margin-bottom: 5px;
+            font-size: 22px;
+        }
+
+        .header p {
+            color: #ccc;
+            margin: 0;
+            font-size: 12px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .section h3 {
+            color: #ffdd59;
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+
+        .btn {
+            background: #ffdd59;
+            color: #333;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-bottom: 8px;
+            transition: background 0.3s;
+            font-size: 12px;
+        }
+
+        .btn:hover {
+            background: #ffc107;
+        }
+
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .btn-small {
+            padding: 6px 10px;
+            font-size: 11px;
+            width: auto;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 3px;
+            font-weight: bold;
+            color: #ffdd59;
+            font-size: 12px;
+        }
+
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            box-sizing: border-box;
+            font-size: 12px;
+        }
+
+        .input-group textarea {
+            height: 60px;
+            resize: vertical;
+        }
+
+        .gesture-preview {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 11px;
+        }
+
+        .gesture-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .multiuser-info {
+            font-size: 11px;
+            color: #ccc;
+        }
+
+        .user-avatar {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .error-message, .success-message {
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 11px;
+            display: none;
+        }
+
+        .error-message {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .success-message {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #51cf66;
+            color: #51cf66;
+        }
+
+        .controls-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            font-size: 12px;
+            max-width: 200px;
+        }
+
+        .xr-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            font-size: 11px;
+        }
+
+        #viewer {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #ffdd59;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="header">
+                <h1>🇹🇭 PaiNaiDee AI</h1>
+                <p>Enhanced 3D Assistant with AR/VR & Thai Culture</p>
+            </div>
+
+            <div class="section">
+                <h3>🤖 AI Model Selection</h3>
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+                
+                <div class="input-group">
+                    <label for="questionInput">Ask about 3D models:</label>
+                    <textarea id="questionInput" placeholder="e.g., Show me a walking person, Display running animation..."></textarea>
+                </div>
+                
+                <button class="btn" onclick="analyzeQuestion()" id="analyzeBtn">🔍 Analyze & Select Model</button>
+                <button class="btn" onclick="loadSelectedModel()" id="loadBtn" disabled>📦 Load 3D Model</button>
+            </div>
+
+            <div class="section">
+                <h3>🎭 Thai Cultural Gestures</h3>
+                <div class="input-group">
+                    <label for="gestureSelect">Select Gesture:</label>
+                    <select id="gestureSelect" onchange="previewGesture()">
+                        <option value="">-- Select Thai Gesture --</option>
+                        <option value="thai_wai">Thai Wai (ไหว้) - Greeting</option>
+                        <option value="thai_smile">Thai Smile (ยิ้ม) - Friendly</option>
+                        <option value="thai_point">Thai Point (ชี้) - Direction</option>
+                        <option value="thai_welcome">Thai Welcome - Hospitality</option>
+                        <option value="thai_respect">Deep Wai - Respect</option>
+                        <option value="thai_bow">Thai Bow - Gratitude</option>
+                    </select>
+                </div>
+                
+                <div class="gesture-grid">
+                    <button class="btn btn-small" onclick="triggerGesture('thai_wai')">ไหว้</button>
+                    <button class="btn btn-small" onclick="triggerGesture('thai_smile')">ยิ้ม</button>
+                    <button class="btn btn-small" onclick="triggerGesture('thai_point')">ชี้</button>
+                    <button class="btn btn-small" onclick="triggerGesture('thai_welcome')">ต้อนรับ</button>
+                </div>
+                
+                <div class="gesture-preview" id="gesturePreview">
+                    <strong>Gesture Preview:</strong><br>
+                    Select a gesture to see description and cultural context.
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>🥽 AR/VR Mode</h3>
+                <button class="btn" onclick="enterAR()" id="arBtn" style="display: none;">📱 Enter AR</button>
+                <button class="btn" onclick="enterVR()" id="vrBtn" style="display: none;">🥽 Enter VR</button>
+                <p id="xrStatus" style="font-size: 11px; color: #ccc;">Checking XR support...</p>
+            </div>
+
+            <div class="section">
+                <h3>👥 Multi-user Collaboration</h3>
+                <div class="input-group">
+                    <label for="usernameInput">Your Name:</label>
+                    <input type="text" id="usernameInput" placeholder="Enter your name" value="Tourist">
+                </div>
+                
+                <div class="input-group">
+                    <label for="roomInput">Room ID:</label>
+                    <input type="text" id="roomInput" placeholder="Enter room ID or create new">
+                </div>
+                
+                <button class="btn" onclick="joinRoom()" id="joinRoomBtn">🏠 Join Room</button>
+                <button class="btn" onclick="createRoom()" id="createRoomBtn">➕ Create New Room</button>
+                <button class="btn" onclick="leaveRoom()" id="leaveRoomBtn" disabled>🚪 Leave Room</button>
+                
+                <div class="multiuser-info" id="multiuserInfo">
+                    <strong>Connected Users:</strong><br>
+                    <div id="connectedUsers">Not connected</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>🎮 Scene Management</h3>
+                <div class="input-group">
+                    <label for="sceneSelect">Load Scene:</label>
+                    <select id="sceneSelect">
+                        <option value="default">Default Scene</option>
+                        <option value="temple">Thai Temple</option>
+                        <option value="market">Floating Market</option>
+                        <option value="beach">Thai Beach</option>
+                        <option value="city">Bangkok Skyline</option>
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="loadScene()">🌍 Load Scene</button>
+                <button class="btn" onclick="resetScene()">🔄 Reset Scene</button>
+            </div>
+
+            <div class="section">
+                <h3>📂 Model Formats</h3>
+                <p style="font-size: 11px; color: #ccc;">
+                    Supported: FBX, GLB, GLTF, OBJ<br>
+                    <span id="currentFormat">Current: FBX</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="viewer">
+                <div class="loading" id="viewerLoading">
+                    <div class="spinner"></div>
+                    <p>Initializing Enhanced 3D Viewer...</p>
+                </div>
+            </div>
+            
+            <div class="controls-overlay">
+                <h4>🎮 3D Controls</h4>
+                <ul style="margin: 0; padding-left: 15px;">
+                    <li><strong>Mouse:</strong> Rotate view</li>
+                    <li><strong>Wheel:</strong> Zoom in/out</li>
+                    <li><strong>Right-click:</strong> Pan view</li>
+                    <li><strong>Click model:</strong> Show info</li>
+                </ul>
+            </div>
+
+            <div class="xr-overlay" id="xrOverlay">
+                <div>🥽 XR Status: <span id="xrStatusText">Checking...</span></div>
+                <div>👥 Users: <span id="userCount">0</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js CDN with multiple loaders and WebXR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/webxr/VRButton.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/webxr/ARButton.js"></script>
+
+    <script>
+        // Global variables
+        let scene, camera, renderer, controls;
+        let currentModel = null;
+        let selectedModelData = null;
+        let isViewerInitialized = false;
+        let animationMixer = null;
+        let websocket = null;
+        let currentRoom = null;
+        let connectedUsers = new Map();
+        const clock = new THREE.Clock();
+        
+        // XR support tracking
+        let xrSupported = {
+            ar: false,
+            vr: false
+        };
+
+        // Initialize everything when page loads
+        window.addEventListener('load', () => {
+            initializeViewer();
+            loadAvailableModels();
+            loadThaiGestures();
+        });
+
+        function initializeViewer() {
+            try {
+                const viewerElement = document.getElementById('viewer');
+                
+                // Create scene
+                scene = new THREE.Scene();
+                scene.background = new THREE.Color(0x87CEEB); // Sky blue
+                
+                // Create camera
+                camera = new THREE.PerspectiveCamera(75, viewerElement.clientWidth / viewerElement.clientHeight, 0.1, 1000);
+                camera.position.set(3, 3, 3);
+                
+                // Create renderer with WebXR support
+                renderer = new THREE.WebGLRenderer({ antialias: true });
+                renderer.setSize(viewerElement.clientWidth, viewerElement.clientHeight);
+                renderer.shadowMap.enabled = true;
+                renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                renderer.xr.enabled = true; // Enable WebXR
+                
+                viewerElement.appendChild(renderer.domElement);
+                
+                // Add lighting
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+                scene.add(ambientLight);
+                
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                directionalLight.position.set(10, 10, 5);
+                directionalLight.castShadow = true;
+                scene.add(directionalLight);
+                
+                // Add ground plane
+                const groundGeometry = new THREE.PlaneGeometry(20, 20);
+                const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x90EE90 });
+                const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+                ground.rotation.x = -Math.PI / 2;
+                ground.receiveShadow = true;
+                scene.add(ground);
+                
+                // Add controls
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.05;
+                
+                // Handle window resize
+                window.addEventListener('resize', onWindowResize, false);
+                
+                // Start animation loop
+                animate();
+                
+                isViewerInitialized = true;
+                hideLoading('viewerLoading');
+                showSuccess('Enhanced 3D Viewer initialized successfully!');
+
+                // Initialize WebXR support
+                initializeXR();
+
+            } catch (error) {
+                console.error('Error initializing viewer:', error);
+                showError('Failed to initialize 3D viewer. Please refresh the page.');
+            }
+        }
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const delta = clock.getDelta();
+            
+            // Update animation mixer if present
+            if (animationMixer) {
+                animationMixer.update(delta);
+            }
+            
+            if (controls) controls.update();
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        // Initialize WebXR support
+        async function initializeXR() {
+            if ('xr' in navigator) {
+                try {
+                    // Check AR support
+                    const arSupported = await navigator.xr.isSessionSupported('immersive-ar');
+                    xrSupported.ar = arSupported;
+                    
+                    // Check VR support  
+                    const vrSupported = await navigator.xr.isSessionSupported('immersive-vr');
+                    xrSupported.vr = vrSupported;
+                    
+                    updateXRUI();
+                } catch (error) {
+                    console.log('WebXR not supported:', error);
+                    updateXRUI();
+                }
+            } else {
+                console.log('WebXR not available');
+                updateXRUI();
+            }
+        }
+
+        function updateXRUI() {
+            const arBtn = document.getElementById('arBtn');
+            const vrBtn = document.getElementById('vrBtn');
+            const xrStatus = document.getElementById('xrStatus');
+            const xrStatusText = document.getElementById('xrStatusText');
+            
+            if (xrSupported.ar) {
+                arBtn.style.display = 'block';
+            }
+            
+            if (xrSupported.vr) {
+                vrBtn.style.display = 'block';
+            }
+            
+            if (xrSupported.ar || xrSupported.vr) {
+                xrStatus.textContent = `AR: ${xrSupported.ar ? '✅' : '❌'} | VR: ${xrSupported.vr ? '✅' : '❌'}`;
+                xrStatus.style.color = '#51cf66';
+                xrStatusText.textContent = `AR: ${xrSupported.ar ? '✅' : '❌'} VR: ${xrSupported.vr ? '✅' : '❌'}`;
+            } else {
+                xrStatus.textContent = 'AR/VR not supported on this device';
+                xrStatus.style.color = '#ff6b6b';
+                xrStatusText.textContent = 'Not supported';
+            }
+        }
+
+        // WebXR functions (simplified for demo)
+        async function enterAR() {
+            if (!xrSupported.ar) {
+                showError('AR not supported on this device');
+                return;
+            }
+            showSuccess('AR mode would start here (WebXR implementation)');
+        }
+
+        async function enterVR() {
+            if (!xrSupported.vr) {
+                showError('VR not supported on this device');
+                return;
+            }
+            showSuccess('VR mode would start here (WebXR implementation)');
+        }
+
+        // AI Model Selection
+        async function analyzeQuestion() {
+            const question = document.getElementById('questionInput').value.trim();
+            if (!question) {
+                showError('Please enter a question about 3D models');
+                return;
+            }
+
+            document.getElementById('analyzeBtn').disabled = true;
+            showLoading('analyzeBtn');
+
+            try {
+                const response = await fetch('/ai/select_model', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: question })
+                });
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    selectedModelData = data.model_selection;
+                    selectedModelData.format = detectModelFormat(selectedModelData.selected_model);
+                    
+                    document.getElementById('currentFormat').textContent = 
+                        `Current: ${selectedModelData.format}`;
+                    
+                    document.getElementById('loadBtn').disabled = false;
+                    showSuccess(`Selected: ${selectedModelData.selected_model} (${(selectedModelData.confidence * 100).toFixed(1)}% confidence)`);
+                } else {
+                    showError('Failed to analyze question');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Failed to connect to AI service');
+            } finally {
+                document.getElementById('analyzeBtn').disabled = false;
+                hideLoading('analyzeBtn');
+            }
+        }
+
+        // Model loading with multiple format support
+        async function loadSelectedModel() {
+            if (!selectedModelData) {
+                showError('Please select a model first');
+                return;
+            }
+
+            document.getElementById('loadBtn').disabled = true;
+            showLoading('viewerLoading');
+
+            try {
+                // Remove existing model
+                if (currentModel) {
+                    scene.remove(currentModel);
+                    currentModel = null;
+                }
+
+                // Load real 3D model based on format
+                loadRealModel(selectedModelData);
+
+            } catch (error) {
+                console.error('Error loading model:', error);
+                showError('Failed to load 3D model');
+                hideLoading('viewerLoading');
+                document.getElementById('loadBtn').disabled = false;
+            }
+        }
+
+        function detectModelFormat(filename) {
+            const extension = filename.toLowerCase().split('.').pop();
+            const formatMap = {
+                'fbx': 'FBX',
+                'glb': 'GLB', 
+                'gltf': 'GLTF',
+                'obj': 'OBJ'
+            };
+            return formatMap[extension] || 'UNKNOWN';
+        }
+
+        function loadRealModel(modelData) {
+            const modelPath = `/models/${modelData.selected_model}`;
+            const format = detectModelFormat(modelData.selected_model);
+            
+            console.log(`Loading ${format} model: ${modelPath}`);
+
+            // For demo, create mock models since actual files may not exist
+            loadMockModel(modelData);
+        }
+
+        function loadMockModel(modelData) {
+            // Create mock geometry based on model type and format
+            let geometry, material;
+            const format = detectModelFormat(modelData.selected_model);
+
+            if (modelData.selected_model.includes('Man') || modelData.selected_model.includes('Idle')) {
+                geometry = new THREE.CapsuleGeometry(0.3, 1.5, 4, 8);
+                material = new THREE.MeshLambertMaterial({ 
+                    color: format === 'GLB' ? 0x44aa88 : format === 'GLTF' ? 0xaa4488 : 0x8844aa 
+                });
+            } else if (modelData.selected_model.includes('Walking') || modelData.selected_model.includes('Running')) {
+                geometry = new THREE.CapsuleGeometry(0.3, 1.5, 4, 8);
+                material = new THREE.MeshLambertMaterial({ 
+                    color: format === 'GLB' ? 0x66cc66 : format === 'GLTF' ? 0xcc6666 : 0x44aa88 
+                });
+            } else {
+                geometry = new THREE.BoxGeometry(0.5, 1.5, 0.3);
+                material = new THREE.MeshLambertMaterial({ 
+                    color: format === 'GLB' ? 0x88aa44 : format === 'GLTF' ? 0xaa8844 : 0xaa4488 
+                });
+            }
+
+            currentModel = new THREE.Mesh(geometry, material);
+            currentModel.position.y = 0.75;
+            currentModel.castShadow = true;
+            currentModel.userData = modelData;
+            
+            scene.add(currentModel);
+
+            // Focus camera on model
+            controls.target.set(0, 0.75, 0);
+            camera.position.set(2, 2, 2);
+            controls.update();
+
+            hideLoading('viewerLoading');
+            document.getElementById('loadBtn').disabled = false;
+            showSuccess(`Loaded ${format} model: ${modelData.selected_model}`);
+
+            // Broadcast to other users if in multiuser mode
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                broadcastModelChange(modelData);
+            }
+        }
+
+        // Thai Gesture Functions
+        async function loadThaiGestures() {
+            try {
+                const response = await fetch('/gesture/thai/list');
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('Thai gestures loaded:', data.thai_gestures.length);
+                }
+            } catch (error) {
+                console.error('Error loading Thai gestures:', error);
+            }
+        }
+
+        function previewGesture() {
+            const gestureSelect = document.getElementById('gestureSelect');
+            const previewDiv = document.getElementById('gesturePreview');
+            const gestureValue = gestureSelect.value;
+            
+            const gestureDescriptions = {
+                'thai_wai': {
+                    name: 'Thai Wai (ไหว้)',
+                    description: 'Traditional greeting with palms together',
+                    cultural: 'Shows respect and gratitude',
+                    usage: 'Meeting people, saying thank you'
+                },
+                'thai_smile': {
+                    name: 'Thai Smile (ยิ้ม)',
+                    description: 'Gentle smile with head nod',
+                    cultural: 'Expresses friendliness',
+                    usage: 'General positive interactions'
+                },
+                'thai_point': {
+                    name: 'Thai Point (ชี้)',
+                    description: 'Polite pointing with open hand',
+                    cultural: 'Respectful way to indicate direction',
+                    usage: 'Giving directions, showing locations'
+                },
+                'thai_welcome': {
+                    name: 'Thai Welcome',
+                    description: 'Open arms welcoming gesture',
+                    cultural: 'Traditional hospitality',
+                    usage: 'Welcoming guests and tourists'
+                },
+                'thai_respect': {
+                    name: 'Deep Wai (ไหว้สูง)',
+                    description: 'Deep respectful bow',
+                    cultural: 'Shows high respect',
+                    usage: 'Temples, elders, formal occasions'
+                },
+                'thai_bow': {
+                    name: 'Thai Bow (คำนับ)',
+                    description: 'Traditional bow of gratitude',
+                    cultural: 'Expresses thankfulness',
+                    usage: 'Showing appreciation'
+                }
+            };
+            
+            if (gestureValue && gestureDescriptions[gestureValue]) {
+                const gesture = gestureDescriptions[gestureValue];
+                previewDiv.innerHTML = `
+                    <strong>${gesture.name}</strong><br>
+                    ${gesture.description}<br>
+                    <em>Cultural:</em> ${gesture.cultural}<br>
+                    <em>Usage:</em> ${gesture.usage}
+                `;
+            } else {
+                previewDiv.innerHTML = `
+                    <strong>Gesture Preview:</strong><br>
+                    Select a gesture to see description and cultural context.
+                `;
+            }
+        }
+
+        async function triggerGesture(gestureType) {
+            try {
+                if (currentModel) {
+                    // Visual feedback for gesture
+                    currentModel.material.emissive.setHex(0x444444);
+                    setTimeout(() => {
+                        if (currentModel) {
+                            currentModel.material.emissive.setHex(0x000000);
+                        }
+                    }, 1000);
+                    
+                    showSuccess(`Performing ${gestureType} gesture`);
+                    
+                    // Broadcast gesture to other users
+                    if (websocket && websocket.readyState === WebSocket.OPEN) {
+                        broadcastGesture(gestureType);
+                    }
+                } else {
+                    showError('Please load a 3D model first');
+                }
+            } catch (error) {
+                console.error('Error triggering gesture:', error);
+                showError('Failed to trigger gesture');
+            }
+        }
+
+        // Multi-user collaboration functions
+        function createRoom() {
+            const roomId = 'room_' + Math.random().toString(36).substr(2, 9);
+            document.getElementById('roomInput').value = roomId;
+            joinRoom();
+        }
+
+        function joinRoom() {
+            const username = document.getElementById('usernameInput').value || 'Anonymous';
+            const roomId = document.getElementById('roomInput').value || 'default_room';
+            
+            if (websocket) {
+                websocket.close();
+            }
+            
+            try {
+                websocket = new WebSocket(`ws://localhost:8000/ws/collaboration/${roomId}`);
+                
+                websocket.onopen = () => {
+                    // Send authentication
+                    websocket.send(JSON.stringify({
+                        type: 'auth',
+                        user: {
+                            user_id: 'user_' + Math.random().toString(36).substr(2, 9),
+                            username: username,
+                            avatar_color: '#' + Math.floor(Math.random()*16777215).toString(16),
+                            position: [0, 0, 0],
+                            rotation: [0, 0, 0]
+                        }
+                    }));
+                    
+                    currentRoom = roomId;
+                    document.getElementById('joinRoomBtn').disabled = true;
+                    document.getElementById('leaveRoomBtn').disabled = false;
+                    showSuccess(`Joined room: ${roomId}`);
+                };
+                
+                websocket.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    handleMultiuserMessage(data);
+                };
+                
+                websocket.onclose = () => {
+                    currentRoom = null;
+                    document.getElementById('joinRoomBtn').disabled = false;
+                    document.getElementById('leaveRoomBtn').disabled = true;
+                    updateUsersList([]);
+                };
+                
+                websocket.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    showError('Failed to connect to collaboration room');
+                };
+                
+            } catch (error) {
+                console.error('Error joining room:', error);
+                showError('Failed to join room');
+            }
+        }
+
+        function leaveRoom() {
+            if (websocket) {
+                websocket.close();
+            }
+        }
+
+        function handleMultiuserMessage(data) {
+            switch (data.type) {
+                case 'room_state':
+                    updateUsersList(data.data.users || []);
+                    break;
+                case 'user_join':
+                    showSuccess(`${data.data.username} joined the room`);
+                    break;
+                case 'user_leave':
+                    showSuccess(`${data.data.username} left the room`);
+                    break;
+                case 'gesture_perform':
+                    showSuccess(`${data.user_id} performed ${data.data.gesture_name}`);
+                    break;
+                case 'chat_message':
+                    showSuccess(`${data.data.username}: ${data.data.text}`);
+                    break;
+            }
+        }
+
+        function updateUsersList(users) {
+            const userCount = users.length + (currentRoom ? 1 : 0); // +1 for current user
+            document.getElementById('userCount').textContent = userCount;
+            
+            const connectedUsersDiv = document.getElementById('connectedUsers');
+            if (users.length === 0) {
+                connectedUsersDiv.innerHTML = 'Only you in room';
+            } else {
+                connectedUsersDiv.innerHTML = users.map(user => 
+                    `<div style="margin-bottom: 5px;">
+                        <span class="user-avatar" style="background-color: ${user.avatar_color};"></span>
+                        ${user.username}
+                    </div>`
+                ).join('');
+            }
+        }
+
+        function broadcastGesture(gestureType) {
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                websocket.send(JSON.stringify({
+                    type: 'gesture_perform',
+                    gesture: {
+                        name: gestureType,
+                        type: 'thai_cultural',
+                        duration: 2.0,
+                        cultural_context: 'thai_tourism'
+                    }
+                }));
+            }
+        }
+
+        function broadcastModelChange(modelData) {
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                websocket.send(JSON.stringify({
+                    type: 'model_change',
+                    model: {
+                        name: modelData.selected_model,
+                        format: modelData.format,
+                        position: [0, 0, 0],
+                        scale: [1, 1, 1]
+                    }
+                }));
+            }
+        }
+
+        // Scene management functions
+        function loadScene() {
+            const sceneSelect = document.getElementById('sceneSelect');
+            const sceneName = sceneSelect.value;
+            
+            // Change background based on scene
+            const sceneConfigs = {
+                'default': { color: 0x87CEEB, name: 'Default Sky' },
+                'temple': { color: 0xFFA500, name: 'Temple Sunset' },
+                'market': { color: 0x00CED1, name: 'Market Morning' },
+                'beach': { color: 0x1E90FF, name: 'Beach Paradise' },
+                'city': { color: 0x4B0082, name: 'City Night' }
+            };
+            
+            const config = sceneConfigs[sceneName] || sceneConfigs['default'];
+            scene.background = new THREE.Color(config.color);
+            
+            showSuccess(`Loaded scene: ${config.name}`);
+        }
+
+        function resetScene() {
+            // Reset to default scene
+            scene.background = new THREE.Color(0x87CEEB);
+            
+            // Reset camera position
+            camera.position.set(3, 3, 3);
+            controls.target.set(0, 0.75, 0);
+            controls.update();
+            
+            showSuccess('Scene reset to default');
+        }
+
+        // Utility functions
+        async function loadAvailableModels() {
+            try {
+                const response = await fetch('/ai/models');
+                const data = await response.json();
+                console.log('Available models:', data.models?.length || 0);
+            } catch (error) {
+                console.error('Error loading models:', error);
+            }
+        }
+
+        function onWindowResize() {
+            const viewerElement = document.getElementById('viewer');
+            camera.aspect = viewerElement.clientWidth / viewerElement.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(viewerElement.clientWidth, viewerElement.clientHeight);
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            setTimeout(() => errorEl.style.display = 'none', 5000);
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('successMessage');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+            setTimeout(() => successEl.style.display = 'none', 3000);
+        }
+
+        function showLoading(elementId) {
+            const element = document.getElementById(elementId);
+            if (element.tagName === 'BUTTON') {
+                element.textContent = 'Loading...';
+            } else {
+                element.style.display = 'flex';
+            }
+        }
+
+        function hideLoading(elementId) {
+            const element = document.getElementById(elementId);
+            if (element.tagName === 'BUTTON') {
+                element.textContent = element.getAttribute('data-original-text') || 'Load';
+            } else {
+                element.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -29,6 +29,7 @@ try:
     from api.tts_routes import create_tts_routes
     from api.rag_routes import create_rag_routes
     from api.plugin_routes import create_plugin_routes
+    from api.multiuser_routes import create_multiuser_routes
     HAS_AI_ROUTES = True
     HAS_TOURISM_ROUTES = True
     HAS_EMOTION_ROUTES = True
@@ -37,6 +38,7 @@ try:
     HAS_TTS_ROUTES = True
     HAS_RAG_ROUTES = True
     HAS_PLUGIN_ROUTES = True
+    HAS_MULTIUSER_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
@@ -189,6 +191,10 @@ if HAS_PLUGIN_ROUTES:
 # Add performance optimization routes
 if performance_router:
     app.include_router(performance_router, prefix="/api", tags=["Performance"])
+
+# Add multi-user collaboration routes
+if HAS_MULTIUSER_ROUTES:
+    create_multiuser_routes(app)
 
 # Mount static files for 3D viewer
 app.mount("/static", StaticFiles(directory="static"), name="static")

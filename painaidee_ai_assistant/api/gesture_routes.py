@@ -721,6 +721,164 @@ def create_gesture_routes(app):
             }
         }
 
+    @app.get("/gesture/thai/list")
+    async def list_thai_cultural_gestures():
+        """List all available Thai cultural gestures"""
+        try:
+            # Import emotion analysis agent to get Thai gestures
+            try:
+                from agents.emotion_analysis import EmotionAnalysisAgent
+                emotion_agent = EmotionAnalysisAgent()
+            except ImportError:
+                return {"success": False, "message": "Emotion analysis not available"}
+            
+            thai_gestures = [
+                {
+                    "id": "thai_wai",
+                    "name": "Thai Wai (ไหว้)",
+                    "description": "Traditional Thai greeting with palms together",
+                    "context": "greeting",
+                    "cultural_significance": "Respectful greeting, showing gratitude or respect",
+                    "usage": "Meeting someone, saying hello, showing thanks"
+                },
+                {
+                    "id": "thai_smile",
+                    "name": "Thai Smile (ยิ้ม)",
+                    "description": "Gentle Thai smile with slight head nod",
+                    "context": "friendly_interaction", 
+                    "cultural_significance": "Expressing friendliness and approachability",
+                    "usage": "General positive interactions, welcoming tourists"
+                },
+                {
+                    "id": "thai_point",
+                    "name": "Thai Point (ชี้)",
+                    "description": "Polite pointing with open hand, not finger",
+                    "context": "direction",
+                    "cultural_significance": "Polite way to point or give directions",
+                    "usage": "Showing directions, indicating locations on map"
+                },
+                {
+                    "id": "thai_welcome",
+                    "name": "Thai Welcome",
+                    "description": "Traditional welcoming gesture with open arms",
+                    "context": "welcome",
+                    "cultural_significance": "Welcoming guests and visitors",
+                    "usage": "Greeting tourists, welcoming to attractions"
+                },
+                {
+                    "id": "thai_respect",
+                    "name": "Deep Wai (ไหว้สูง)",
+                    "description": "Deep wai showing high respect",
+                    "context": "respect",
+                    "cultural_significance": "Showing deep respect to elders, monks, or sacred places",
+                    "usage": "At temples, meeting elderly people, formal occasions"
+                },
+                {
+                    "id": "thai_bow",
+                    "name": "Thai Bow (คำนับ)",
+                    "description": "Traditional Thai bow showing gratitude",
+                    "context": "gratitude",
+                    "cultural_significance": "Expressing thankfulness and appreciation",
+                    "usage": "Saying thank you, showing appreciation for help"
+                }
+            ]
+            
+            return {
+                "success": True,
+                "thai_gestures": thai_gestures,
+                "total_count": len(thai_gestures),
+                "cultural_context": "Traditional Thai gestures for tourism and hospitality"
+            }
+            
+        except Exception as e:
+            logger.error(f"List Thai gestures error: {e}")
+            return {"success": False, "message": str(e)}
+    
+    @app.post("/gesture/thai/recommend")
+    async def recommend_thai_gesture(request: dict):
+        """Recommend appropriate Thai gesture based on tourism context"""
+        try:
+            context = request.get("context", "")
+            user_emotion = request.get("user_emotion", "neutral") 
+            tourism_scenario = request.get("tourism_scenario", "general")
+            
+            # Import emotion analysis agent
+            try:
+                from agents.emotion_analysis import EmotionAnalysisAgent
+                emotion_agent = EmotionAnalysisAgent()
+            except ImportError:
+                return {"success": False, "message": "Emotion analysis not available"}
+            
+            # Get Thai cultural gesture based on context
+            thai_gesture = emotion_agent.get_thai_cultural_gesture(context)
+            
+            # Enhanced recommendations based on tourism scenarios
+            scenario_recommendations = {
+                "temple_visit": {
+                    "primary_gesture": "thai_respect",
+                    "description": "Deep wai showing respect for sacred place",
+                    "cultural_notes": "Always wai before entering temple areas"
+                },
+                "market_interaction": {
+                    "primary_gesture": "thai_smile",
+                    "description": "Friendly smile to engage with vendors",
+                    "cultural_notes": "Smiling helps with bargaining and making connections"
+                },
+                "asking_directions": {
+                    "primary_gesture": "thai_point",
+                    "description": "Polite pointing with open hand",
+                    "cultural_notes": "Never point with single finger, use open hand"
+                },
+                "hotel_checkin": {
+                    "primary_gesture": "thai_wai",
+                    "description": "Respectful greeting to hotel staff",
+                    "cultural_notes": "Shows respect and appreciation for service"
+                },
+                "restaurant_dining": {
+                    "primary_gesture": "thai_bow",
+                    "description": "Slight bow when thanking restaurant staff",
+                    "cultural_notes": "Express gratitude for good service"
+                },
+                "tour_group": {
+                    "primary_gesture": "thai_welcome",
+                    "description": "Welcoming gesture for group interactions",
+                    "cultural_notes": "Creates friendly atmosphere in group settings"
+                }
+            }
+            
+            scenario_rec = scenario_recommendations.get(tourism_scenario, {
+                "primary_gesture": "thai_wai",
+                "description": "Default respectful greeting",
+                "cultural_notes": "Safe and respectful for most situations"
+            })
+            
+            return {
+                "success": True,
+                "recommended_gesture": {
+                    "gesture_name": thai_gesture.gesture.value,
+                    "model_expression": thai_gesture.model_expression,
+                    "animation_style": thai_gesture.animation_style,
+                    "description": thai_gesture.description,
+                    "emotion_context": user_emotion
+                },
+                "scenario_specific": scenario_rec,
+                "cultural_context": {
+                    "language": "Thai",
+                    "tourism_appropriate": True,
+                    "respectful": True,
+                    "scenario": tourism_scenario
+                },
+                "implementation_notes": {
+                    "3d_animation": f"Trigger {thai_gesture.gesture.value} animation",
+                    "timing": f"Use {thai_gesture.animation_style} timing",
+                    "expression": f"Set facial expression to {thai_gesture.model_expression}"
+                }
+            }
+            
+        except Exception as e:
+            logger.error(f"Thai gesture recommendation error: {e}")
+            return {"success": False, "message": str(e)}
+
 # Create the routes when this module is imported
 def create_gesture_api_routes(app):
     """Create gesture recognition API routes"""

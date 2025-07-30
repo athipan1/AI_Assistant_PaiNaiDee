@@ -37,6 +37,14 @@ class GestureType(Enum):
     NEUTRAL_IDLE = "neutral_idle"
     CONFIDENT_POSE = "confident_pose"
     ENERGETIC_MOVEMENT = "energetic_movement"
+    
+    # Thai Cultural Gestures
+    THAI_WAI = "thai_wai"           # Traditional Thai greeting with palms together
+    THAI_SMILE = "thai_smile"       # Thai-style gentle smile with slight bow
+    THAI_POINT = "thai_point"       # Thai-style pointing (with open hand, not finger)
+    THAI_WELCOME = "thai_welcome"   # Traditional Thai welcoming gesture
+    THAI_RESPECT = "thai_respect"   # Deep wai for showing respect
+    THAI_BOW = "thai_bow"          # Traditional Thai bow
 
 @dataclass
 class EmotionResult:
@@ -148,6 +156,64 @@ class EmotionAnalysisAgent:
                 description="Dynamic movement with enthusiastic expression"
             )
         }
+    
+    def get_thai_cultural_gesture(self, context: str) -> GestureMapping:
+        """Get appropriate Thai cultural gesture based on context"""
+        context_lower = context.lower()
+        
+        # Thai tourism context mappings
+        thai_gesture_contexts = {
+            "greeting": GestureMapping(
+                emotion=EmotionType.HAPPY,
+                gesture=GestureType.THAI_WAI,
+                model_expression="respectful_smile",
+                animation_style="traditional",
+                description="Traditional Thai wai greeting (สวัสดี) - palms together with gentle bow"
+            ),
+            "welcome": GestureMapping(
+                emotion=EmotionType.HAPPY,
+                gesture=GestureType.THAI_WELCOME,
+                model_expression="welcoming_smile",
+                animation_style="graceful",
+                description="Thai welcoming gesture with open arms and warm smile"
+            ),
+            "direction": GestureMapping(
+                emotion=EmotionType.NEUTRAL,
+                gesture=GestureType.THAI_POINT,
+                model_expression="helpful",
+                animation_style="polite",
+                description="Thai-style pointing with open hand (not finger) for giving directions"
+            ),
+            "respect": GestureMapping(
+                emotion=EmotionType.CALM,
+                gesture=GestureType.THAI_RESPECT,
+                model_expression="reverent",
+                animation_style="ceremonial",
+                description="Deep wai gesture showing high respect (for temples, elderly)"
+            ),
+            "smile": GestureMapping(
+                emotion=EmotionType.HAPPY,
+                gesture=GestureType.THAI_SMILE,
+                model_expression="gentle_smile",
+                animation_style="serene",
+                description="Genuine Thai smile with slight head nod"
+            ),
+            "gratitude": GestureMapping(
+                emotion=EmotionType.HAPPY,
+                gesture=GestureType.THAI_BOW,
+                model_expression="grateful",
+                animation_style="appreciative",
+                description="Traditional Thai bow showing gratitude (ขอบคุณ)"
+            )
+        }
+        
+        # Context matching
+        for context_key, gesture_mapping in thai_gesture_contexts.items():
+            if context_key in context_lower:
+                return gesture_mapping
+        
+        # Default to Thai wai for tourism interactions
+        return thai_gesture_contexts["greeting"]
     
     async def _load_models(self):
         """Load emotion analysis models (lazy loading)"""
