@@ -1,0 +1,46 @@
+[
+  {
+    "id": "sample_1",
+    "content": "Bangkok is the capital and largest city of Thailand. It's known for its vibrant street life, cultural landmarks, and amazing food. Popular attractions include the Grand Palace, Wat Pho temple, and Chatuchak Weekend Market. The city offers excellent shopping, from luxury malls to street markets.",
+    "metadata": {
+      "source": "Sample Tourism Data",
+      "title": "Bangkok - Thailand's Capital City",
+      "url": "https://example.com/bangkok",
+      "type": "tourism_info",
+      "crawled_at": "2025-07-30T00:59:38.650014"
+    }
+  },
+  {
+    "id": "sample_2",
+    "content": "Chiang Mai is Thailand's cultural capital in the north. Famous for its ancient temples, night markets, and traditional crafts. The city is surrounded by mountains and is a gateway to trekking and elephant sanctuaries. Best visited during cool season (November to February).",
+    "metadata": {
+      "source": "Sample Tourism Data",
+      "title": "Chiang Mai - Cultural Capital of Northern Thailand",
+      "url": "https://example.com/chiangmai",
+      "type": "tourism_info",
+      "crawled_at": "2025-07-30T00:59:38.650023"
+    }
+  },
+  {
+    "id": "sample_3",
+    "content": "Thai cuisine is world-renowned for its balance of sweet, sour, salty, and spicy flavors. Must-try dishes include Pad Thai, Tom Yum Goong, Green Curry, and Mango Sticky Rice. Street food is excellent and affordable. Vegetarian and vegan options are widely available.",
+    "metadata": {
+      "source": "Sample Tourism Data",
+      "title": "Thai Cuisine Guide",
+      "url": "https://example.com/thai-food",
+      "type": "food_info",
+      "crawled_at": "2025-07-30T00:59:38.650025"
+    }
+  },
+  {
+    "id": "sample_4",
+    "content": "Phuket is Thailand's largest island and most popular beach destination. Known for beautiful beaches like Patong, Kata, and Karon. Offers water sports, diving, island hopping tours. The old town has Sino-Portuguese architecture and great restaurants.",
+    "metadata": {
+      "source": "Sample Tourism Data",
+      "title": "Phuket - Thailand's Premier Beach Destination",
+      "url": "https://example.com/phuket",
+      "type": "beach_info",
+      "crawled_at": "2025-07-30T00:59:38.650026"
+    }
+  }
+]

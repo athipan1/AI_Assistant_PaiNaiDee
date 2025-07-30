@@ -27,16 +27,19 @@ try:
     from api.gesture_routes import create_gesture_api_routes
     from api.action_plan_routes import router as action_plan_router
     from api.tts_routes import create_tts_routes
+    from api.rag_routes import create_rag_routes
     HAS_AI_ROUTES = True
     HAS_TOURISM_ROUTES = True
     HAS_EMOTION_ROUTES = True
     HAS_GESTURE_ROUTES = True
     HAS_ACTION_PLAN_ROUTES = True
     HAS_TTS_ROUTES = True
+    HAS_RAG_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
     HAS_AI_ROUTES = False
+    HAS_RAG_ROUTES = False
     from api.model_routes import create_model_routes, model_selector
     from api.versioning_routes import create_versioning_routes
     from api.cdn_routes import create_cdn_routes
@@ -141,6 +144,11 @@ if HAS_GESTURE_ROUTES:
 # Add TTS routes
 if HAS_TTS_ROUTES:
     create_tts_routes(app)
+
+# Add RAG routes
+if HAS_RAG_ROUTES:
+    rag_router = create_rag_routes()
+    app.include_router(rag_router, tags=["RAG"])
 
 # Add performance optimization routes
 if performance_router:

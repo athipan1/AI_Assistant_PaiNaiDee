@@ -19,9 +19,12 @@ pillow>=10.0.0
 # Additional models for emotion analysis
 sentencepiece>=0.1.99
 
-# Optional LangChain support
+# LangChain and RAG support
 langchain==0.0.340
 langchain-community==0.0.1
+# feedparser==6.0.10  # Commented out due to network issues
+# sentence-transformers==2.2.2  # Commented out due to network issues  
+# faiss-cpu==1.7.4  # Commented out due to network issues
 
 # Web scraping and API requests
 requests==2.31.0
