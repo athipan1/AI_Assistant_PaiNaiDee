@@ -28,6 +28,7 @@ try:
     from api.action_plan_routes import router as action_plan_router
     from api.tts_routes import create_tts_routes
     from api.rag_routes import create_rag_routes
+    from api.plugin_routes import create_plugin_routes
     HAS_AI_ROUTES = True
     HAS_TOURISM_ROUTES = True
     HAS_EMOTION_ROUTES = True
@@ -35,11 +36,13 @@ try:
     HAS_ACTION_PLAN_ROUTES = True
     HAS_TTS_ROUTES = True
     HAS_RAG_ROUTES = True
+    HAS_PLUGIN_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
     HAS_AI_ROUTES = False
     HAS_RAG_ROUTES = False
+    HAS_PLUGIN_ROUTES = False
     from api.model_routes import create_model_routes, model_selector
     from api.versioning_routes import create_versioning_routes
     from api.cdn_routes import create_cdn_routes
@@ -79,6 +82,12 @@ except ImportError as e:
     except ImportError as tts_e:
         HAS_TTS_ROUTES = False
         print(f"Warning: TTS routes not available: {tts_e}")
+    try:
+        from api.plugin_routes import create_plugin_routes
+        HAS_PLUGIN_ROUTES = True
+    except ImportError as plugin_e:
+        HAS_PLUGIN_ROUTES = False
+        print(f"Warning: Plugin routes not available: {plugin_e}")
     performance_router = None
 
 # Load environment variables
@@ -87,9 +96,23 @@ load_dotenv()
 # Create FastAPI app
 app = FastAPI(
     title="PaiNaiDee AI Assistant",
-    description="AI-powered tourism assistant for Thailand with 3D model visualization",
+    description="AI-powered tourism assistant for Thailand with 3D model visualization and plugin system",
     version="1.0.0"
 )
+
+# Startup event to initialize plugins
+@app.on_event("startup")
+async def startup_event():
+    """Initialize plugins on startup"""
+    if HAS_PLUGIN_ROUTES:
+        try:
+            from api.plugin_routes import initialize_default_plugins
+            await initialize_default_plugins()
+            print("✅ Plugin system initialized successfully")
+        except Exception as e:
+            print(f"⚠️ Plugin system initialization failed: {e}")
+    else:
+        print("⚠️ Plugin system not available")
 
 # Configure CORS
 app.add_middleware(
@@ -149,6 +172,19 @@ if HAS_TTS_ROUTES:
 if HAS_RAG_ROUTES:
     rag_router = create_rag_routes()
     app.include_router(rag_router, tags=["RAG"])
+
+# Add Plugin routes
+if HAS_PLUGIN_ROUTES:
+    plugin_router = create_plugin_routes()
+    app.include_router(plugin_router, tags=["Plugin System"])
+    
+    # Add admin plugin routes
+    try:
+        from api.admin_plugin_routes import create_admin_plugin_routes
+        admin_plugin_router = create_admin_plugin_routes()
+        app.include_router(admin_plugin_router, tags=["Plugin Admin"])
+    except ImportError as e:
+        print(f"Warning: Admin plugin routes not available: {e}")
 
 # Add performance optimization routes
 if performance_router:
@@ -223,7 +259,7 @@ async def root():
             "message": "PaiNaiDee AI Assistant with 3D Models is running!",
             "status": "healthy",
             "version": "1.0.0",
-            "features": ["3D Model Viewer", "AI Model Selection", "Interactive Controls", "Emotion Analysis", "3D Gesture Recognition"],
+            "features": ["3D Model Viewer", "AI Model Selection", "Interactive Controls", "Emotion Analysis", "3D Gesture Recognition", "Plugin System", "External API Integration"],
             "endpoints": {
                 "models": "/ai/models",
                 "select_model": "/ai/select_model",
@@ -234,6 +270,11 @@ async def root():
                 "action_plans": "/action/generate_plan",
                 "execute_plan": "/action/execute_plan",
                 "quick_action": "/action/quick_action",
+                "plugin_query": "/plugin/query",
+                "latest_attractions": "/plugin/get_latest_attractions",
+                "event_news": "/plugin/get_event_news", 
+                "temple_info": "/plugin/get_temple_info",
+                "plugin_admin": "/plugin/admin/stats",
                 "viewer": "/static/demo.html"
             }
         }
@@ -262,7 +303,9 @@ async def health_check():
                 "tourist_interest_graph": HAS_TOURISM_ROUTES,
                 "contextual_recommendations": HAS_TOURISM_ROUTES,
                 "multimodal_action_plans": HAS_ACTION_PLAN_ROUTES,
-                "intent_to_action_mapping": HAS_ACTION_PLAN_ROUTES
+                "intent_to_action_mapping": HAS_ACTION_PLAN_ROUTES,
+                "plugin_system": HAS_PLUGIN_ROUTES,
+                "external_api_integration": HAS_PLUGIN_ROUTES
             }
         }
     except Exception as e:
