@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaiNaiDee - Group Trip Planner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #ffdd59;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #ccc;
+            font-size: 16px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            height: calc(100vh - 140px);
+        }
+
+        .sidebar {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .main-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section h3 {
+            color: #ffdd59;
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 2px solid #ffdd59;
+            padding-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #aaa;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 5px;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 12px;
+        }
+
+        .group-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .group-info h4 {
+            color: #ffdd59;
+            margin-bottom: 10px;
+        }
+
+        .member-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .member-tag {
+            background: rgba(102, 126, 234, 0.7);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .location-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #ffdd59;
+            cursor: grab;
+            transition: all 0.3s ease;
+        }
+
+        .location-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .location-item.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        .location-item h5 {
+            color: #ffdd59;
+            margin-bottom: 8px;
+        }
+
+        .location-item p {
+            color: #ccc;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .location-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .location-tag {
+            background: rgba(118, 75, 162, 0.7);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+        }
+
+        .drop-zone {
+            border: 2px dashed #ffdd59;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            color: #ffdd59;
+            margin: 20px 0;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone.drag-over {
+            background: rgba(255, 221, 89, 0.1);
+            border-color: #fff;
+        }
+
+        .ai-recommendations {
+            background: rgba(40, 167, 69, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .ai-recommendations h4 {
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+
+        .recommendation-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .preference-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .preference-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        .preference-item strong {
+            color: #ffdd59;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .itinerary {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .day-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .day-header {
+            color: #ffdd59;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .day-locations {
+            display: grid;
+            gap: 10px;
+        }
+
+        .day-location {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 10px;
+            border-left: 3px solid #667eea;
+        }
+
+        .share-link {
+            background: rgba(255, 221, 89, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .share-link h4 {
+            color: #ffdd59;
+            margin-bottom: 10px;
+        }
+
+        .share-link input {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            width: calc(100% - 70px);
+            margin-right: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #ccc;
+        }
+
+        .error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #dc3545;
+        }
+
+        .success {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #28a745;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌏 Group Trip Planner</h1>
+            <p>Plan amazing trips together with AI-powered recommendations</p>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <!-- Group Creation Section -->
+                <div class="section" id="create-group-section">
+                    <h3>Create New Group Trip</h3>
+                    <div class="form-group">
+                        <label>Group Name</label>
+                        <input type="text" id="group-name" placeholder="Amazing Thailand Trip">
+                    </div>
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" id="creator-name" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label>Destination City</label>
+                        <input type="text" id="destination" placeholder="Bangkok, Thailand">
+                    </div>
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="start-date">
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="end-date">
+                    </div>
+                    <button class="btn btn-primary" onclick="createGroup()">Create Group Trip</button>
+                </div>
+
+                <!-- Join Group Section -->
+                <div class="section">
+                    <h3>Join Existing Group</h3>
+                    <div class="form-group">
+                        <label>Invitation Code</label>
+                        <input type="text" id="invitation-code" placeholder="ABC12345">
+                    </div>
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" id="join-name" placeholder="Your name">
+                    </div>
+                    <button class="btn btn-secondary" onclick="joinGroup()">Join Group</button>
+                </div>
+
+                <!-- User Preferences Section -->
+                <div class="section" id="preferences-section" style="display: none;">
+                    <h3>Your Travel Preferences</h3>
+                    <div class="form-group">
+                        <label>Interests (select multiple)</label>
+                        <div id="interests-checkboxes">
+                            <label><input type="checkbox" value="nature"> Nature & Outdoors</label><br>
+                            <label><input type="checkbox" value="culture"> Culture & History</label><br>
+                            <label><input type="checkbox" value="food"> Food & Dining</label><br>
+                            <label><input type="checkbox" value="adventure"> Adventure Sports</label><br>
+                            <label><input type="checkbox" value="shopping"> Shopping</label><br>
+                            <label><input type="checkbox" value="nightlife"> Nightlife</label><br>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Activity Level</label>
+                        <select id="activity-level">
+                            <option value="low">Low - Relaxed pace</option>
+                            <option value="medium" selected>Medium - Balanced</option>
+                            <option value="high">High - Active adventures</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Budget Range</label>
+                        <select id="budget-range">
+                            <option value="budget">Budget - Save money</option>
+                            <option value="mid" selected>Mid - Comfortable</option>
+                            <option value="luxury">Luxury - Premium experiences</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success" onclick="savePreferences()">Save Preferences</button>
+                </div>
+
+                <!-- Add Location Section -->
+                <div class="section" id="add-location-section" style="display: none;">
+                    <h3>Add Location</h3>
+                    <div class="form-group">
+                        <label>Location Name</label>
+                        <input type="text" id="location-name" placeholder="Grand Palace">
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="location-type">
+                            <option value="attraction">Attraction</option>
+                            <option value="restaurant">Restaurant</option>
+                            <option value="hotel">Hotel</option>
+                            <option value="activity">Activity</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="location-description" placeholder="Amazing temple complex in Bangkok"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Tags (comma separated)</label>
+                        <input type="text" id="location-tags" placeholder="culture, history, temple">
+                    </div>
+                    <button class="btn btn-success" onclick="addLocation()">Add Location</button>
+                </div>
+
+                <!-- Group Locations -->
+                <div class="section" id="locations-section" style="display: none;">
+                    <h3>Group Locations</h3>
+                    <div id="locations-list"></div>
+                </div>
+            </div>
+
+            <div class="main-panel">
+                <!-- Group Info -->
+                <div id="group-info" style="display: none;">
+                    <div class="group-info">
+                        <h4 id="group-title">Group Trip</h4>
+                        <p id="group-details"></p>
+                        <div class="member-list" id="member-list"></div>
+                        <div style="margin-top: 15px;">
+                            <button class="btn btn-primary btn-small" onclick="generatePlan()">🤖 Generate AI Plan</button>
+                            <button class="btn btn-secondary btn-small" onclick="shareGroup()">🔗 Share Link</button>
+                            <button class="btn btn-secondary btn-small" onclick="analyzeGroup()">📊 Analyze Group</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Drag & Drop Zone -->
+                <div id="drop-zone" class="drop-zone" style="display: none;">
+                    <div>
+                        <h3>Drag locations here to build your itinerary</h3>
+                        <p>Or click "Generate AI Plan" for automatic recommendations</p>
+                    </div>
+                </div>
+
+                <!-- Itinerary Display -->
+                <div id="itinerary-section" style="display: none;">
+                    <h3>Trip Itinerary</h3>
+                    <div id="itinerary-content" class="itinerary"></div>
+                </div>
+
+                <!-- AI Recommendations -->
+                <div id="ai-recommendations" class="ai-recommendations" style="display: none;">
+                    <h4>🤖 AI Recommendations</h4>
+                    <div id="recommendations-content"></div>
+                </div>
+
+                <!-- Share Link -->
+                <div id="share-section" class="share-link" style="display: none;">
+                    <h4>Share This Trip</h4>
+                    <div>
+                        <input type="text" id="share-url" readonly>
+                        <button class="btn btn-small btn-secondary" onclick="copyShareLink()">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentGroup = null;
+        let currentUserId = null;
+        let currentUsername = null;
+        let groupLocations = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            currentUserId = 'user_' + Math.random().toString(36).substr(2, 9);
+            setupDragAndDrop();
+            
+            // Check if joining via URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const groupId = urlParams.get('group');
+            const inviteCode = urlParams.get('invite');
+            
+            if (groupId && inviteCode) {
+                document.getElementById('invitation-code').value = inviteCode;
+            }
+        });
+
+        // Create new group trip
+        async function createGroup() {
+            const groupName = document.getElementById('group-name').value;
+            const creatorName = document.getElementById('creator-name').value;
+            const destination = document.getElementById('destination').value;
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+
+            if (!groupName || !creatorName || !destination || !startDate || !endDate) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/trip/group', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        group_name: groupName,
+                        creator_id: currentUserId,
+                        creator_username: creatorName,
+                        destination_city: destination,
+                        start_date: startDate,
+                        end_date: endDate
+                    })
+                });
+
+                if (response.ok) {
+                    const group = await response.json();
+                    currentGroup = group;
+                    currentUsername = creatorName;
+                    showGroupInterface();
+                    showSuccess('Group trip created successfully!');
+                } else {
+                    const error = await response.json();
+                    showError('Failed to create group: ' + error.detail);
+                }
+            } catch (error) {
+                showError('Error creating group: ' + error.message);
+            }
+        }
+
+        // Join existing group
+        async function joinGroup() {
+            const inviteCode = document.getElementById('invitation-code').value;
+            const userName = document.getElementById('join-name').value;
+
+            if (!inviteCode || !userName) {
+                alert('Please enter invitation code and your name');
+                return;
+            }
+
+            // First, we need to find the group by invitation code
+            // This would typically require a search endpoint, but for now we'll use a mock approach
+            try {
+                // Mock group ID for demo - in real implementation, you'd search by invite code
+                const groupId = 'demo-group-id';
+                
+                const response = await fetch(`/api/trip/group/${groupId}/join`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: currentUserId,
+                        username: userName,
+                        invitation_code: inviteCode
+                    })
+                });
+
+                if (response.ok) {
+                    currentUsername = userName;
+                    // Load group details
+                    loadGroupDetails(groupId);
+                    showSuccess('Successfully joined the group!');
+                } else {
+                    const error = await response.json();
+                    showError('Failed to join group: ' + error.detail);
+                }
+            } catch (error) {
+                showError('Error joining group: ' + error.message);
+            }
+        }
+
+        // Load group details
+        async function loadGroupDetails(groupId) {
+            try {
+                const response = await fetch(`/api/trip/group/${groupId}`);
+                if (response.ok) {
+                    currentGroup = await response.json();
+                    showGroupInterface();
+                    loadGroupLocations();
+                }
+            } catch (error) {
+                showError('Error loading group details: ' + error.message);
+            }
+        }
+
+        // Show group interface
+        function showGroupInterface() {
+            document.getElementById('create-group-section').style.display = 'none';
+            document.getElementById('preferences-section').style.display = 'block';
+            document.getElementById('add-location-section').style.display = 'block';
+            document.getElementById('locations-section').style.display = 'block';
+            document.getElementById('group-info').style.display = 'block';
+            document.getElementById('drop-zone').style.display = 'block';
+
+            // Update group info
+            document.getElementById('group-title').textContent = currentGroup.group_name;
+            document.getElementById('group-details').textContent = 
+                `${currentGroup.destination_city} • ${currentGroup.trip_dates.start_date} to ${currentGroup.trip_dates.end_date}`;
+            
+            // Update member list
+            const memberList = document.getElementById('member-list');
+            memberList.innerHTML = '';
+            currentGroup.member_ids.forEach(memberId => {
+                const memberTag = document.createElement('div');
+                memberTag.className = 'member-tag';
+                memberTag.textContent = memberId === currentGroup.creator_id ? 'Creator' : 'Member';
+                memberList.appendChild(memberTag);
+            });
+        }
+
+        // Save user preferences
+        async function savePreferences() {
+            const interests = Array.from(document.querySelectorAll('#interests-checkboxes input:checked'))
+                .map(cb => cb.value);
+            const activityLevel = document.getElementById('activity-level').value;
+            const budgetRange = document.getElementById('budget-range').value;
+
+            try {
+                const response = await fetch('/api/user/preferences', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: currentUserId,
+                        username: currentUsername,
+                        interest_types: interests,
+                        activity_level: activityLevel,
+                        budget_range: budgetRange,
+                        time_preferences: ['afternoon'],
+                        location_preferences: ['mixed']
+                    })
+                });
+
+                if (response.ok) {
+                    showSuccess('Preferences saved successfully!');
+                } else {
+                    const error = await response.json();
+                    showError('Failed to save preferences: ' + error.detail);
+                }
+            } catch (error) {
+                showError('Error saving preferences: ' + error.message);
+            }
+        }
+
+        // Add location to group
+        async function addLocation() {
+            const name = document.getElementById('location-name').value;
+            const type = document.getElementById('location-type').value;
+            const description = document.getElementById('location-description').value;
+            const tags = document.getElementById('location-tags').value.split(',').map(t => t.trim());
+
+            if (!name || !description) {
+                alert('Please enter location name and description');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/trip/group/${currentGroup.group_id}/locations?user_id=${currentUserId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        location_name: name,
+                        location_type: type,
+                        description: description,
+                        coordinates: [0, 0], // Mock coordinates
+                        tags: tags,
+                        rating: 4.0,
+                        price_range: '$$',
+                        duration_hours: 2.0,
+                        best_time: ['afternoon']
+                    })
+                });
+
+                if (response.ok) {
+                    // Clear form
+                    document.getElementById('location-name').value = '';
+                    document.getElementById('location-description').value = '';
+                    document.getElementById('location-tags').value = '';
+                    
+                    loadGroupLocations();
+                    showSuccess('Location added successfully!');
+                } else {
+                    const error = await response.json();
+                    showError('Failed to add location: ' + error.detail);
+                }
+            } catch (error) {
+                showError('Error adding location: ' + error.message);
+            }
+        }
+
+        // Load group locations
+        async function loadGroupLocations() {
+            try {
+                const response = await fetch(`/api/trip/group/${currentGroup.group_id}/locations`);
+                if (response.ok) {
+                    const data = await response.json();
+                    groupLocations = data.locations;
+                    displayLocations();
+                }
+            } catch (error) {
+                showError('Error loading locations: ' + error.message);
+            }
+        }
+
+        // Display locations
+        function displayLocations() {
+            const locationsList = document.getElementById('locations-list');
+            locationsList.innerHTML = '';
+
+            groupLocations.forEach(location => {
+                const locationItem = document.createElement('div');
+                locationItem.className = 'location-item';
+                locationItem.draggable = true;
+                locationItem.dataset.locationId = location.location_id;
+
+                locationItem.innerHTML = `
+                    <h5>${location.name}</h5>
+                    <p>${location.description}</p>
+                    <div class="location-tags">
+                        ${location.tags.map(tag => `<span class="location-tag">${tag}</span>`).join('')}
+                    </div>
+                `;
+
+                locationItem.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', location.location_id);
+                    this.classList.add('dragging');
+                });
+
+                locationItem.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                });
+
+                locationsList.appendChild(locationItem);
+            });
+        }
+
+        // Generate AI plan
+        async function generatePlan() {
+            if (!currentGroup) return;
+
+            try {
+                document.getElementById('ai-recommendations').style.display = 'block';
+                document.getElementById('recommendations-content').innerHTML = '<div class="loading">🤖 AI is analyzing your group preferences and generating the perfect itinerary...</div>';
+
+                const response = await fetch('/api/group/plan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        group_id: currentGroup.group_id,
+                        max_locations_per_day: 4,
+                        include_alternatives: false,
+                        optimization_focus: 'balanced'
+                    })
+                });
+
+                if (response.ok) {
+                    const plan = await response.json();
+                    displayItinerary(plan.itinerary);
+                    displayRecommendations(plan);
+                } else {
+                    const error = await response.json();
+                    document.getElementById('recommendations-content').innerHTML = 
+                        `<div class="error">Failed to generate plan: ${error.detail}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('recommendations-content').innerHTML = 
+                    `<div class="error">Error generating plan: ${error.message}</div>`;
+            }
+        }
+
+        // Display itinerary
+        function displayItinerary(itinerary) {
+            document.getElementById('itinerary-section').style.display = 'block';
+            const content = document.getElementById('itinerary-content');
+            
+            content.innerHTML = itinerary.map(day => `
+                <div class="day-item">
+                    <div class="day-header">Day ${day.day} - ${day.date}</div>
+                    <div class="day-locations">
+                        ${day.locations.map(loc => `
+                            <div class="day-location">
+                                <strong>${loc.name}</strong> (${loc.duration_hours}h)
+                                <br><small>${loc.type}</small>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <small>Total time: ${day.total_duration}h</small>
+                </div>
+            `).join('');
+        }
+
+        // Display AI recommendations
+        function displayRecommendations(plan) {
+            const content = document.getElementById('recommendations-content');
+            
+            content.innerHTML = `
+                <div class="recommendation-item">
+                    <strong>Confidence Score:</strong> ${(plan.confidence_score * 100).toFixed(1)}%
+                </div>
+                <div class="recommendation-item">
+                    <strong>Group Compatibility:</strong> 
+                    ${plan.compromise_analysis.consensus_strength > 0.7 ? 'Excellent' : 
+                      plan.compromise_analysis.consensus_strength > 0.4 ? 'Good' : 'Needs Discussion'}
+                </div>
+                <div class="recommendation-item">
+                    <strong>Top Group Interests:</strong>
+                    ${plan.compromise_analysis.top_interests?.map(([interest, score]) => 
+                        `${interest} (${score} votes)`).join(', ') || 'No common interests identified'}
+                </div>
+                <div class="recommendation-item">
+                    <strong>Recommended Activity Level:</strong> ${plan.compromise_analysis.activity_level}
+                </div>
+                <div class="recommendation-item">
+                    <strong>Budget Range:</strong> ${plan.compromise_analysis.budget_range}
+                </div>
+            `;
+        }
+
+        // Analyze group preferences
+        async function analyzeGroup() {
+            try {
+                const response = await fetch(`/api/group/${currentGroup.group_id}/analysis`);
+                if (response.ok) {
+                    const analysis = await response.json();
+                    showAnalysisModal(analysis);
+                }
+            } catch (error) {
+                showError('Error analyzing group: ' + error.message);
+            }
+        }
+
+        // Share group
+        async function shareGroup() {
+            try {
+                const response = await fetch(`/api/trip/group/${currentGroup.group_id}/share`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('share-section').style.display = 'block';
+                    document.getElementById('share-url').value = window.location.origin + data.full_url;
+                }
+            } catch (error) {
+                showError('Error creating share link: ' + error.message);
+            }
+        }
+
+        // Copy share link
+        function copyShareLink() {
+            const shareUrl = document.getElementById('share-url');
+            shareUrl.select();
+            document.execCommand('copy');
+            showSuccess('Share link copied to clipboard!');
+        }
+
+        // Setup drag and drop
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('drag-over');
+            });
+
+            dropZone.addEventListener('dragleave', function() {
+                this.classList.remove('drag-over');
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+                
+                const locationId = e.dataTransfer.getData('text/plain');
+                const location = groupLocations.find(loc => loc.location_id === locationId);
+                
+                if (location) {
+                    showSuccess(`Added ${location.name} to itinerary!`);
+                    // Here you could add logic to build custom itinerary
+                }
+            });
+        }
+
+        // Utility functions
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                document.body.removeChild(errorDiv);
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                document.body.removeChild(successDiv);
+            }, 3000);
+        }
+
+        function showAnalysisModal(analysis) {
+            // Simple analysis display - could be enhanced with a proper modal
+            alert(`Group Analysis:\n\n` +
+                  `Member Count: ${analysis.analysis.member_count}\n` +
+                  `Consensus Strength: ${(analysis.analysis.consensus_strength * 100).toFixed(1)}%\n` +
+                  `Top Interests: ${analysis.analysis.top_interests?.map(([interest, score]) => 
+                      `${interest} (${score})`).join(', ') || 'None'}\n` +
+                  `Activity Level: ${analysis.analysis.activity_level}\n` +
+                  `Budget Range: ${analysis.analysis.budget_range}\n\n` +
+                  `Recommendations:\n${analysis.recommendations.join('\n')}`);
+        }
+    </script>
+</body>
+</html>
