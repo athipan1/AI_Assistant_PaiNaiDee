@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaiNaiDee AI - 3D World Demo | ผู้ช่วย AI โลก 3D</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        .sidebar {
+            width: 350px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        
+        .main-content {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #ffdd59;
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+        
+        .header p {
+            color: #ccc;
+            margin: 0;
+            font-size: 14px;
+        }
+        
+        .demo-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .demo-section h3 {
+            color: #ffdd59;
+            margin-top: 0;
+        }
+        
+        .location-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .location-item {
+            padding: 15px;
+            background: rgba(255, 221, 89, 0.1);
+            border: 2px solid rgba(255, 221, 89, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .location-item:hover {
+            background: rgba(255, 221, 89, 0.3);
+            border-color: rgba(255, 221, 89, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .location-item.active {
+            background: rgba(255, 221, 89, 0.4);
+            border-color: #ffdd59;
+        }
+        
+        .emoji {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .btn {
+            background: #ffdd59;
+            color: #333;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin: 5px 0;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #ffc107;
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0px);
+        }
+        
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .status-display {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #ffdd59;
+        }
+        
+        .ai-character {
+            width: 200px;
+            height: 300px;
+            background: linear-gradient(180deg, #4ecdc4, #44a08d);
+            border-radius: 50px;
+            position: relative;
+            margin: 20px auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .ai-character::before {
+            content: '🤖';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+        
+        .speech-bubble {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 15px 20px;
+            border-radius: 20px;
+            position: relative;
+            margin: 20px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 10px solid transparent;
+            border-top-color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .feature-highlight {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid rgba(76, 175, 80, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .feature-highlight h4 {
+            color: #4CAF50;
+            margin: 0 0 10px 0;
+        }
+        
+        .demo-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffdd59;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #ccc;
+        }
+        
+        .language-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 221, 89, 0.9);
+            color: #333;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <button class="language-toggle" onclick="toggleLanguage()">
+        <span id="langIcon">🌐</span> <span id="langText">ไทย</span>
+    </button>
+    
+    <div class="container">
+        <div class="sidebar">
+            <div class="header">
+                <h1>🌏 PaiNaiDee 3D World</h1>
+                <p id="subtitle">AI Tourism Assistant in Virtual 3D World</p>
+            </div>
+            
+            <div class="demo-section">
+                <h3 id="locationsTitle">🏝️ Tourist Locations</h3>
+                <div class="location-grid">
+                    <div class="location-item" onclick="visitLocation('koh-samui')" data-location="koh-samui">
+                        <span class="emoji">🏝️</span>
+                        <span id="loc-koh-samui">Koh Samui</span>
+                    </div>
+                    <div class="location-item" onclick="visitLocation('temple')" data-location="temple">
+                        <span class="emoji">🏛️</span>
+                        <span id="loc-temple">Buddhist Temple</span>
+                    </div>
+                    <div class="location-item" onclick="visitLocation('market')" data-location="market">
+                        <span class="emoji">🛒</span>
+                        <span id="loc-market">Floating Market</span>
+                    </div>
+                    <div class="location-item" onclick="visitLocation('beach')" data-location="beach">
+                        <span class="emoji">🏖️</span>
+                        <span id="loc-beach">Tropical Beach</span>
+                    </div>
+                    <div class="location-item" onclick="visitLocation('restaurant')" data-location="restaurant">
+                        <span class="emoji">🍜</span>
+                        <span id="loc-restaurant">Thai Restaurant</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <h3 id="actionsTitle">🤖 AI Actions</h3>
+                <div class="btn-grid">
+                    <button class="btn" onclick="performAction('greet')">👋 <span id="btn-greet">Greet</span></button>
+                    <button class="btn" onclick="performAction('dance')">💃 <span id="btn-dance">Dance</span></button>
+                    <button class="btn" onclick="performAction('point')">👉 <span id="btn-point">Point</span></button>
+                    <button class="btn" onclick="performAction('wave')">🌊 <span id="btn-wave">Wave</span></button>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <h3 id="featuresTitle">✨ 3D World Features</h3>
+                <div class="feature-highlight">
+                    <h4 id="multiUserTitle">👥 Multi-User Support</h4>
+                    <p id="multiUserDesc">Multiple users can explore the 3D world together in real-time</p>
+                </div>
+                <div class="feature-highlight">
+                    <h4 id="realTimeTitle">⚡ Real-time AI Interaction</h4>
+                    <p id="realTimeDesc">AI responds instantly to user commands and navigates the 3D world</p>
+                </div>
+                <div class="feature-highlight">
+                    <h4 id="bilingualTitle">🌐 Bilingual Support</h4>
+                    <p id="bilingualDesc">Full Thai and English language support with cultural context</p>
+                </div>
+            </div>
+            
+            <div class="demo-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="userCount">1</span>
+                    <span class="stat-label" id="usersLabel">Active Users</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">5</span>
+                    <span class="stat-label" id="locationsLabel">Locations</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="actionCount">0</span>
+                    <span class="stat-label" id="actionsLabel">AI Actions</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div style="text-align: center; max-width: 600px;">
+                <div class="ai-character" id="aiCharacter"></div>
+                
+                <div class="speech-bubble" id="speechBubble">
+                    <span id="aiSpeechText">Welcome to PaiNaiDee 3D World! Click on any location to explore Thailand with your AI assistant.</span>
+                </div>
+                
+                <div class="status-display">
+                    <h4 id="statusTitle">🚀 3D World Status</h4>
+                    <p id="statusText">System ready. Click locations to navigate AI assistant.</p>
+                    <p><strong id="currentLocationLabel">Current Location:</strong> <span id="currentLocation">Starting Point</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'en';
+        let actionCount = 0;
+        let currentLocationId = 'start';
+        
+        // Translations
+        const translations = {
+            en: {
+                subtitle: "AI Tourism Assistant in Virtual 3D World",
+                locationsTitle: "🏝️ Tourist Locations",
+                actionsTitle: "🤖 AI Actions",
+                featuresTitle: "✨ 3D World Features",
+                multiUserTitle: "👥 Multi-User Support",
+                multiUserDesc: "Multiple users can explore the 3D world together in real-time",
+                realTimeTitle: "⚡ Real-time AI Interaction",
+                realTimeDesc: "AI responds instantly to user commands and navigates the 3D world",
+                bilingualTitle: "🌐 Bilingual Support",
+                bilingualDesc: "Full Thai and English language support with cultural context",
+                statusTitle: "🚀 3D World Status",
+                statusText: "System ready. Click locations to navigate AI assistant.",
+                currentLocationLabel: "Current Location:",
+                usersLabel: "Active Users",
+                locationsLabel: "Locations",
+                actionsLabel: "AI Actions",
+                "btn-greet": "Greet",
+                "btn-dance": "Dance",
+                "btn-point": "Point",
+                "btn-wave": "Wave",
+                "loc-koh-samui": "Koh Samui",
+                "loc-temple": "Buddhist Temple",
+                "loc-market": "Floating Market",
+                "loc-beach": "Tropical Beach",
+                "loc-restaurant": "Thai Restaurant",
+                currentLocation: "Starting Point",
+                aiSpeechText: "Welcome to PaiNaiDee 3D World! Click on any location to explore Thailand with your AI assistant."
+            },
+            th: {
+                subtitle: "ผู้ช่วย AI ด้านการท่องเที่ยวในโลก 3D เสมือนจริง",
+                locationsTitle: "🏝️ สถานที่ท่องเที่ยว",
+                actionsTitle: "🤖 การกระทำของ AI",
+                featuresTitle: "✨ คุณสมบัติโลก 3D",
+                multiUserTitle: "👥 รองรับผู้ใช้หลายคน",
+                multiUserDesc: "ผู้ใช้หลายคนสามารถสำรวจโลก 3D ร่วมกันแบบเรียลไทม์",
+                realTimeTitle: "⚡ การโต้ตอบ AI แบบเรียลไทม์",
+                realTimeDesc: "AI ตอบสนองทันทีต่อคำสั่งของผู้ใช้และนำทางในโลก 3D",
+                bilingualTitle: "🌐 รองรับสองภาษา",
+                bilingualDesc: "รองรับภาษาไทยและอังกฤษอย่างเต็มรูปแบบพร้อมบริบททางวัฒนธรรม",
+                statusTitle: "🚀 สถานะโลก 3D",
+                statusText: "ระบบพร้อม คลิกที่ตำแหน่งเพื่อนำทางผู้ช่วย AI",
+                currentLocationLabel: "ตำแหน่งปัจจุบัน:",
+                usersLabel: "ผู้ใช้ที่ใช้งาน",
+                locationsLabel: "สถานที่",
+                actionsLabel: "การกระทำ AI",
+                "btn-greet": "ทักทาย",
+                "btn-dance": "เต้นรำ",
+                "btn-point": "ชี้",
+                "btn-wave": "โบก",
+                "loc-koh-samui": "เกาะสมุย",
+                "loc-temple": "วัดพุทธ",
+                "loc-market": "ตลาดน้ำ",
+                "loc-beach": "ชายหาดเขตร้อน",
+                "loc-restaurant": "ร้านอาหารไทย",
+                currentLocation: "จุดเริ่มต้น",
+                aiSpeechText: "ยินดีต้อนรับสู่โลก 3D ไปไหนดี! คลิกที่สถานที่ใดก็ได้เพื่อสำรวจประเทศไทยกับผู้ช่วย AI ของคุณ"
+            }
+        };
+        
+        // Location data
+        const locations = {
+            'koh-samui': {
+                name: { en: 'Koh Samui Island', th: 'เกาะสมุย' },
+                description: { en: 'Beautiful tropical island with pristine beaches', th: 'เกาะเขตร้อนที่สวยงามพร้อมชายหาดบริสุทธิ์' }
+            },
+            'temple': {
+                name: { en: 'Buddhist Temple', th: 'วัดพุทธ' },
+                description: { en: 'Sacred Buddhist temple with ancient architecture', th: 'วัดพุทธศักดิ์สิทธิ์พร้อมสถาปัตยกรรมโบราณ' }
+            },
+            'market': {
+                name: { en: 'Floating Market', th: 'ตลาดน้ำ' },
+                description: { en: 'Traditional floating market with local food and crafts', th: 'ตลาดน้ำแบบดั้งเดิมพร้อมอาหารและหัตถกรรมท้องถิ่น' }
+            },
+            'beach': {
+                name: { en: 'Tropical Beach', th: 'ชายหาดเขตร้อน' },
+                description: { en: 'Pristine tropical beach with crystal clear water', th: 'ชายหาดเขตร้อนบริสุทธิ์พร้อมน้ำใสคริสตัล' }
+            },
+            'restaurant': {
+                name: { en: 'Thai Restaurant', th: 'ร้านอาหารไทย' },
+                description: { en: 'Authentic Thai restaurant with traditional cuisine', th: 'ร้านอาหารไทยแท้พร้อมอาหารแบบดั้งเดิม' }
+            }
+        };
+        
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'th' : 'en';
+            document.getElementById('langText').textContent = currentLanguage === 'en' ? 'ไทย' : 'ENG';
+            updateLanguage();
+        }
+        
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            
+            // Update all translatable elements
+            Object.keys(t).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = t[key];
+                }
+            });
+        }
+        
+        function visitLocation(locationId) {
+            // Remove active class from all locations
+            document.querySelectorAll('.location-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked location
+            document.querySelector(`[data-location="${locationId}"]`).classList.add('active');
+            
+            const location = locations[locationId];
+            currentLocationId = locationId;
+            
+            // Update AI speech
+            const message = `Now visiting ${location.name[currentLanguage]}. ${location.description[currentLanguage]}`;
+            document.getElementById('aiSpeechText').textContent = message;
+            
+            // Update current location
+            document.getElementById('currentLocation').textContent = location.name[currentLanguage];
+            
+            // Animate AI character
+            const aiCharacter = document.getElementById('aiCharacter');
+            aiCharacter.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                aiCharacter.style.transform = 'scale(1)';
+            }, 500);
+            
+            // API call to backend
+            navigateAI(locationId);
+            
+            console.log(`Navigating AI to ${locationId}`);
+        }
+        
+        function performAction(actionType) {
+            actionCount++;
+            document.getElementById('actionCount').textContent = actionCount;
+            
+            const actions = {
+                greet: {
+                    en: "Hello! I'm your AI tourism assistant. How can I help you explore Thailand today?",
+                    th: "สวัสดีค่ะ! ฉันเป็นผู้ช่วย AI ด้านการท่องเที่ยว วันนี้ช่วยให้คุณสำรวจประเทศไทยได้อย่างไร?"
+                },
+                dance: {
+                    en: "Let me show you a traditional Thai dance! 💃",
+                    th: "ให้ฉันแสดงการเต้นรำแบบไทยให้ดูนะ! 💃"
+                },
+                point: {
+                    en: "I'm pointing to show you this interesting location!",
+                    th: "ฉันชี้เพื่อแสดงให้คุณเห็นสถานที่น่าสนใจนี้!"
+                },
+                wave: {
+                    en: "👋 Waving hello to all tourists visiting Thailand!",
+                    th: "👋 โบกมือทักทายนักท่องเที่ยวทุกคนที่มาเยือนประเทศไทย!"
+                }
+            };
+            
+            const message = actions[actionType][currentLanguage];
+            document.getElementById('aiSpeechText').textContent = message;
+            
+            // Animate AI character based on action
+            const aiCharacter = document.getElementById('aiCharacter');
+            switch(actionType) {
+                case 'dance':
+                    aiCharacter.style.animation = 'none';
+                    setTimeout(() => {
+                        aiCharacter.style.animation = 'float 0.5s ease-in-out infinite';
+                    }, 100);
+                    setTimeout(() => {
+                        aiCharacter.style.animation = 'float 3s ease-in-out infinite';
+                    }, 2000);
+                    break;
+                case 'greet':
+                case 'wave':
+                    aiCharacter.style.transform = 'scale(1.1) rotate(5deg)';
+                    setTimeout(() => {
+                        aiCharacter.style.transform = 'scale(1) rotate(-5deg)';
+                    }, 300);
+                    setTimeout(() => {
+                        aiCharacter.style.transform = 'scale(1)';
+                    }, 600);
+                    break;
+                case 'point':
+                    aiCharacter.style.transform = 'translateX(10px)';
+                    setTimeout(() => {
+                        aiCharacter.style.transform = 'translateX(0)';
+                    }, 500);
+                    break;
+            }
+            
+            // API call to backend
+            executeAIAction(actionType);
+            
+            console.log(`AI performing action: ${actionType}`);
+        }
+        
+        async function navigateAI(locationId) {
+            try {
+                const response = await fetch('/3d_world/ai/navigate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: 'navigate',
+                        target_location: locationId,
+                        language: currentLanguage
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('AI Navigation Response:', data);
+                
+                if (data.status === 'success' && data.ai_response) {
+                    setTimeout(() => {
+                        document.getElementById('aiSpeechText').textContent = data.ai_response.message;
+                    }, 1000);
+                }
+            } catch (error) {
+                console.error('Error navigating AI:', error);
+            }
+        }
+        
+        async function executeAIAction(actionType) {
+            try {
+                const response = await fetch('/3d_world/ai/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: actionType,
+                        language: currentLanguage
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('AI Action Response:', data);
+            } catch (error) {
+                console.error('Error executing AI action:', error);
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateLanguage();
+            
+            // Auto-update user count simulation
+            setInterval(() => {
+                const count = Math.floor(Math.random() * 5) + 1;
+                document.getElementById('userCount').textContent = count;
+            }, 30000);
+        });
+        
+        // Add some interactivity to the AI character
+        document.getElementById('aiCharacter').addEventListener('click', () => {
+            performAction('greet');
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (event) => {
+            switch(event.code) {
+                case 'Space':
+                    event.preventDefault();
+                    performAction('greet');
+                    break;
+                case 'KeyD':
+                    if (event.ctrlKey) {
+                        event.preventDefault();
+                        performAction('dance');
+                    }
+                    break;
+                case 'KeyL':
+                    if (event.ctrlKey) {
+                        event.preventDefault();
+                        toggleLanguage();
+                    }
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>

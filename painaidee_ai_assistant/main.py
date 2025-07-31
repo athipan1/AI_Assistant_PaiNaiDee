@@ -36,6 +36,7 @@ try:
     from api.partner_dashboard_routes import router as partner_dashboard_router
     from api.auth_middleware import APIKeyAuthMiddleware
     from api.enhanced_avatar_routes import create_enhanced_avatar_routes
+    from api.world_3d_routes import create_3d_world_routes
     HAS_AI_ROUTES = True
     HAS_TOURISM_ROUTES = True
     HAS_LOCATION_ROUTES = True
@@ -49,6 +50,7 @@ try:
     HAS_GROUP_TRIP_ROUTES = True
     HAS_PUBLIC_API_ROUTES = True
     HAS_ENHANCED_AVATAR_ROUTES = True
+    HAS_3D_WORLD_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
@@ -125,10 +127,10 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Startup event to initialize plugins
+# Startup event to initialize plugins and Socket.IO
 @app.on_event("startup")
 async def startup_event():
-    """Initialize plugins on startup"""
+    """Initialize plugins and Socket.IO on startup"""
     if HAS_PLUGIN_ROUTES:
         try:
             from api.plugin_routes import initialize_default_plugins
@@ -138,6 +140,14 @@ async def startup_event():
             print(f"⚠️ Plugin system initialization failed: {e}")
     else:
         print("⚠️ Plugin system not available")
+    
+    # Initialize Socket.IO for 3D World
+    try:
+        from api.socketio_3d_world import init_socketio_with_fastapi
+        socket_manager = init_socketio_with_fastapi(app)
+        print("✅ Socket.IO for 3D World initialized successfully")
+    except Exception as e:
+        print(f"⚠️ Socket.IO initialization failed: {e}")
 
 # Configure CORS
 app.add_middleware(
@@ -250,6 +260,24 @@ try:
 except Exception as avatar_e:
     print(f"Warning: Enhanced Avatar routes failed to load: {avatar_e}")
 
+# Add 3D World routes
+try:
+    from api.world_3d_routes import create_3d_world_routes
+    world_3d_router = create_3d_world_routes()
+    app.include_router(world_3d_router, tags=["3D World"])
+    print("INFO: 3D World API routes added")
+except Exception as world_e:
+    print(f"Warning: 3D World routes failed to load: {world_e}")
+
+# Add WebXR routes
+try:
+    from api.webxr_routes import create_webxr_routes
+    webxr_router = create_webxr_routes()
+    app.include_router(webxr_router, tags=["WebXR/AR"])
+    print("INFO: WebXR/AR API routes added")
+except Exception as webxr_e:
+    print(f"Warning: WebXR routes failed to load: {webxr_e}")
+
 # Mount static files for 3D viewer
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -300,6 +328,27 @@ async def gesture_viewer():
                 "gesture_config": "/gesture/config",
                 "custom_gestures": "/gesture/custom/list",
                 "performance_stats": "/gesture/performance"
+            }
+        }
+
+@app.get("/3d_world")
+async def world_3d_viewer():
+    """Serve the 3D World viewer interface"""
+    world_3d_path = "static/3d_world_demo.html"
+    
+    if os.path.exists(world_3d_path):
+        return FileResponse(world_3d_path)
+    else:
+        return {
+            "message": "3D World Viewer",
+            "status": "available",
+            "endpoints": {
+                "locations": "/3d_world/locations",
+                "ai_navigate": "/3d_world/ai/navigate",
+                "ai_action": "/3d_world/ai/action",
+                "ai_status": "/3d_world/ai/status",
+                "active_users": "/3d_world/users/active",
+                "websocket": "/3d_world/ws/{user_id}"
             }
         }
 
