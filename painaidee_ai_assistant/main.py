@@ -35,6 +35,7 @@ try:
     from api.public_api_routes import router as public_api_router
     from api.partner_dashboard_routes import router as partner_dashboard_router
     from api.auth_middleware import APIKeyAuthMiddleware
+    from api.enhanced_avatar_routes import create_enhanced_avatar_routes
     HAS_AI_ROUTES = True
     HAS_TOURISM_ROUTES = True
     HAS_LOCATION_ROUTES = True
@@ -47,6 +48,7 @@ try:
     HAS_MULTIUSER_ROUTES = True
     HAS_GROUP_TRIP_ROUTES = True
     HAS_PUBLIC_API_ROUTES = True
+    HAS_ENHANCED_AVATAR_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
@@ -65,6 +67,7 @@ except ImportError as e:
     HAS_RAG_ROUTES = False
     HAS_PLUGIN_ROUTES = False
     HAS_GROUP_TRIP_ROUTES = False
+    HAS_ENHANCED_AVATAR_ROUTES = False
     from api.model_routes import create_model_routes, model_selector
     from api.versioning_routes import create_versioning_routes
     from api.cdn_routes import create_cdn_routes
@@ -237,6 +240,15 @@ if HAS_GROUP_TRIP_ROUTES:
 if HAS_PUBLIC_API_ROUTES:
     app.include_router(public_api_router, tags=["Public API"])
     app.include_router(partner_dashboard_router, tags=["Partner Dashboard"])
+
+# Add enhanced avatar routes
+try:
+    from api.enhanced_avatar_routes import create_enhanced_avatar_routes
+    enhanced_avatar_router = create_enhanced_avatar_routes()
+    app.include_router(enhanced_avatar_router, tags=["Enhanced Avatar"])
+    print("INFO: Enhanced Avatar API routes added")
+except Exception as avatar_e:
+    print(f"Warning: Enhanced Avatar routes failed to load: {avatar_e}")
 
 # Mount static files for 3D viewer
 app.mount("/static", StaticFiles(directory="static"), name="static")
