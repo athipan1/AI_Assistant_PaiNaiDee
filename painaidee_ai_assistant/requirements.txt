@@ -44,9 +44,21 @@ typing-extensions==4.8.0
 # Optional SERP API (uncomment if needed)
 # google-search-results==2.4.2
 
+# Database support
+sqlalchemy==2.0.25
+psycopg2-binary==2.9.9
+alembic==1.13.1
+
+# Memory and vector store
+redis==5.0.1
+pinecone-client==2.2.4
+
+# LangChain memory
+langchain-community>=0.0.12
+
 # Development and testing (optional)
-# pytest==7.4.3
-# pytest-asyncio==0.21.1
+pytest==7.4.3
+pytest-asyncio==0.21.1
 
 # Advanced AI Models (uncomment when needed)
 # NOTE: Requires C/C++ compiler setup in Dockerfile for successful installation

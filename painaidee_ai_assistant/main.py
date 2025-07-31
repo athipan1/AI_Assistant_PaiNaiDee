@@ -30,6 +30,7 @@ try:
     from api.rag_routes import create_rag_routes
     from api.plugin_routes import create_plugin_routes
     from api.multiuser_routes import create_multiuser_routes
+    from api.personalization_routes import create_personalization_routes, create_personalization_integration_routes
     HAS_AI_ROUTES = True
     HAS_TOURISM_ROUTES = True
     HAS_EMOTION_ROUTES = True
@@ -39,6 +40,7 @@ try:
     HAS_RAG_ROUTES = True
     HAS_PLUGIN_ROUTES = True
     HAS_MULTIUSER_ROUTES = True
+    HAS_PERSONALIZATION_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
@@ -90,6 +92,14 @@ except ImportError as e:
     except ImportError as plugin_e:
         HAS_PLUGIN_ROUTES = False
         print(f"Warning: Plugin routes not available: {plugin_e}")
+    
+    try:
+        from api.personalization_routes import create_personalization_routes, create_personalization_integration_routes
+        HAS_PERSONALIZATION_ROUTES = True
+    except ImportError as personalization_e:
+        HAS_PERSONALIZATION_ROUTES = False
+        print(f"Warning: Personalization routes not available: {personalization_e}")
+    
     performance_router = None
 
 # Load environment variables
@@ -195,6 +205,14 @@ if performance_router:
 # Add multi-user collaboration routes
 if HAS_MULTIUSER_ROUTES:
     create_multiuser_routes(app)
+
+# Add personalization routes
+if HAS_PERSONALIZATION_ROUTES:
+    personalization_router = create_personalization_routes()
+    app.include_router(personalization_router, tags=["User Personalization"])
+    
+    personalization_ai_router = create_personalization_integration_routes()
+    app.include_router(personalization_ai_router, tags=["AI Personalization"])
 
 # Mount static files for 3D viewer
 app.mount("/static", StaticFiles(directory="static"), name="static")
