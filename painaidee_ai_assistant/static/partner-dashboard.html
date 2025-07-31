@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaiNaiDee Partner Dashboard</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .api-key-display {
+            font-family: 'Courier New', monospace;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 8px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:8000';
+
+        // Utility function to make API calls
+        const apiCall = async (endpoint, options = {}) => {
+            const url = `${API_BASE_URL}${endpoint}`;
+            const response = await fetch(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                ...options
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'API call failed');
+            }
+            
+            return await response.json();
+        };
+
+        // Registration Component
+        const RegistrationForm = ({ onRegisterSuccess }) => {
+            const [formData, setFormData] = useState({
+                name: '',
+                email: '',
+                company: '',
+                tier: 'FREE'
+            });
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setError('');
+
+                try {
+                    const result = await apiCall('/partner/register', {
+                        method: 'POST',
+                        body: JSON.stringify(formData)
+                    });
+                    onRegisterSuccess(result);
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            return (
+                <div className="min-h-screen flex items-center justify-center gradient-bg py-12 px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-md w-full space-y-8">
+                        <div>
+                            <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+                                Register for PaiNaiDee API
+                            </h2>
+                            <p className="mt-2 text-center text-sm text-gray-200">
+                                Get access to our tourism AI assistant API
+                            </p>
+                        </div>
+                        <form className="mt-8 space-y-6 bg-white p-8 rounded-lg card-shadow" onSubmit={handleSubmit}>
+                            {error && (
+                                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                                    {error}
+                                </div>
+                            )}
+                            
+                            <div className="space-y-4">
+                                <input
+                                    type="text"
+                                    required
+                                    className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                    placeholder="Full Name"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                />
+                                <input
+                                    type="email"
+                                    required
+                                    className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                    placeholder="Email Address"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                />
+                                <input
+                                    type="text"
+                                    required
+                                    className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                    placeholder="Company Name"
+                                    value={formData.company}
+                                    onChange={(e) => setFormData({...formData, company: e.target.value})}
+                                />
+                                <select
+                                    className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                    value={formData.tier}
+                                    onChange={(e) => setFormData({...formData, tier: e.target.value})}
+                                >
+                                    <option value="free">Free Tier</option>
+                                    <option value="basic">Basic Tier</option>
+                                    <option value="premium">Premium Tier</option>
+                                    <option value="enterprise">Enterprise Tier</option>
+                                </select>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                            >
+                                {loading ? 'Registering...' : 'Register'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            );
+        };
+
+        // Success Component
+        const RegistrationSuccess = ({ registrationData, onContinue }) => {
+            const [copied, setCopied] = useState(false);
+
+            const copyApiKey = () => {
+                navigator.clipboard.writeText(registrationData.api_key);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            };
+
+            return (
+                <div className="min-h-screen flex items-center justify-center gradient-bg py-12 px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-2xl w-full space-y-8">
+                        <div className="bg-white p-8 rounded-lg card-shadow">
+                            <div className="text-center mb-6">
+                                <i className="fas fa-check-circle text-green-500 text-6xl mb-4"></i>
+                                <h2 className="text-3xl font-extrabold text-gray-900">Registration Successful!</h2>
+                                <p className="mt-2 text-gray-600">Your PaiNaiDee API account has been created</p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Partner ID</label>
+                                    <div className="api-key-display">{registrationData.partner_id}</div>
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">API Key</label>
+                                    <div className="flex items-center space-x-2">
+                                        <div className="api-key-display flex-1">{registrationData.api_key}</div>
+                                        <button
+                                            onClick={copyApiKey}
+                                            className="bg-indigo-600 text-white px-3 py-2 rounded hover:bg-indigo-700"
+                                        >
+                                            {copied ? <i className="fas fa-check"></i> : <i className="fas fa-copy"></i>}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Company</label>
+                                        <div className="text-gray-900">{registrationData.company}</div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Tier</label>
+                                        <div className="text-gray-900 uppercase">{registrationData.tier}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
+                                <div className="flex">
+                                    <i className="fas fa-exclamation-triangle text-yellow-400 mt-1 mr-3"></i>
+                                    <div>
+                                        <h3 className="text-sm font-medium text-yellow-800">Important!</h3>
+                                        <p className="text-sm text-yellow-700 mt-1">
+                                            Save your API key securely. It won't be shown again. You'll need it to access the API and manage your account.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6 flex space-x-4">
+                                <button
+                                    onClick={onContinue}
+                                    className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700"
+                                >
+                                    Continue to Dashboard
+                                </button>
+                                <a
+                                    href="/docs"
+                                    target="_blank"
+                                    className="flex-1 bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700 text-center"
+                                >
+                                    View API Docs
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Dashboard Component
+        const Dashboard = ({ apiKey }) => {
+            const [partnerInfo, setPartnerInfo] = useState(null);
+            const [apiKeys, setApiKeys] = useState([]);
+            const [analytics, setAnalytics] = useState(null);
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState('');
+            const [newKeyName, setNewKeyName] = useState('');
+            const [showNewKeyForm, setShowNewKeyForm] = useState(false);
+
+            useEffect(() => {
+                loadDashboardData();
+            }, []);
+
+            const loadDashboardData = async () => {
+                try {
+                    setLoading(true);
+                    const headers = { 'X-Partner-Key': apiKey };
+                    
+                    const [info, keys, analytics] = await Promise.all([
+                        apiCall('/partner/info', { headers }),
+                        apiCall('/partner/api-keys', { headers }),
+                        apiCall('/partner/analytics', { headers })
+                    ]);
+                    
+                    setPartnerInfo(info);
+                    setApiKeys(keys);
+                    setAnalytics(analytics);
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const createApiKey = async () => {
+                try {
+                    const result = await apiCall('/partner/api-keys', {
+                        method: 'POST',
+                        headers: { 'X-Partner-Key': apiKey },
+                        body: JSON.stringify({ name: newKeyName })
+                    });
+                    
+                    alert(`New API Key Created: ${result.api_key}\n\nSave it securely - it won't be shown again!`);
+                    setNewKeyName('');
+                    setShowNewKeyForm(false);
+                    loadDashboardData();
+                } catch (err) {
+                    alert('Error creating API key: ' + err.message);
+                }
+            };
+
+            const revokeApiKey = async (keyId) => {
+                if (!confirm('Are you sure you want to revoke this API key? This action cannot be undone.')) {
+                    return;
+                }
+                
+                try {
+                    await apiCall(`/partner/api-keys/${keyId}`, {
+                        method: 'DELETE',
+                        headers: { 'X-Partner-Key': apiKey }
+                    });
+                    
+                    loadDashboardData();
+                } catch (err) {
+                    alert('Error revoking API key: ' + err.message);
+                }
+            };
+
+            if (loading) {
+                return (
+                    <div className="min-h-screen flex items-center justify-center">
+                        <div className="text-center">
+                            <i className="fas fa-spinner fa-spin text-4xl text-indigo-600 mb-4"></i>
+                            <p>Loading dashboard...</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (error) {
+                return (
+                    <div className="min-h-screen flex items-center justify-center">
+                        <div className="text-center text-red-600">
+                            <i className="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                            <p>{error}</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen bg-gray-100">
+                    {/* Header */}
+                    <header className="bg-white shadow">
+                        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                            <div className="flex justify-between items-center">
+                                <h1 className="text-3xl font-bold text-gray-900">PaiNaiDee Partner Dashboard</h1>
+                                <div className="text-sm text-gray-600">
+                                    {partnerInfo?.company} • {partnerInfo?.tier.toUpperCase()} Tier
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                        {/* Stats Overview */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                            <div className="bg-white p-6 rounded-lg card-shadow">
+                                <div className="flex items-center">
+                                    <i className="fas fa-key text-2xl text-indigo-600 mr-4"></i>
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-600">API Keys</p>
+                                        <p className="text-2xl font-bold text-gray-900">{analytics?.active_api_keys}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="bg-white p-6 rounded-lg card-shadow">
+                                <div className="flex items-center">
+                                    <i className="fas fa-chart-line text-2xl text-green-600 mr-4"></i>
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-600">Total Requests</p>
+                                        <p className="text-2xl font-bold text-gray-900">{analytics?.total_requests}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="bg-white p-6 rounded-lg card-shadow">
+                                <div className="flex items-center">
+                                    <i className="fas fa-clock text-2xl text-yellow-600 mr-4"></i>
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-600">This Hour</p>
+                                        <p className="text-2xl font-bold text-gray-900">{analytics?.current_period_usage?.requests_this_hour || 0}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="bg-white p-6 rounded-lg card-shadow">
+                                <div className="flex items-center">
+                                    <i className="fas fa-calendar-day text-2xl text-purple-600 mr-4"></i>
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-600">Today</p>
+                                        <p className="text-2xl font-bold text-gray-900">{analytics?.current_period_usage?.requests_this_day || 0}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* API Keys Management */}
+                        <div className="bg-white rounded-lg card-shadow mb-8">
+                            <div className="px-6 py-4 border-b border-gray-200">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-xl font-semibold text-gray-900">API Keys</h2>
+                                    <button
+                                        onClick={() => setShowNewKeyForm(!showNewKeyForm)}
+                                        className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+                                    >
+                                        <i className="fas fa-plus mr-2"></i>New Key
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            {showNewKeyForm && (
+                                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                                    <div className="flex space-x-4">
+                                        <input
+                                            type="text"
+                                            placeholder="API Key Name"
+                                            value={newKeyName}
+                                            onChange={(e) => setNewKeyName(e.target.value)}
+                                            className="flex-1 px-3 py-2 border border-gray-300 rounded"
+                                        />
+                                        <button
+                                            onClick={createApiKey}
+                                            disabled={!newKeyName}
+                                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
+                                        >
+                                            Create
+                                        </button>
+                                        <button
+                                            onClick={() => setShowNewKeyForm(false)}
+                                            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                            
+                            <div className="px-6 py-4">
+                                <div className="space-y-4">
+                                    {apiKeys.map(key => (
+                                        <div key={key.key_id} className="flex items-center justify-between p-4 border border-gray-200 rounded">
+                                            <div className="flex-1">
+                                                <h3 className="font-medium text-gray-900">{key.name}</h3>
+                                                <p className="text-sm text-gray-600">
+                                                    Created: {new Date(key.created_at).toLocaleDateString()} • 
+                                                    Usage: {key.usage_count} requests • 
+                                                    Status: <span className={`${key.status === 'active' ? 'text-green-600' : 'text-red-600'}`}>
+                                                        {key.status}
+                                                    </span>
+                                                </p>
+                                                <p className="text-xs text-gray-500">
+                                                    Limits: {key.requests_per_minute}/min, {key.requests_per_hour}/hour, {key.requests_per_day}/day
+                                                </p>
+                                            </div>
+                                            <div className="flex space-x-2">
+                                                {key.status === 'active' && (
+                                                    <button
+                                                        onClick={() => revokeApiKey(key.key_id)}
+                                                        className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+                                                    >
+                                                        Revoke
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Usage Analytics */}
+                        <div className="bg-white rounded-lg card-shadow">
+                            <div className="px-6 py-4 border-b border-gray-200">
+                                <h2 className="text-xl font-semibold text-gray-900">Usage Analytics</h2>
+                            </div>
+                            <div className="px-6 py-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <h3 className="font-medium text-gray-900 mb-2">Current Period Usage</h3>
+                                        <div className="space-y-2 text-sm">
+                                            <div className="flex justify-between">
+                                                <span>This Minute:</span>
+                                                <span>{analytics?.current_period_usage?.requests_this_minute || 0}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>This Hour:</span>
+                                                <span>{analytics?.current_period_usage?.requests_this_hour || 0}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>Today:</span>
+                                                <span>{analytics?.current_period_usage?.requests_this_day || 0}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>This Month:</span>
+                                                <span>{analytics?.current_period_usage?.requests_this_month || 0}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h3 className="font-medium text-gray-900 mb-2">Rate Limits</h3>
+                                        <div className="space-y-2 text-sm">
+                                            <div className="flex justify-between">
+                                                <span>Per Minute:</span>
+                                                <span>{analytics?.rate_limits?.requests_per_minute?.limit || 0}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>Per Hour:</span>
+                                                <span>{analytics?.rate_limits?.requests_per_hour?.limit || 0}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>Per Day:</span>
+                                                <span>{analytics?.rate_limits?.requests_per_day?.limit || 0}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>Per Month:</span>
+                                                <span>{analytics?.rate_limits?.requests_per_month?.limit || 0}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        // Main App Component
+        const App = () => {
+            const [stage, setStage] = useState('register'); // 'register', 'success', 'dashboard'
+            const [registrationData, setRegistrationData] = useState(null);
+
+            const handleRegisterSuccess = (data) => {
+                setRegistrationData(data);
+                setStage('success');
+            };
+
+            const handleContinueToDashboard = () => {
+                setStage('dashboard');
+            };
+
+            switch (stage) {
+                case 'register':
+                    return <RegistrationForm onRegisterSuccess={handleRegisterSuccess} />;
+                case 'success':
+                    return <RegistrationSuccess registrationData={registrationData} onContinue={handleContinueToDashboard} />;
+                case 'dashboard':
+                    return <Dashboard apiKey={registrationData.api_key} />;
+                default:
+                    return <RegistrationForm onRegisterSuccess={handleRegisterSuccess} />;
+            }
+        };
+
+        // Render the app
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

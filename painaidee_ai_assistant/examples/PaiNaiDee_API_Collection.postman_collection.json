@@ -1,0 +1,603 @@
+{
+  "info": {
+    "name": "PaiNaiDee Public API",
+    "description": "Comprehensive collection for testing PaiNaiDee Tourism AI Assistant API\n\n## Authentication\nAdd your API key to the Authorization header:\n`Authorization: Bearer painaidee_xxxxxxxxxxxxxxxx`\n\n## Rate Limits\n- Free: 10/min, 100/hour, 1K/day\n- Basic: 60/min, 1K/hour, 10K/day\n- Premium: 300/min, 5K/hour, 50K/day\n- Enterprise: 1K/min, 20K/hour, 200K/day\n\n## Support\napi@painaidee.com",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "painaidee-api-collection",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "patch": 0
+    }
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string",
+      "description": "Base URL for PaiNaiDee API"
+    },
+    {
+      "key": "api_key",
+      "value": "painaidee_your_api_key_here",
+      "type": "string",
+      "description": "Your PaiNaiDee API key"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{api_key}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Partner Management",
+      "description": "Partner registration and dashboard endpoints",
+      "item": [
+        {
+          "name": "Register New Partner",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"company\": \"Tourism Company Ltd\",\n  \"tier\": \"free\",\n  \"contact_info\": {\n    \"phone\": \"+66-123-456-789\",\n    \"website\": \"https://example.com\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/partner/register",
+              "host": ["{{base_url}}"],
+              "path": ["partner", "register"]
+            },
+            "description": "Register as a new partner to get API access"
+          },
+          "response": [
+            {
+              "name": "Successful Registration",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"company\": \"Tourism Company Ltd\",\n  \"tier\": \"free\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/partner/register",
+                  "host": ["{{base_url}}"],
+                  "path": ["partner", "register"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"partner_id\": \"uuid-here\",\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"company\": \"Tourism Company Ltd\",\n  \"tier\": \"free\",\n  \"api_key\": \"painaidee_xxxxxxxxxxxxxxxx\",\n  \"created_at\": \"2025-01-29T12:00:00Z\",\n  \"message\": \"Partner registered successfully! Save your API key securely - it won't be shown again.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Partner Info",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Partner-Key",
+                "value": "{{api_key}}",
+                "type": "text",
+                "description": "Your API key for partner authentication"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/partner/info",
+              "host": ["{{base_url}}"],
+              "path": ["partner", "info"]
+            },
+            "description": "Get information about your partner account"
+          }
+        },
+        {
+          "name": "List API Keys",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Partner-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/partner/api-keys",
+              "host": ["{{base_url}}"],
+              "path": ["partner", "api-keys"]
+            },
+            "description": "Get list of your API keys"
+          }
+        },
+        {
+          "name": "Create New API Key",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Partner-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mobile App Key\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/partner/api-keys",
+              "host": ["{{base_url}}"],
+              "path": ["partner", "api-keys"]
+            },
+            "description": "Create a new API key for your account"
+          }
+        },
+        {
+          "name": "Get Usage Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Partner-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/partner/analytics",
+              "host": ["{{base_url}}"],
+              "path": ["partner", "analytics"]
+            },
+            "description": "Get detailed usage analytics for your account"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public API Endpoints",
+      "description": "Main tourism API endpoints",
+      "item": [
+        {
+          "name": "AI Assistant - Ask Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"แนะนำร้านอาหารไทยในกรุงเทพฯ\",\n  \"context\": {\n    \"user_location\": \"Bangkok\",\n    \"preferences\": [\"spicy\", \"authentic\"]\n  },\n  \"user_id\": \"user123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ai/ask?lang=th",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ai", "ask"],
+              "query": [
+                {
+                  "key": "lang",
+                  "value": "th",
+                  "description": "Response language (th or en)"
+                }
+              ]
+            },
+            "description": "Ask the AI Assistant about Thai tourism, culture, or travel"
+          },
+          "response": [
+            {
+              "name": "Thai Restaurant Recommendation",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"question\": \"แนะนำร้านอาหารไทยในกรุงเทพฯ\",\n  \"context\": {\n    \"user_location\": \"Bangkok\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/ai/ask?lang=th",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "ai", "ask"],
+                  "query": [
+                    {
+                      "key": "lang",
+                      "value": "th"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"answer\": \"ในกรุงเทพฯ มีร้านอาหารไทยเด็ดหลายแห่ง เช่น ร้านสมบูรณ์โภชนา (ข้าวผัดปู) ร้านเจ๊กี (ต้มยำกุ้ง) และร้านเรือนข้าวต้ม (ข้าวต้มปลา) ล้วนเป็นร้านที่ใช้เครื่องเทศแท้ๆ รสชาติต้นตำรับ\",\n  \"confidence\": 0.92,\n  \"language\": \"th\",\n  \"suggested_actions\": [\n    \"ขอข้อมูลร้านอาหารเฉพาะเจาะจง\",\n    \"ถามเกี่ยวกับเมนูแนะนำ\",\n    \"สอบถามราคาและที่ตั้ง\"\n  ],\n  \"metadata\": {\n    \"partner_id\": \"uuid-here\",\n    \"tier\": \"free\",\n    \"model_used\": \"thai-tourism-v1\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "AI Assistant - English Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"What are the best temples to visit in Bangkok?\",\n  \"context\": {\n    \"interests\": [\"history\", \"architecture\"],\n    \"time_available\": \"half_day\"\n  },\n  \"user_id\": \"tourist456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ai/ask?lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ai", "ask"],
+              "query": [
+                {
+                  "key": "lang",
+                  "value": "en",
+                  "description": "Response language"
+                }
+              ]
+            },
+            "description": "Ask AI Assistant in English"
+          }
+        },
+        {
+          "name": "Trip Recommendations - Budget Travel",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/recommend/trip?budget=low&location=Bangkok&duration=3&trip_type=leisure&interests=culture,food&group_size=2",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recommend", "trip"],
+              "query": [
+                {
+                  "key": "budget",
+                  "value": "low",
+                  "description": "Budget level: low, medium, high, luxury"
+                },
+                {
+                  "key": "location",
+                  "value": "Bangkok",
+                  "description": "Target location"
+                },
+                {
+                  "key": "duration",
+                  "value": "3",
+                  "description": "Duration in days"
+                },
+                {
+                  "key": "trip_type",
+                  "value": "leisure",
+                  "description": "Type: leisure, business, adventure, cultural, family, romantic"
+                },
+                {
+                  "key": "interests",
+                  "value": "culture,food",
+                  "description": "Comma-separated interests"
+                },
+                {
+                  "key": "group_size",
+                  "value": "2",
+                  "description": "Number of travelers"
+                }
+              ]
+            },
+            "description": "Get budget-friendly trip recommendations for Bangkok"
+          },
+          "response": [
+            {
+              "name": "Budget Bangkok Trip",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/recommend/trip?budget=low&location=Bangkok&duration=3",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "recommend", "trip"],
+                  "query": [
+                    {
+                      "key": "budget",
+                      "value": "low"
+                    },
+                    {
+                      "key": "location",
+                      "value": "Bangkok"
+                    },
+                    {
+                      "key": "duration",
+                      "value": "3"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"destinations\": [\n    {\n      \"name\": \"Chatuchak Weekend Market\",\n      \"description\": \"Famous weekend market with local food and shopping\",\n      \"location\": {\n        \"lat\": 13.7997,\n        \"lng\": 100.5507\n      },\n      \"category\": \"market\",\n      \"rating\": 4.2,\n      \"price_range\": \"$\",\n      \"opening_hours\": \"Sat-Sun 9:00-18:00\"\n    },\n    {\n      \"name\": \"Wat Pho Temple\",\n      \"description\": \"Historic temple with giant reclining Buddha\",\n      \"location\": {\n        \"lat\": 13.7465,\n        \"lng\": 100.4927\n      },\n      \"category\": \"temple\",\n      \"rating\": 4.5,\n      \"price_range\": \"$\"\n    }\n  ],\n  \"estimated_budget\": {\n    \"accommodation\": 50.0,\n    \"food\": 20.0,\n    \"activities\": 30.0,\n    \"transportation\": 15.0\n  },\n  \"tips\": [\n    \"Perfect for low budget travelers\",\n    \"Book accommodations in advance for better rates\",\n    \"Try local street food for authentic experiences\"\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Trip Recommendations - Luxury Travel",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/recommend/trip?budget=luxury&location=Phuket&duration=5&trip_type=romantic&interests=beach,spa&group_size=2",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recommend", "trip"],
+              "query": [
+                {
+                  "key": "budget",
+                  "value": "luxury"
+                },
+                {
+                  "key": "location",
+                  "value": "Phuket"
+                },
+                {
+                  "key": "duration",
+                  "value": "5"
+                },
+                {
+                  "key": "trip_type",
+                  "value": "romantic"
+                },
+                {
+                  "key": "interests",
+                  "value": "beach,spa"
+                },
+                {
+                  "key": "group_size",
+                  "value": "2"
+                }
+              ]
+            },
+            "description": "Get luxury travel recommendations for a romantic getaway"
+          }
+        },
+        {
+          "name": "Image Tour Preview - Chiang Mai",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/image-tour-preview?location=เชียงใหม่",
+              "host": ["{{base_url}}"],
+              "path": ["api", "image-tour-preview"],
+              "query": [
+                {
+                  "key": "location",
+                  "value": "เชียงใหม่",
+                  "description": "Location name in Thai or English"
+                }
+              ]
+            },
+            "description": "Get visual tour preview for Chiang Mai"
+          },
+          "response": [
+            {
+              "name": "Chiang Mai Preview",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/image-tour-preview?location=เชียงใหม่",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "image-tour-preview"],
+                  "query": [
+                    {
+                      "key": "location",
+                      "value": "เชียงใหม่"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"location\": \"เชียงใหม่\",\n  \"images\": [\n    {\n      \"url\": \"/assets/images/chiangmai_temple.jpg\",\n      \"description\": \"Wat Phra That Doi Suthep\",\n      \"type\": \"temple\"\n    },\n    {\n      \"url\": \"/assets/images/chiangmai_market.jpg\",\n      \"description\": \"Sunday Night Walking Market\",\n      \"type\": \"market\"\n    },\n    {\n      \"url\": \"/assets/images/chiangmai_mountain.jpg\",\n      \"description\": \"Doi Inthanon National Park\",\n      \"type\": \"nature\"\n    }\n  ],\n  \"tour_highlights\": [\n    \"Ancient temples with golden stupas\",\n    \"Traditional handicraft markets\",\n    \"Mountain views and cool climate\",\n    \"Authentic Lanna culture\",\n    \"Elephant sanctuaries\"\n  ],\n  \"best_visit_times\": [\n    \"November to February (cool season)\",\n    \"Early morning for temples\",\n    \"Evening for markets\"\n  ],\n  \"virtual_tour_url\": \"https://virtualtour.painaidee.com/เชียงใหม่\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Image Tour Preview - Bangkok",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/image-tour-preview?location=Bangkok",
+              "host": ["{{base_url}}"],
+              "path": ["api", "image-tour-preview"],
+              "query": [
+                {
+                  "key": "location",
+                  "value": "Bangkok"
+                }
+              ]
+            },
+            "description": "Get visual tour preview for Bangkok"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Premium Endpoints",
+      "description": "Advanced features for Premium+ partners",
+      "item": [
+        {
+          "name": "Advanced AI Assistant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"I want to plan a cultural tour of Thailand with 3D visualization\",\n  \"context\": {\n    \"user_preferences\": [\"history\", \"art\", \"temples\"],\n    \"budget_range\": \"medium_to_high\"\n  },\n  \"user_id\": \"premium_user\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ai/ask/advanced?lang=en&enable_personalization=true&include_3d_visualization=true",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ai", "ask", "advanced"],
+              "query": [
+                {
+                  "key": "lang",
+                  "value": "en"
+                },
+                {
+                  "key": "enable_personalization",
+                  "value": "true",
+                  "description": "Enable personalized responses"
+                },
+                {
+                  "key": "include_3d_visualization",
+                  "value": "true",
+                  "description": "Include 3D model recommendations"
+                }
+              ]
+            },
+            "description": "Advanced AI Assistant with 3D visualization (Premium+ only)"
+          }
+        },
+        {
+          "name": "Usage Analytics (Enterprise)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/analytics/usage",
+              "host": ["{{base_url}}"],
+              "path": ["api", "analytics", "usage"]
+            },
+            "description": "Detailed usage analytics (Enterprise tier only)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health & Status",
+      "description": "API health and status endpoints",
+      "item": [
+        {
+          "name": "API Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health"]
+            },
+            "description": "Check API health status (no authentication required)"
+          },
+          "response": [
+            {
+              "name": "Healthy Status",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/health",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "health"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"status\": \"healthy\",\n  \"version\": \"1.0.0\",\n  \"timestamp\": \"2025-01-29T12:00:00Z\",\n  \"endpoints\": {\n    \"/api/ai/ask\": \"operational\",\n    \"/api/recommend/trip\": \"operational\",\n    \"/api/image-tour-preview\": \"operational\"\n  },\n  \"dependencies\": {\n    \"ai_system\": \"operational\",\n    \"tourism_database\": \"operational\",\n    \"authentication\": \"operational\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Partner Dashboard Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/partner/health",
+              "host": ["{{base_url}}"],
+              "path": ["partner", "health"]
+            },
+            "description": "Check partner dashboard health"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-set timestamp for requests",
+          "pm.globals.set('timestamp', new Date().toISOString());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Common tests for all requests",
+          "pm.test('Response time is less than 5000ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});",
+          "",
+          "pm.test('Response has correct content type', function () {",
+          "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+          "});",
+          "",
+          "// Check for rate limit headers if present",
+          "if (pm.response.headers.has('X-RateLimit-Limit-Minute')) {",
+          "    pm.test('Rate limit headers present', function () {",
+          "        pm.expect(pm.response.headers.get('X-RateLimit-Limit-Minute')).to.exist;",
+          "        pm.expect(pm.response.headers.get('X-RateLimit-Remaining-Minute')).to.exist;",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ]
+}
