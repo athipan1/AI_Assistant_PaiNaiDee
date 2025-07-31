@@ -1,0 +1,49 @@
+{
+  "test_user": {
+    "user_id": "test_user",
+    "username": "Test User",
+    "preferences": {
+      "interest_types": [
+        "culture",
+        "food"
+      ],
+      "activity_level": "medium",
+      "budget_range": "mid"
+    },
+    "favorite_locations": [],
+    "disliked_locations": [],
+    "special_requirements": [],
+    "availability": {},
+    "weight": 1.0,
+    "created_at": "2025-07-31T03:25:45.810744",
+    "updated_at": "2025-07-31T03:25:45.810748"
+  },
+  "user123": {
+    "user_id": "user123",
+    "username": "John Doe",
+    "preferences": {
+      "interest_types": [
+        "culture",
+        "food",
+        "nature"
+      ],
+      "activity_level": "medium",
+      "budget_range": "mid",
+      "time_preferences": [
+        "morning",
+        "afternoon"
+      ],
+      "location_preferences": [
+        "outdoor",
+        "mixed"
+      ]
+    },
+    "favorite_locations": [],
+    "disliked_locations": [],
+    "special_requirements": [],
+    "availability": {},
+    "weight": 1.0,
+    "created_at": "2025-07-31T03:26:42.636823",
+    "updated_at": "2025-07-31T03:26:42.636832"
+  }
+}

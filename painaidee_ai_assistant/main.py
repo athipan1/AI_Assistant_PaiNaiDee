@@ -30,6 +30,7 @@ try:
     from api.rag_routes import create_rag_routes
     from api.plugin_routes import create_plugin_routes
     from api.multiuser_routes import create_multiuser_routes
+    from api.group_trip_routes import create_group_trip_routes
     HAS_AI_ROUTES = True
     HAS_TOURISM_ROUTES = True
     HAS_EMOTION_ROUTES = True
@@ -39,12 +40,14 @@ try:
     HAS_RAG_ROUTES = True
     HAS_PLUGIN_ROUTES = True
     HAS_MULTIUSER_ROUTES = True
+    HAS_GROUP_TRIP_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
     HAS_AI_ROUTES = False
     HAS_RAG_ROUTES = False
     HAS_PLUGIN_ROUTES = False
+    HAS_GROUP_TRIP_ROUTES = False
     from api.model_routes import create_model_routes, model_selector
     from api.versioning_routes import create_versioning_routes
     from api.cdn_routes import create_cdn_routes
@@ -195,6 +198,14 @@ if performance_router:
 # Add multi-user collaboration routes
 if HAS_MULTIUSER_ROUTES:
     create_multiuser_routes(app)
+
+# Add group trip planning routes
+if HAS_GROUP_TRIP_ROUTES:
+    try:
+        group_trip_router = create_group_trip_routes()
+        app.include_router(group_trip_router, tags=["Group Trip Planning"])
+    except Exception as e:
+        print(f"Warning: Group trip routes not available: {e}")
 
 # Mount static files for 3D viewer
 app.mount("/static", StaticFiles(directory="static"), name="static")

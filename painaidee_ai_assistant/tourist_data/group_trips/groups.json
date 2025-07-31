@@ -1,0 +1,111 @@
+{
+  "f8ddd606-103c-4fab-86b5-82f3faf78654": {
+    "group_id": "f8ddd606-103c-4fab-86b5-82f3faf78654",
+    "group_name": "Test Trip",
+    "creator_id": "test_user",
+    "member_ids": [
+      "test_user"
+    ],
+    "status": "draft",
+    "destination_city": "Bangkok",
+    "trip_dates": {
+      "start_date": "2024-03-01",
+      "end_date": "2024-03-05"
+    },
+    "shared_locations": [],
+    "group_preferences": {},
+    "public_link": null,
+    "invitation_code": "E41D75EE",
+    "created_at": "2025-07-31T03:25:45.810310",
+    "updated_at": "2025-07-31T03:25:45.810319"
+  },
+  "d66ede89-a97c-4aea-83c3-a6f9fb54fbcf": {
+    "group_id": "d66ede89-a97c-4aea-83c3-a6f9fb54fbcf",
+    "group_name": "Amazing Thailand Adventure",
+    "creator_id": "user123",
+    "member_ids": [
+      "user123"
+    ],
+    "status": "draft",
+    "destination_city": "Bangkok, Thailand",
+    "trip_dates": {
+      "start_date": "2024-06-01",
+      "end_date": "2024-06-07"
+    },
+    "shared_locations": [
+      {
+        "location_id": "56dccf46-63f8-4eb4-bcdb-87c8c32209b2",
+        "name": "Grand Palace",
+        "location_type": "attraction",
+        "coordinates": [
+          13.7563,
+          100.4998
+        ],
+        "description": "Historic palace complex and temple in Bangkok",
+        "tags": [
+          "culture",
+          "history",
+          "temple",
+          "architecture"
+        ],
+        "rating": 4.5,
+        "price_range": "$",
+        "duration_hours": 3.0,
+        "best_time": [
+          "morning",
+          "afternoon"
+        ],
+        "requirements": []
+      },
+      {
+        "location_id": "b12fe8b6-1fd9-4b29-9c12-cfaaa3376880",
+        "name": "Chatuchak Weekend Market",
+        "location_type": "activity",
+        "coordinates": [
+          13.7897,
+          100.5503
+        ],
+        "description": "Massive weekend market with food, crafts, and shopping",
+        "tags": [
+          "shopping",
+          "culture",
+          "food",
+          "local"
+        ],
+        "rating": 4.3,
+        "price_range": "$$",
+        "duration_hours": 4.0,
+        "best_time": [
+          "morning",
+          "afternoon"
+        ],
+        "requirements": []
+      }
+    ],
+    "group_preferences": {},
+    "public_link": "/group-trip/83d6289c-9f5e-48c1-979c-de3300113387",
+    "invitation_code": "BE8FE008",
+    "created_at": "2025-07-31T03:26:30.537208",
+    "updated_at": "2025-07-31T03:27:08.497016"
+  },
+  "e266332e-7998-4081-8cdc-dbef817f7419": {
+    "group_id": "e266332e-7998-4081-8cdc-dbef817f7419",
+    "group_name": "Final Test",
+    "creator_id": "final_user",
+    "member_ids": [
+      "final_user"
+    ],
+    "status": "draft",
+    "destination_city": "Bangkok",
+    "trip_dates": {
+      "start_date": "2024-08-01",
+      "end_date": "2024-08-05"
+    },
+    "shared_locations": [],
+    "group_preferences": {},
+    "public_link": null,
+    "invitation_code": "038BCD7E",
+    "created_at": "2025-07-31T03:30:23.110634",
+    "updated_at": "2025-07-31T03:30:23.110641"
+  }
+}
