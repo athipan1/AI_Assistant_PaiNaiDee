@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaiNaiDee AI - 3D World | ผู้ช่วย AI โลก 3D</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: #000;
+            overflow: hidden;
+        }
+        
+        #renderCanvas {
+            width: 100%;
+            height: 100vh;
+            touch-action: none;
+        }
+        
+        .ui-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            max-width: 350px;
+            z-index: 1000;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .btn {
+            background: rgba(255, 221, 89, 0.9);
+            color: #333;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn:hover {
+            background: rgba(255, 193, 7, 1);
+            transform: translateY(-2px);
+        }
+        
+        .location-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            max-width: 300px;
+            z-index: 1000;
+        }
+        
+        .location-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .location-item:hover {
+            background: rgba(255, 221, 89, 0.3);
+            transform: translateX(5px);
+        }
+        
+        .status-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 2000;
+            display: none;
+        }
+        
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #ffdd59;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .ai-speech-bubble {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 15px 20px;
+            border-radius: 20px;
+            max-width: 400px;
+            text-align: center;
+            display: none;
+            z-index: 1500;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .ai-speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 10px solid transparent;
+            border-top-color: rgba(255, 255, 255, 0.95);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    
+    <!-- UI Overlay -->
+    <div class="ui-overlay">
+        <h3>🌏 PaiNaiDee 3D World</h3>
+        <p><strong>Instructions:</strong></p>
+        <ul>
+            <li>Click on tourist locations to make AI visit them</li>
+            <li>Use WASD or Arrow keys to move camera</li>
+            <li>Hold mouse and drag to look around</li>
+            <li>Press Space for AI actions</li>
+        </ul>
+        <p><strong>Current Users:</strong> <span id="userCount">1</span></p>
+    </div>
+    
+    <!-- Tourist Location Menu -->
+    <div class="location-menu">
+        <h4>🏝️ Tourist Locations</h4>
+        <div class="location-item" data-location="koh-samui" data-position="10,0,5">
+            🏝️ Koh Samui (เกาะสมุย)
+        </div>
+        <div class="location-item" data-location="temple" data-position="-10,0,5">
+            🏛️ Buddhist Temple (วัด)
+        </div>
+        <div class="location-item" data-location="market" data-position="0,0,15">
+            🛒 Floating Market (ตลาดน้ำ)
+        </div>
+        <div class="location-item" data-location="beach" data-position="15,0,-5">
+            🏖️ Tropical Beach (ชายหาด)
+        </div>
+        <div class="location-item" data-location="restaurant" data-position="-5,0,-10">
+            🍜 Thai Restaurant (ร้านอาหาร)
+        </div>
+    </div>
+    
+    <!-- Control Buttons -->
+    <div class="controls">
+        <button class="btn" onclick="aiActions.greet()">👋 Greet</button>
+        <button class="btn" onclick="aiActions.dance()">💃 Dance</button>
+        <button class="btn" onclick="toggleAR()">📱 AR Mode</button>
+        <button class="btn" onclick="toggleVR()">🥽 VR Mode</button>
+        <button class="btn" onclick="switchLanguage()">🌐 <span id="langText">ไทย</span></button>
+    </div>
+    
+    <!-- Status Indicator -->
+    <div class="status-indicator" id="statusIndicator">
+        <div class="loading-spinner"></div>
+        <div id="statusText">Loading 3D World...</div>
+    </div>
+    
+    <!-- AI Speech Bubble -->
+    <div class="ai-speech-bubble" id="aiSpeechBubble">
+        <div id="aiSpeechText">Hello! I'm your AI tourism assistant!</div>
+    </div>
+
+    <!-- Babylon.js Engine -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/materials/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    
+    <!-- Socket.io for Multi-user Support -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    
+    <script>
+        // Global variables
+        let engine, scene, camera, aiCharacter;
+        let socket;
+        let currentLanguage = 'en';
+        let isARMode = false;
+        let isVRMode = false;
+        let touristLocations = new Map();
+        let currentRoom = 'default';
+        let userId = 'user_' + Math.random().toString(36).substr(2, 9);
+        let otherUsers = new Map(); // Store other users in the room
+        
+        // Tourist location data
+        const locations = {
+            'koh-samui': {
+                name: { en: 'Koh Samui Island', th: 'เกาะสมุย' },
+                description: { en: 'Beautiful tropical island', th: 'เกาะเขตร้อนที่สวยงาม' },
+                color: '#00A8FF'
+            },
+            'temple': {
+                name: { en: 'Buddhist Temple', th: 'วัดพุทธ' },
+                description: { en: 'Sacred Buddhist temple', th: 'วัดพุทธศักดิ์สิทธิ์' },
+                color: '#FFD700'
+            },
+            'market': {
+                name: { en: 'Floating Market', th: 'ตลาดน้ำ' },
+                description: { en: 'Traditional floating market', th: 'ตลาดน้ำแบบดั้งเดิม' },
+                color: '#FF6B6B'
+            },
+            'beach': {
+                name: { en: 'Tropical Beach', th: 'ชายหาดเขตร้อน' },
+                description: { en: 'Pristine tropical beach', th: 'ชายหาดเขตร้อนที่บริสุทธิ์' },
+                color: '#4ECDC4'
+            },
+            'restaurant': {
+                name: { en: 'Thai Restaurant', th: 'ร้านอาหารไทย' },
+                description: { en: 'Authentic Thai cuisine', th: 'อาหารไทยแท้' },
+                color: '#45B7D1'
+            }
+        };
+
+        // Initialize the 3D world
+        async function init3DWorld() {
+            showStatus('Initializing 3D World...');
+            
+            const canvas = document.getElementById('renderCanvas');
+            engine = new BABYLON.Engine(canvas, true);
+            
+            // Create scene
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color3(0.2, 0.6, 1.0); // Sky blue
+            
+            // Create camera
+            camera = new BABYLON.UniversalCamera('camera', new BABYLON.Vector3(0, 5, -10), scene);
+            camera.lookAt(BABYLON.Vector3.Zero());
+            camera.attachControls(canvas, true);
+            
+            // Add lighting
+            const hemisphericLight = new BABYLON.HemisphericLight('hemisphericLight', new BABYLON.Vector3(0, 1, 0), scene);
+            hemisphericLight.intensity = 0.7;
+            
+            const directionalLight = new BABYLON.DirectionalLight('directionalLight', new BABYLON.Vector3(-1, -1, -1), scene);
+            directionalLight.intensity = 0.5;
+            
+            // Create ground
+            const ground = BABYLON.MeshBuilder.CreateGround('ground', {width: 50, height: 50}, scene);
+            const groundMaterial = new BABYLON.StandardMaterial('groundMaterial', scene);
+            groundMaterial.diffuseTexture = new BABYLON.Texture('data:image/svg+xml;base64,' + btoa(`
+                <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <pattern id="grass" patternUnits="userSpaceOnUse" width="10" height="10">
+                            <rect width="10" height="10" fill="#4a7c59"/>
+                            <circle cx="2" cy="2" r="1" fill="#5a8c69"/>
+                            <circle cx="8" cy="8" r="1" fill="#5a8c69"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100" height="100" fill="url(#grass)"/>
+                </svg>
+            `), scene);
+            groundMaterial.diffuseTexture.uOffset = 0;
+            groundMaterial.diffuseTexture.vOffset = 0;
+            ground.material = groundMaterial;
+            
+            // Create skybox
+            const skybox = BABYLON.MeshBuilder.CreateSphere('skybox', {diameter: 100}, scene);
+            const skyboxMaterial = new BABYLON.StandardMaterial('skyboxMaterial', scene);
+            skyboxMaterial.backFaceCulling = false;
+            skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+            skyboxMaterial.disableLighting = true;
+            skybox.material = skyboxMaterial;
+            skybox.infiniteDistance = true;
+            
+            // Create AI character
+            await createAICharacter();
+            
+            // Create tourist locations
+            createTouristLocations();
+            
+            // Initialize multi-user support
+            initializeMultiUser();
+            
+            // Start render loop
+            engine.runRenderLoop(() => {
+                scene.render();
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                engine.resize();
+            });
+            
+            hideStatus();
+            showAISpeech('Welcome to the PaiNaiDee 3D World! Click on any location to explore.', 'ยินดีต้อนรับสู่โลก 3D ไปไหนดี! คลิกที่ตำแหน่งใดก็ได้เพื่อสำรวจ');
+        }
+
+        // Create AI character
+        async function createAICharacter() {
+            // Create a simple AI character (will be replaced with actual model loading)
+            aiCharacter = BABYLON.MeshBuilder.CreateCapsule('aiCharacter', {height: 2, radius: 0.5}, scene);
+            aiCharacter.position = new BABYLON.Vector3(0, 1, 0);
+            
+            const aiMaterial = new BABYLON.StandardMaterial('aiMaterial', scene);
+            aiMaterial.diffuseColor = new BABYLON.Color3(0.3, 0.8, 1.0);
+            aiMaterial.emissiveColor = new BABYLON.Color3(0.1, 0.3, 0.5);
+            aiCharacter.material = aiMaterial;
+            
+            // Add simple animation
+            const animationGroup = new BABYLON.AnimationGroup('aiIdle');
+            const positionAnimation = new BABYLON.Animation('aiFloat', 'position.y', 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+            
+            const keys = [];
+            keys.push({frame: 0, value: 1});
+            keys.push({frame: 30, value: 1.2});
+            keys.push({frame: 60, value: 1});
+            
+            positionAnimation.setKeys(keys);
+            animationGroup.addTargetedAnimation(positionAnimation, aiCharacter);
+            animationGroup.start(true);
+            
+            // Add glow effect
+            const glowLayer = new BABYLON.GlowLayer('glow', scene);
+            glowLayer.addIncludedOnlyMesh(aiCharacter);
+            
+            console.log('AI character created successfully');
+        }
+
+        // Create tourist locations
+        function createTouristLocations() {
+            document.querySelectorAll('.location-item').forEach(item => {
+                const locationId = item.dataset.location;
+                const [x, y, z] = item.dataset.position.split(',').map(Number);
+                const locationData = locations[locationId];
+                
+                // Create location marker
+                const marker = BABYLON.MeshBuilder.CreateSphere(`marker_${locationId}`, {diameter: 1.5}, scene);
+                marker.position = new BABYLON.Vector3(x, y + 0.75, z);
+                
+                const markerMaterial = new BABYLON.StandardMaterial(`markerMaterial_${locationId}`, scene);
+                markerMaterial.diffuseColor = BABYLON.Color3.FromHexString(locationData.color);
+                markerMaterial.emissiveColor = BABYLON.Color3.FromHexString(locationData.color).scale(0.3);
+                marker.material = markerMaterial;
+                
+                // Add floating animation
+                const floatAnimation = new BABYLON.Animation(`float_${locationId}`, 'position.y', 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+                const floatKeys = [];
+                floatKeys.push({frame: 0, value: y + 0.75});
+                floatKeys.push({frame: 30, value: y + 1.25});
+                floatKeys.push({frame: 60, value: y + 0.75});
+                floatAnimation.setKeys(floatKeys);
+                marker.animations.push(floatAnimation);
+                scene.beginAnimation(marker, 0, 60, true);
+                
+                // Add click interaction
+                marker.actionManager = new BABYLON.ActionManager(scene);
+                marker.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
+                    navigateAIToLocation(locationId, marker.position);
+                }));
+                
+                touristLocations.set(locationId, {
+                    marker: marker,
+                    position: marker.position,
+                    data: locationData
+                });
+            });
+        }
+
+        // Navigate AI to location with Socket.IO integration
+        async function navigateAIToLocation(locationId, targetPosition) {
+            const locationData = locations[locationId];
+            const currentLang = currentLanguage;
+            
+            // Send request through Socket.IO for multi-user sync
+            if (socket && socket.connected) {
+                socket.emit('ai_navigate_request', {
+                    location_id: locationId,
+                    language: currentLang
+                });
+            }
+            
+            // Also call the HTTP API for AI processing
+            try {
+                const response = await fetch('/3d_world/ai/navigate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        type: 'navigate',
+                        target_location: locationId,
+                        language: currentLang
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.status === 'success' && data.ai_response) {
+                    showAISpeech(data.ai_response.message);
+                }
+            } catch (error) {
+                console.error('Error calling navigation API:', error);
+            }
+        }
+
+        // AI points to location
+        function pointToLocation(targetPosition, locationData) {
+            const currentLang = currentLanguage;
+            
+            // Create pointing gesture (simple rotation)
+            const pointAnimation = new BABYLON.Animation('aiPoint', 'rotation.y', 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            const currentRotation = aiCharacter.rotation.y;
+            const targetRotation = Math.atan2(targetPosition.x - aiCharacter.position.x, targetPosition.z - aiCharacter.position.z);
+            
+            const pointKeys = [];
+            pointKeys.push({frame: 0, value: currentRotation});
+            pointKeys.push({frame: 30, value: targetRotation});
+            pointAnimation.setKeys(pointKeys);
+            
+            scene.beginAnimation(aiCharacter, 0, 30, false, 1, () => {
+                showAISpeech(
+                    `Here is ${locationData.name[currentLang]}! ${locationData.description[currentLang]}`,
+                    `นี่คือ ${locationData.name.th}! ${locationData.description.th}`
+                );
+                
+                // Send AI response to backend for processing
+                fetch('/ai/process_location_visit', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        location: locationData.name[currentLang],
+                        language: currentLang
+                    })
+                }).catch(console.error);
+            });
+        }
+
+        // AI Actions with Socket.IO integration
+        const aiActions = {
+            greet: function() {
+                const greetings = {
+                    en: "Hello! I'm your AI tourism assistant. How can I help you explore Thailand today?",
+                    th: "สวัสดีค่ะ! ฉันเป็นผู้ช่วย AI ด้านการท่องเที่ยว วันนี้ช่วยให้คุณสำรวจประเทศไทยได้อย่างไร?"
+                };
+                showAISpeech(greetings.en, greetings.th);
+                
+                // Send through Socket.IO for multi-user sync
+                if (socket && socket.connected) {
+                    socket.emit('ai_action_request', {
+                        action_type: 'greet',
+                        language: currentLanguage
+                    });
+                }
+                
+                // Greeting animation
+                const greetAnimation = new BABYLON.Animation('aiGreet', 'rotation.x', 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                const greetKeys = [];
+                greetKeys.push({frame: 0, value: 0});
+                greetKeys.push({frame: 15, value: 0.3});
+                greetKeys.push({frame: 30, value: 0});
+                greetAnimation.setKeys(greetKeys);
+                scene.beginAnimation(aiCharacter, 0, 30, false);
+            },
+            
+            dance: function() {
+                const danceMessages = {
+                    en: "Let me show you a traditional Thai dance! 💃",
+                    th: "ให้ฉันแสดงการเต้นรำแบบไทยให้ดูนะ! 💃"
+                };
+                showAISpeech(danceMessages.en, danceMessages.th);
+                
+                // Send through Socket.IO for multi-user sync
+                if (socket && socket.connected) {
+                    socket.emit('ai_action_request', {
+                        action_type: 'dance',
+                        language: currentLanguage
+                    });
+                }
+                
+                // Dance animation
+                const danceAnimation = new BABYLON.Animation('aiDance', 'rotation.y', 15, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+                const danceKeys = [];
+                for (let i = 0; i <= 60; i += 15) {
+                    danceKeys.push({frame: i, value: (i / 15) * Math.PI / 2});
+                }
+                danceAnimation.setKeys(danceKeys);
+                scene.beginAnimation(aiCharacter, 0, 60, false, 2);
+            }
+        };
+
+        // Multi-user support with Socket.IO
+        function initializeMultiUser() {
+            // Initialize Socket.io connection
+            socket = io();
+            
+            socket.on('connect', () => {
+                console.log('Connected to server:', socket.id);
+                userId = socket.id;
+                
+                // Join the 3D world
+                socket.emit('join_3d_world', {
+                    username: `Tourist_${userId.substr(0, 8)}`,
+                    language: currentLanguage,
+                    room: currentRoom
+                });
+            });
+            
+            socket.on('disconnect', () => {
+                console.log('Disconnected from server');
+                showStatus('Disconnected from server. Reconnecting...');
+            });
+            
+            // Room events
+            socket.on('room_joined', (data) => {
+                console.log('Joined room:', data);
+                currentRoom = data.room_id;
+                document.getElementById('userCount').textContent = data.user_count;
+                
+                // Add other users to the scene
+                data.other_users.forEach(user => {
+                    addOtherUserToScene(user);
+                });
+                
+                showAISpeech(`Welcome to room ${data.room_id}! ${data.user_count} users online.`, 
+                           `ยินดีต้อนรับสู่ห้อง ${data.room_id}! มีผู้ใช้ ${data.user_count} คน`);
+            });
+            
+            socket.on('user_joined', (data) => {
+                console.log('User joined:', data.user);
+                document.getElementById('userCount').textContent = data.user_count;
+                addOtherUserToScene(data.user);
+                showStatus(`${data.user.username} joined the room`);
+            });
+            
+            socket.on('user_left', (data) => {
+                console.log('User left:', data);
+                document.getElementById('userCount').textContent = data.remaining_users;
+                removeOtherUserFromScene(data.user_id);
+                showStatus(`User left the room`);
+            });
+            
+            socket.on('user_moved', (data) => {
+                updateOtherUserPosition(data.user_id, data.position);
+            });
+            
+            // AI events
+            socket.on('ai_navigation_started', (data) => {
+                console.log('AI navigation started:', data);
+                showStatus(`${data.requested_by} asked AI to visit ${data.location_id}`);
+                // Update AI position visually
+                if (aiCharacter) {
+                    navigateAIVisually(data.location_id);
+                }
+            });
+            
+            socket.on('ai_action_started', (data) => {
+                console.log('AI action started:', data);
+                showStatus(`${data.requested_by} asked AI to ${data.action_type}`);
+                // Trigger AI action visually
+                if (data.action_type === 'greet') {
+                    aiActions.greet();
+                } else if (data.action_type === 'dance') {
+                    aiActions.dance();
+                }
+            });
+            
+            // Chat events
+            socket.on('chat_message_received', (data) => {
+                console.log('Chat message:', data);
+                showChatMessage(data.username, data.message, data.language);
+            });
+            
+            // Error handling
+            socket.on('error', (data) => {
+                console.error('Socket error:', data);
+                showStatus(`Error: ${data.message}`);
+            });
+        }
+
+        // Add other users to the 3D scene
+        function addOtherUserToScene(user) {
+            if (otherUsers.has(user.user_id)) return;
+            
+            // Create a simple representation of other users
+            const userMesh = BABYLON.MeshBuilder.CreateCapsule(`user_${user.user_id}`, {height: 1.8, radius: 0.3}, scene);
+            userMesh.position = new BABYLON.Vector3(user.position.x, user.position.y, user.position.z);
+            
+            const userMaterial = new BABYLON.StandardMaterial(`userMaterial_${user.user_id}`, scene);
+                userMaterial.diffuseColor = new BABYLON.Color3(0.8, 0.4, 0.8); // Purple for other users
+            userMaterial.emissiveColor = new BABYLON.Color3(0.2, 0.1, 0.2);
+            userMesh.material = userMaterial;
+            
+            // Add name tag (simplified)
+            const nameTag = BABYLON.MeshBuilder.CreatePlane(`nameTag_${user.user_id}`, {size: 2}, scene);
+            nameTag.position = new BABYLON.Vector3(user.position.x, user.position.y + 1.2, user.position.z);
+            nameTag.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+            
+            const nameMaterial = new BABYLON.StandardMaterial(`nameMaterial_${user.user_id}`, scene);
+            nameMaterial.diffuseColor = new BABYLON.Color3(1, 1, 1);
+            nameMaterial.emissiveColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+            nameTag.material = nameMaterial;
+            
+            otherUsers.set(user.user_id, {
+                mesh: userMesh,
+                nameTag: nameTag,
+                username: user.username,
+                language: user.language
+            });
+            
+            console.log(`Added user ${user.username} to scene`);
+        }
+        
+        // Remove other users from the scene
+        function removeOtherUserFromScene(userId) {
+            if (!otherUsers.has(userId)) return;
+            
+            const user = otherUsers.get(userId);
+            user.mesh.dispose();
+            user.nameTag.dispose();
+            otherUsers.delete(userId);
+            
+            console.log(`Removed user ${userId} from scene`);
+        }
+        
+        // Update other user positions
+        function updateOtherUserPosition(userId, position) {
+            if (!otherUsers.has(userId)) return;
+            
+            const user = otherUsers.get(userId);
+            user.mesh.position = new BABYLON.Vector3(position.x, position.y, position.z);
+            user.nameTag.position = new BABYLON.Vector3(position.x, position.y + 1.2, position.z);
+        }
+        
+        // Navigate AI visually (for synchronized viewing)
+        function navigateAIVisually(locationId) {
+            const locationData = locations[locationId];
+            if (!locationData || !aiCharacter) return;
+            
+            const targetPosition = new BABYLON.Vector3(
+                locationData.position.x, 
+                1, 
+                locationData.position.z - 2
+            );
+            
+            // Animate AI movement
+            const walkAnimation = new BABYLON.Animation('aiWalk', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            const walkKeys = [];
+            walkKeys.push({frame: 0, value: aiCharacter.position.clone()});
+            walkKeys.push({frame: 60, value: targetPosition});
+            walkAnimation.setKeys(walkKeys);
+            
+            scene.beginAnimation(aiCharacter, 0, 60, false, 1, () => {
+                // Point to location when animation completes
+                aiCharacter.lookAt(new BABYLON.Vector3(locationData.position.x, locationData.position.y, locationData.position.z));
+                showAISpeech(
+                    `Here is ${locationData.name[currentLanguage]}! ${locationData.description[currentLanguage]}`,
+                    `นี่คือ ${locationData.name.th}! ${locationData.description.th}`
+                );
+            });
+        }
+        
+        // Send user position updates
+        function sendPositionUpdate() {
+            if (socket && socket.connected && camera) {
+                socket.emit('user_position_update', {
+                    position: {
+                        x: camera.position.x,
+                        y: camera.position.y,
+                        z: camera.position.z
+                    }
+                });
+            }
+        }
+        
+        // Send position updates periodically
+        setInterval(sendPositionUpdate, 1000); // Every second
+        
+        // Show chat messages
+        function showChatMessage(username, message, language) {
+            // Simple chat display (could be enhanced with a proper chat UI)
+            const chatBubble = document.createElement('div');
+            chatBubble.style.cssText = `
+                position: absolute;
+                top: 120px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 10px;
+                border-radius: 10px;
+                max-width: 200px;
+                z-index: 1000;
+                font-size: 12px;
+            `;
+            chatBubble.innerHTML = `<strong>${username}:</strong> ${message}`;
+            document.body.appendChild(chatBubble);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                if (chatBubble.parentNode) {
+                    chatBubble.parentNode.removeChild(chatBubble);
+                }
+            }, 5000);
+        }
+
+        // AR/VR Mode toggles with WebXR integration
+        function toggleAR() {
+            if (!isARMode) {
+                // Check for WebXR support
+                if (navigator.xr) {
+                    navigator.xr.isSessionSupported('immersive-ar').then(supported => {
+                        if (supported) {
+                            navigator.xr.requestSession('immersive-ar', {
+                                requiredFeatures: ['local', 'bounded-floor'],
+                                optionalFeatures: ['hand-tracking', 'anchors', 'plane-detection']
+                            }).then(session => {
+                                isARMode = true;
+                                showStatus('AR Mode Activated - Point your device at the world!');
+                                
+                                // Start XR session via API
+                                fetch('/webxr/session/start', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({
+                                        session_id: userId + '_ar',
+                                        mode: 'immersive-ar',
+                                        user_id: userId,
+                                        device_info: {
+                                            platform: navigator.platform,
+                                            userAgent: navigator.userAgent
+                                        }
+                                    })
+                                }).then(response => response.json())
+                                  .then(data => {
+                                      console.log('AR session started:', data);
+                                      showAISpeech(
+                                          'AR mode activated! Look around to see Thai tourist locations in your real world!',
+                                          'โหมด AR เปิดใช้งานแล้ว! มองไปรอบๆ เพื่อดูสถานที่ท่องเที่ยวไทยในโลกจริงของคุณ!'
+                                      );
+                                  });
+                                
+                                setTimeout(hideStatus, 3000);
+                            }).catch(err => {
+                                console.error('AR session failed:', err);
+                                showStatus('AR not available: ' + err.message);
+                                setTimeout(hideStatus, 3000);
+                            });
+                        } else {
+                            showStatus('AR not supported on this device');
+                            setTimeout(hideStatus, 2000);
+                        }
+                    });
+                } else {
+                    showStatus('WebXR not supported - try on a newer mobile browser');
+                    setTimeout(hideStatus, 2000);
+                }
+            } else {
+                // End AR session
+                if (navigator.xr) {
+                    fetch(`/webxr/session/end/${userId}_ar`, {
+                        method: 'POST'
+                    }).then(() => {
+                        isARMode = false;
+                        showStatus('AR Mode Deactivated');
+                        setTimeout(hideStatus, 2000);
+                    });
+                }
+            }
+        }
+
+        function toggleVR() {
+            if (!isVRMode) {
+                if (navigator.xr) {
+                    navigator.xr.isSessionSupported('immersive-vr').then(supported => {
+                        if (supported) {
+                            navigator.xr.requestSession('immersive-vr', {
+                                requiredFeatures: ['local'],
+                                optionalFeatures: ['bounded-floor', 'hand-tracking']
+                            }).then(session => {
+                                isVRMode = true;
+                                showStatus('VR Mode Activated - Put on your headset!');
+                                
+                                // Start VR session via API
+                                fetch('/webxr/session/start', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({
+                                        session_id: userId + '_vr',
+                                        mode: 'immersive-vr',
+                                        user_id: userId,
+                                        device_info: {
+                                            platform: navigator.platform,
+                                            userAgent: navigator.userAgent
+                                        }
+                                    })
+                                }).then(response => response.json())
+                                  .then(data => {
+                                      console.log('VR session started:', data);
+                                      showAISpeech(
+                                          'VR mode activated! Welcome to the immersive 3D world of Thailand!',
+                                          'โหมด VR เปิดใช้งานแล้ว! ยินดีต้อนรับสู่โลก 3D แบบครอบคลุมของประเทศไทย!'
+                                      );
+                                  });
+                                
+                                setTimeout(hideStatus, 3000);
+                            }).catch(err => {
+                                console.error('VR session failed:', err);
+                                showStatus('VR not available: ' + err.message);
+                                setTimeout(hideStatus, 3000);
+                            });
+                        } else {
+                            showStatus('VR not supported on this device');
+                            setTimeout(hideStatus, 2000);
+                        }
+                    });
+                } else {
+                    showStatus('WebXR not supported');
+                    setTimeout(hideStatus, 2000);
+                }
+            } else {
+                // End VR session
+                if (navigator.xr) {
+                    fetch(`/webxr/session/end/${userId}_vr`, {
+                        method: 'POST'
+                    }).then(() => {
+                        isVRMode = false;
+                        showStatus('VR Mode Deactivated');
+                        setTimeout(hideStatus, 2000);
+                    });
+                }
+            }
+        }
+
+        // Language switching
+        function switchLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'th' : 'en';
+            document.getElementById('langText').textContent = currentLanguage === 'en' ? 'ไทย' : 'ENG';
+            
+            const welcomeMessages = {
+                en: "Language switched to English",
+                th: "เปลี่ยนภาษาเป็นภาษาไทยแล้ว"
+            };
+            showAISpeech(welcomeMessages[currentLanguage]);
+        }
+
+        // UI Helper functions
+        function showStatus(message) {
+            const indicator = document.getElementById('statusIndicator');
+            const text = document.getElementById('statusText');
+            text.textContent = message;
+            indicator.style.display = 'block';
+        }
+
+        function hideStatus() {
+            document.getElementById('statusIndicator').style.display = 'none';
+        }
+
+        function showAISpeech(enMessage, thMessage = null) {
+            const bubble = document.getElementById('aiSpeechBubble');
+            const text = document.getElementById('aiSpeechText');
+            
+            const message = currentLanguage === 'th' && thMessage ? thMessage : enMessage;
+            text.textContent = message;
+            bubble.style.display = 'block';
+            
+            // Auto-hide after 4 seconds
+            setTimeout(() => {
+                bubble.style.display = 'none';
+            }, 4000);
+        }
+
+        // Initialize everything when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            init3DWorld();
+        });
+
+        // Keyboard controls
+        window.addEventListener('keydown', (event) => {
+            switch(event.code) {
+                case 'Space':
+                    event.preventDefault();
+                    aiActions.greet();
+                    break;
+                case 'KeyD':
+                    if (event.ctrlKey) {
+                        event.preventDefault();
+                        aiActions.dance();
+                    }
+                    break;
+                case 'KeyL':
+                    if (event.ctrlKey) {
+                        event.preventDefault();
+                        switchLanguage();
+                    }
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
