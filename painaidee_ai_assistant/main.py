@@ -32,6 +32,9 @@ try:
     from api.plugin_routes import create_plugin_routes
     from api.multiuser_routes import create_multiuser_routes
     from api.group_trip_routes import create_group_trip_routes
+    from api.public_api_routes import router as public_api_router
+    from api.partner_dashboard_routes import router as partner_dashboard_router
+    from api.auth_middleware import APIKeyAuthMiddleware
     HAS_AI_ROUTES = True
     HAS_TOURISM_ROUTES = True
     HAS_LOCATION_ROUTES = True
@@ -43,11 +46,22 @@ try:
     HAS_PLUGIN_ROUTES = True
     HAS_MULTIUSER_ROUTES = True
     HAS_GROUP_TRIP_ROUTES = True
+    HAS_PUBLIC_API_ROUTES = True
 except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
     HAS_AI_ROUTES = False
     HAS_LOCATION_ROUTES = False
+    HAS_TOURISM_ROUTES = False
+    HAS_EMOTION_ROUTES = False
+    HAS_GESTURE_ROUTES = False
+    HAS_ACTION_PLAN_ROUTES = False
+    HAS_TTS_ROUTES = False
+    HAS_RAG_ROUTES = False
+    HAS_PLUGIN_ROUTES = False
+    HAS_MULTIUSER_ROUTES = False
+    HAS_GROUP_TRIP_ROUTES = False
+    HAS_PUBLIC_API_ROUTES = False
     HAS_RAG_ROUTES = False
     HAS_PLUGIN_ROUTES = False
     HAS_GROUP_TRIP_ROUTES = False
@@ -130,6 +144,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add API key authentication middleware for public API routes
+if HAS_PUBLIC_API_ROUTES:
+    app.add_middleware(APIKeyAuthMiddleware)
 
 # Include API routes
 if HAS_AI_ROUTES:
@@ -214,6 +232,11 @@ if HAS_GROUP_TRIP_ROUTES:
         app.include_router(group_trip_router, tags=["Group Trip Planning"])
     except Exception as e:
         print(f"Warning: Group trip routes not available: {e}")
+
+# Add Public API routes
+if HAS_PUBLIC_API_ROUTES:
+    app.include_router(public_api_router, tags=["Public API"])
+    app.include_router(partner_dashboard_router, tags=["Partner Dashboard"])
 
 # Mount static files for 3D viewer
 app.mount("/static", StaticFiles(directory="static"), name="static")
