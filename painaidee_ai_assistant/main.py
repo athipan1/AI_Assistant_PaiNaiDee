@@ -23,6 +23,7 @@ try:
     from api.admin_routes import create_admin_routes
     from api.upload_routes import create_upload_routes
     from api.tourism_routes import create_tourism_routes
+    from api.location_routes import create_location_routes
     from api.emotion_routes import router as emotion_router
     from api.gesture_routes import create_gesture_api_routes
     from api.action_plan_routes import router as action_plan_router
@@ -33,6 +34,7 @@ try:
     from api.group_trip_routes import create_group_trip_routes
     HAS_AI_ROUTES = True
     HAS_TOURISM_ROUTES = True
+    HAS_LOCATION_ROUTES = True
     HAS_EMOTION_ROUTES = True
     HAS_GESTURE_ROUTES = True
     HAS_ACTION_PLAN_ROUTES = True
@@ -45,6 +47,7 @@ except ImportError as e:
     print(f"Warning: Could not import AI routes: {e}")
     print("Running in minimal mode - only 3D model features available")
     HAS_AI_ROUTES = False
+    HAS_LOCATION_ROUTES = False
     HAS_RAG_ROUTES = False
     HAS_PLUGIN_ROUTES = False
     HAS_GROUP_TRIP_ROUTES = False
@@ -139,6 +142,11 @@ if HAS_EMOTION_ROUTES:
 # Add action plan routes
 if HAS_ACTION_PLAN_ROUTES:
     app.include_router(action_plan_router, prefix="/action", tags=["Action Plans"])
+
+# Add location-based tourism routes
+if HAS_LOCATION_ROUTES:
+    location_router = create_location_routes()
+    app.include_router(location_router, tags=["Location Services"])
 
 # Add model routes
 create_model_routes(app)

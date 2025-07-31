@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ใกล้ฉันตอนนี้ - PaiNaiDee AI Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .location-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .category-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+        
+        .category-header {
+            padding: 20px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .restaurants-header { background: linear-gradient(45deg, #ff6b6b, #ee5a52); }
+        .attractions-header { background: linear-gradient(45deg, #4ecdc4, #44a08d); }
+        .accommodations-header { background: linear-gradient(45deg, #45b7d1, #96c93d); }
+        
+        .place-item {
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 20px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .place-item:last-child {
+            border-bottom: none;
+        }
+        
+        .place-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .rating-stars {
+            color: #ffc107;
+        }
+        
+        .price-level {
+            color: #28a745;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 60px;
+        }
+        
+        .location-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .location-btn:hover {
+            background: linear-gradient(45deg, #ee5a24, #ff6b6b);
+            color: white;
+        }
+        
+        .refresh-btn {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+        }
+        
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-link:hover {
+            color: #f8f9fa;
+        }
+        
+        .distance-badge {
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        
+        .place-types {
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+        
+        .quick-actions {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .action-btn {
+            border: 2px solid #dee2e6;
+            background: white;
+            color: #495057;
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn:hover {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="location-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <a href="index.html" class="back-link">
+                            <i class="fas fa-arrow-left me-2"></i>กลับหน้าหลัก
+                        </a>
+                        <h1 class="mt-2 mb-2">📍 ใกล้ฉันตอนนี้</h1>
+                        <p class="mb-3">ค้นหาสถานที่น่าสนใจรอบๆ ตำแหน่งปัจจุบันของคุณ</p>
+                        <div id="currentLocation" class="text-light opacity-75">
+                            <i class="fas fa-map-marker-alt me-2"></i>กำลังค้นหาตำแหน่ง...
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn location-btn" id="findLocationBtn">
+                            <i class="fas fa-location-arrow me-2"></i>หาตำแหน่งของฉัน
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h5 class="mb-3"><i class="fas fa-zap me-2"></i>ค้นหาด่วน</h5>
+            <div class="d-flex flex-wrap">
+                <button class="btn action-btn" onclick="quickSearch('restaurant')">
+                    <i class="fas fa-utensils me-2"></i>ร้านอาหาร
+                </button>
+                <button class="btn action-btn" onclick="quickSearch('gas_station')">
+                    <i class="fas fa-gas-pump me-2"></i>ปั๊มน้ำมัน
+                </button>
+                <button class="btn action-btn" onclick="quickSearch('hospital')">
+                    <i class="fas fa-hospital me-2"></i>โรงพยาบาล
+                </button>
+                <button class="btn action-btn" onclick="quickSearch('bank')">
+                    <i class="fas fa-university me-2"></i>ธนาคาร
+                </button>
+                <button class="btn action-btn" onclick="quickSearch('shopping_mall')">
+                    <i class="fas fa-shopping-cart me-2"></i>ห้างสรรพสินค้า
+                </button>
+                <button class="btn action-btn" onclick="quickSearch('tourist_attraction')">
+                    <i class="fas fa-camera me-2"></i>สถานที่ท่องเที่ยว
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="loading" id="loading">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">กำลังค้นหา...</span>
+            </div>
+            <p class="mt-3">กำลังค้นหาสถานที่ใกล้ๆ คุณ...</p>
+        </div>
+
+        <!-- Results Header -->
+        <div id="resultsHeader" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3><i class="fas fa-map-marked-alt me-2"></i>สถานที่ใกล้เคียง</h3>
+                <button class="btn refresh-btn" id="refreshBtn">
+                    <i class="fas fa-sync-alt me-2"></i>อัปเดต
+                </button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="row" id="results">
+            <!-- Restaurants Card -->
+            <div class="col-lg-4 mb-4">
+                <div class="card category-card">
+                    <div class="category-header restaurants-header">
+                        <i class="fas fa-utensils me-2"></i>ร้านอาหาร
+                        <span class="float-end" id="restaurantCount">0</span>
+                    </div>
+                    <div id="restaurantsList">
+                        <div class="empty-state">
+                            <i class="fas fa-search text-muted mb-2" style="font-size: 2rem;"></i>
+                            <p>กดปุ่ม "หาตำแหน่งของฉัน" เพื่อค้นหาร้านอาหารใกล้เคียง</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attractions Card -->
+            <div class="col-lg-4 mb-4">
+                <div class="card category-card">
+                    <div class="category-header attractions-header">
+                        <i class="fas fa-camera me-2"></i>สถานที่ท่องเที่ยว
+                        <span class="float-end" id="attractionCount">0</span>
+                    </div>
+                    <div id="attractionsList">
+                        <div class="empty-state">
+                            <i class="fas fa-search text-muted mb-2" style="font-size: 2rem;"></i>
+                            <p>กดปุ่ม "หาตำแหน่งของฉัน" เพื่อค้นหาสถานที่ท่องเที่ยวใกล้เคียง</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accommodations Card -->
+            <div class="col-lg-4 mb-4">
+                <div class="card category-card">
+                    <div class="category-header accommodations-header">
+                        <i class="fas fa-bed me-2"></i>ที่พัก
+                        <span class="float-end" id="accommodationCount">0</span>
+                    </div>
+                    <div id="accommodationsList">
+                        <div class="empty-state">
+                            <i class="fas fa-search text-muted mb-2" style="font-size: 2rem;"></i>
+                            <p>กดปุ่ม "หาตำแหน่งของฉัน" เพื่อค้นหาที่พักใกล้เคียง</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="alert alert-warning" id="errorMessage" style="display: none;">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span id="errorText"></span>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let userLocation = null;
+        let currentResults = null;
+
+        // Find location button
+        document.getElementById('findLocationBtn').addEventListener('click', function() {
+            findUserLocation();
+        });
+
+        // Refresh button
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+            if (userLocation) {
+                searchNearbyPlaces();
+            } else {
+                alert('กรุณาหาตำแหน่งก่อน');
+            }
+        });
+
+        function findUserLocation() {
+            if (!navigator.geolocation) {
+                showError('เบราว์เซอร์ไม่รองรับการหาตำแหน่ง');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('currentLocation').innerHTML = 
+                '<i class="fas fa-spinner fa-spin me-2"></i>กำลังค้นหาตำแหน่ง...';
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    document.getElementById('currentLocation').innerHTML = 
+                        `<i class="fas fa-map-marker-alt me-2"></i>พิกัด: ${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}`;
+                    
+                    searchNearbyPlaces();
+                },
+                function(error) {
+                    document.getElementById('loading').style.display = 'none';
+                    let errorMsg = 'ไม่สามารถหาตำแหน่งได้';
+                    
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMsg = 'คุณได้ปฏิเสธการขอใช้ตำแหน่ง กรุณาอนุญาตในการตั้งค่าเบราว์เซอร์';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMsg = 'ไม่สามารถหาตำแหน่งได้ในขณะนี้';
+                            break;
+                        case error.TIMEOUT:
+                            errorMsg = 'หาตำแหน่งใช้เวลานานเกินไป';
+                            break;
+                    }
+                    
+                    showError(errorMsg);
+                    document.getElementById('currentLocation').innerHTML = 
+                        '<i class="fas fa-exclamation-circle me-2"></i>ไม่สามารถหาตำแหน่งได้';
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 300000 // 5 minutes
+                }
+            );
+        }
+
+        async function searchNearbyPlaces() {
+            if (!userLocation) {
+                showError('ไม่พบตำแหน่งปัจจุบัน');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            hideError();
+
+            try {
+                const response = await fetch(`/location/nearby?lat=${userLocation.lat}&lng=${userLocation.lng}&radius=2000&include_restaurants=true&include_attractions=true&include_accommodations=true`);
+                
+                if (!response.ok) {
+                    throw new Error('การค้นหาล้มเหลว');
+                }
+
+                const data = await response.json();
+                currentResults = data;
+                displayResults(data);
+
+            } catch (error) {
+                console.error('Search error:', error);
+                showError('เกิดข้อผิดพลาดในการค้นหา: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        async function quickSearch(placeType) {
+            if (!userLocation) {
+                alert('กรุณาหาตำแหน่งก่อน');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+
+            try {
+                const response = await fetch('/location/places/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        lat: userLocation.lat,
+                        lng: userLocation.lng,
+                        radius: 5000,
+                        place_types: [placeType],
+                        limit: 10
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('การค้นหาล้มเหลว');
+                }
+
+                const places = await response.json();
+                
+                // Display results in a modal or update the relevant section
+                displayQuickSearchResults(placeType, places);
+
+            } catch (error) {
+                console.error('Quick search error:', error);
+                showError('เกิดข้อผิดพลาดในการค้นหา: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function displayResults(data) {
+            document.getElementById('resultsHeader').style.display = 'block';
+
+            // Display restaurants
+            displayPlaceCategory('restaurants', data.restaurants || [], 'restaurantsList', 'restaurantCount');
+            
+            // Display attractions
+            displayPlaceCategory('attractions', data.attractions || [], 'attractionsList', 'attractionCount');
+            
+            // Display accommodations
+            displayPlaceCategory('accommodations', data.accommodations || [], 'accommodationsList', 'accommodationCount');
+        }
+
+        function displayPlaceCategory(category, items, containerId, countId) {
+            const container = document.getElementById(containerId);
+            const countElement = document.getElementById(countId);
+            
+            countElement.textContent = items.length;
+
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search text-muted mb-2" style="font-size: 2rem;"></i>
+                        <p>ไม่พบ${getCategoryName(category)}ในบริเวณใกล้เคียง</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            items.forEach(item => {
+                html += createPlaceItem(item, category);
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function createPlaceItem(item, category) {
+            const rating = item.rating ? `⭐ ${item.rating}` : '';
+            const price = item.price ? `฿${item.price.toLocaleString()}` : '';
+            const types = item.types ? item.types.slice(0, 2).join(', ') : '';
+            
+            return `
+                <div class="place-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">${item.name}</h6>
+                            <p class="text-muted mb-1 small">${item.address}</p>
+                            ${types ? `<div class="place-types mb-1">${types}</div>` : ''}
+                            <div class="d-flex align-items-center">
+                                ${rating ? `<span class="rating-stars me-2">${rating}</span>` : ''}
+                                ${price ? `<span class="price-level">${price}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="distance-badge">ใกล้เค</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayQuickSearchResults(placeType, places) {
+            // Create a simple modal or alert showing results
+            let resultsText = `พบ ${getCategoryName(placeType)} ${places.length} แห่ง:\n\n`;
+            
+            places.slice(0, 5).forEach((place, index) => {
+                resultsText += `${index + 1}. ${place.name}\n`;
+                resultsText += `   ${place.address}\n`;
+                if (place.rating) {
+                    resultsText += `   ⭐ ${place.rating}\n`;
+                }
+                resultsText += '\n';
+            });
+
+            alert(resultsText);
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                'restaurants': 'ร้านอาหาร',
+                'attractions': 'สถานที่ท่องเที่ยว',
+                'accommodations': 'ที่พัก',
+                'restaurant': 'ร้านอาหาร',
+                'gas_station': 'ปั๊มน้ำมัน',
+                'hospital': 'โรงพยาบาล',
+                'bank': 'ธนาคาร',
+                'shopping_mall': 'ห้างสรรพสินค้า',
+                'tourist_attraction': 'สถานที่ท่องเที่ยว'
+            };
+            return names[category] || category;
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📍 Near Me page loaded');
+            
+            // Auto-find location if user has granted permission before
+            if (navigator.permissions) {
+                navigator.permissions.query({name: 'geolocation'}).then(function(result) {
+                    if (result.state === 'granted') {
+                        findUserLocation();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

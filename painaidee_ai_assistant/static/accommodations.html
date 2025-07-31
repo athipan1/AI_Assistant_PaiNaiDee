@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ที่พักแนะนำ - PaiNaiDee AI Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .hotel-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .hotel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+        
+        .hotel-image {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        
+        .rating-stars {
+            color: #ffc107;
+        }
+        
+        .price-badge {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+        
+        .match-score {
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .match-excellent { background-color: #28a745; color: white; }
+        .match-good { background-color: #ffc107; color: white; }
+        .match-moderate { background-color: #6c757d; color: white; }
+        
+        .amenity-tag {
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin: 2px;
+            display: inline-block;
+        }
+        
+        .preferences-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .location-input {
+            border-radius: 25px;
+            padding: 12px 20px;
+        }
+        
+        .search-btn {
+            border-radius: 25px;
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        .back-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-link:hover {
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <a href="index.html" class="back-link">
+                            <i class="fas fa-arrow-left me-2"></i>กลับหน้าหลัก
+                        </a>
+                        <h1 class="mt-2 mb-0">🏨 ที่พักแนะนำ</h1>
+                        <p class="text-muted">ค้นหาที่พักที่เหมาะกับสไตล์ของคุณด้วย AI</p>
+                    </div>
+                    <div class="text-end">
+                        <img src="https://via.placeholder.com/60x60?text=🤖" alt="AI Assistant" class="rounded-circle">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Preferences Panel -->
+        <div class="row">
+            <div class="col-12">
+                <div class="preferences-panel">
+                    <h3><i class="fas fa-search me-2"></i>ค้นหาที่พัก</h3>
+                    <form id="searchForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="location" class="form-label">📍 ตำแหน่งที่ต้องการ</label>
+                                <input type="text" class="form-control location-input" id="location" 
+                                       placeholder="เช่น กรุงเทพฯ, เชียงใหม่, ภูเก็ต" required>
+                                <div class="form-text text-light">หรือกดปุ่มด้านล่างเพื่อใช้ตำแหน่งปัจจุบัน</div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="budget" class="form-label">💰 งบประมาณ (บาท/คืน)</label>
+                                <select class="form-select" id="budget">
+                                    <option value="">ไม่จำกัด</option>
+                                    <option value="1000">น้อยกว่า 1,000</option>
+                                    <option value="2000">น้อยกว่า 2,000</option>
+                                    <option value="3000">น้อยกว่า 3,000</option>
+                                    <option value="5000">น้อยกว่า 5,000</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="propertyType" class="form-label">🏨 ประเภทที่พัก</label>
+                                <select class="form-select" id="propertyType">
+                                    <option value="">ทั้งหมด</option>
+                                    <option value="hotel">โรงแรม</option>
+                                    <option value="resort">รีสอร์ท</option>
+                                    <option value="guesthouse">เกสต์เฮาส์</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="style" class="form-label">✨ สไตล์ที่ชอบ</label>
+                                <select class="form-select" id="style">
+                                    <option value="">ไม่ระบุ</option>
+                                    <option value="luxury">หรูหรา</option>
+                                    <option value="budget">ประหยัด</option>
+                                    <option value="boutique">บูติก</option>
+                                    <option value="beach">ริมชายหาด</option>
+                                    <option value="city">ใจกลางเมือง</option>
+                                    <option value="resort">รีสอร์ท</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="amenities" class="form-label">🏊 สิ่งอำนวยความสะดวกที่ต้องการ</label>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-check text-light">
+                                            <input class="form-check-input" type="checkbox" value="Free WiFi" id="wifi">
+                                            <label class="form-check-label" for="wifi">WiFi ฟรี</label>
+                                        </div>
+                                        <div class="form-check text-light">
+                                            <input class="form-check-input" type="checkbox" value="Swimming Pool" id="pool">
+                                            <label class="form-check-label" for="pool">สระว่ายน้ำ</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-check text-light">
+                                            <input class="form-check-input" type="checkbox" value="Fitness Center" id="gym">
+                                            <label class="form-check-label" for="gym">ฟิตเนส</label>
+                                        </div>
+                                        <div class="form-check text-light">
+                                            <input class="form-check-input" type="checkbox" value="Restaurant" id="restaurant">
+                                            <label class="form-check-label" for="restaurant">ร้านอาหาร</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <button type="submit" class="btn search-btn me-3">
+                                    <i class="fas fa-search me-2"></i>ค้นหาที่พัก
+                                </button>
+                                <button type="button" class="btn btn-outline-light" id="getCurrentLocation">
+                                    <i class="fas fa-location-arrow me-2"></i>ใช้ตำแหน่งปัจจุบัน
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="loading" id="loading">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">กำลังค้นหา...</span>
+            </div>
+            <p class="mt-3">AI กำลังวิเคราะห์และค้นหาที่พักที่เหมาะกับคุณ...</p>
+        </div>
+
+        <!-- Results -->
+        <div class="row" id="results" style="display: none;">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3><i class="fas fa-hotel me-2"></i>ที่พักแนะนำสำหรับคุณ</h3>
+                    <span class="badge bg-primary" id="resultCount">0 รายการ</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hotels Container -->
+        <div class="row" id="hotelsContainer">
+            <!-- Hotels will be populated here -->
+        </div>
+
+        <!-- No Results -->
+        <div class="row" id="noResults" style="display: none;">
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-search-minus text-muted" style="font-size: 4rem;"></i>
+                <h4 class="mt-3 text-muted">ไม่พบที่พักที่ตรงกับเงื่อนไข</h4>
+                <p class="text-muted">ลองปรับเปลี่ยนเงื่อนไขการค้นหาดูครับ</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let userLocation = null;
+
+        // Get current location
+        document.getElementById('getCurrentLocation').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        document.getElementById('location').value = `ตำแหน่งปัจจุบัน (${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)})`;
+                        alert('✅ ได้ตำแหน่งปัจจุบันแล้ว!');
+                    },
+                    function(error) {
+                        alert('❌ ไม่สามารถหาตำแหน่งปัจจุบันได้ กรุณาใส่ตำแหน่งด้วยตนเอง');
+                    }
+                );
+            } else {
+                alert('เบราว์เซอร์ไม่รองรับการหาตำแหน่ง');
+            }
+        });
+
+        // Search form submission
+        document.getElementById('searchForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const location = document.getElementById('location').value;
+            if (!location && !userLocation) {
+                alert('กรุณาระบุตำแหน่งหรือใช้ตำแหน่งปัจจุบัน');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('noResults').style.display = 'none';
+            document.getElementById('hotelsContainer').innerHTML = '';
+
+            // Collect form data
+            const budget = document.getElementById('budget').value;
+            const propertyType = document.getElementById('propertyType').value;
+            const style = document.getElementById('style').value;
+            
+            const amenities = [];
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                amenities.push(checkbox.value);
+            });
+
+            try {
+                let searchData;
+                
+                if (userLocation) {
+                    // Use current location
+                    searchData = {
+                        lat: userLocation.lat,
+                        lng: userLocation.lng,
+                        max_price: budget ? parseFloat(budget) : null,
+                        min_rating: 3.0
+                    };
+                } else {
+                    // For demo purposes, use Bangkok coordinates
+                    // In production, you would geocode the location string
+                    searchData = {
+                        lat: 13.7563,
+                        lng: 100.5018,
+                        max_price: budget ? parseFloat(budget) : null,
+                        min_rating: 3.0
+                    };
+                }
+
+                // Call API
+                const response = await fetch('/location/accommodations/smart-search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ...searchData,
+                        budget: budget ? parseFloat(budget) : null,
+                        property_type: propertyType || null,
+                        preferred_amenities: amenities,
+                        style: style || null
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('การค้นหาล้มเหลว');
+                }
+
+                const accommodations = await response.json();
+                displayHotels(accommodations);
+
+            } catch (error) {
+                console.error('Search error:', error);
+                document.getElementById('loading').style.display = 'none';
+                alert('❌ เกิดข้อผิดพลาดในการค้นหา: ' + error.message);
+            }
+        });
+
+        function displayHotels(accommodations) {
+            document.getElementById('loading').style.display = 'none';
+            
+            if (!accommodations || accommodations.length === 0) {
+                document.getElementById('noResults').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('resultCount').textContent = `${accommodations.length} รายการ`;
+
+            const container = document.getElementById('hotelsContainer');
+            container.innerHTML = '';
+
+            accommodations.forEach(hotel => {
+                const hotelCard = createHotelCard(hotel);
+                container.appendChild(hotelCard);
+            });
+        }
+
+        function createHotelCard(hotel) {
+            const col = document.createElement('div');
+            col.className = 'col-lg-6 col-xl-4';
+
+            const matchScore = hotel.match_analysis;
+            const matchClass = matchScore ? 
+                (matchScore.recommendation === 'excellent' ? 'match-excellent' : 
+                 matchScore.recommendation === 'good' ? 'match-good' : 'match-moderate') : '';
+
+            const stars = hotel.rating ? '⭐'.repeat(Math.floor(hotel.rating)) : '';
+            const imageUrl = hotel.images && hotel.images.length > 0 ? 
+                hotel.images[0] : 'https://via.placeholder.com/400x200?text=Hotel';
+
+            col.innerHTML = `
+                <div class="card hotel-card">
+                    ${matchScore ? `<div class="position-absolute top-0 end-0 m-2">
+                        <span class="match-score ${matchClass}">
+                            ${Math.round(matchScore.match_score * 100)}% เหมาะกับคุณ
+                        </span>
+                    </div>` : ''}
+                    <img src="${imageUrl}" class="card-img-top hotel-image" alt="${hotel.name}">
+                    <div class="card-body">
+                        <h5 class="card-title">${hotel.name}</h5>
+                        <p class="card-text text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i>${hotel.address}
+                        </p>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <span class="rating-stars">${stars}</span>
+                                <small class="text-muted ms-1">${hotel.rating || 'N/A'}</small>
+                                <small class="text-muted">(${hotel.review_count} รีวิว)</small>
+                            </div>
+                            <div class="price-badge">
+                                ${hotel.price_per_night ? `฿${hotel.price_per_night.toLocaleString()}` : 'ติดต่อสอบถาม'}
+                                ${hotel.price_per_night ? '<small>/คืน</small>' : ''}
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <small class="text-muted d-block mb-1">ประเภท: ${hotel.property_type}</small>
+                            <div class="amenities">
+                                ${hotel.amenities.slice(0, 4).map(amenity => 
+                                    `<span class="amenity-tag">${amenity}</span>`
+                                ).join('')}
+                                ${hotel.amenities.length > 4 ? `<span class="amenity-tag">+${hotel.amenities.length - 4} อื่นๆ</span>` : ''}
+                            </div>
+                        </div>
+
+                        ${matchScore && matchScore.match_reasons ? `
+                        <div class="mb-2">
+                            <small class="text-success fw-bold">เหตุผลที่แนะนำ:</small>
+                            <ul class="small text-muted mb-0">
+                                ${matchScore.match_reasons.slice(0, 2).map(reason => 
+                                    `<li>${reason}</li>`
+                                ).join('')}
+                            </ul>
+                        </div>` : ''}
+
+                        <div class="d-grid gap-2">
+                            <a href="${hotel.affiliate_link || hotel.booking_url}" target="_blank" 
+                               class="btn btn-primary">
+                                <i class="fas fa-external-link-alt me-2"></i>ดูรายละเอียดและจอง
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return col;
+        }
+
+        // Initialize with Bangkok location on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏨 Accommodation Recommendations page loaded');
+        });
+    </script>
+</body>
+</html>

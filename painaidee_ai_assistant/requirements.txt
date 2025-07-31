@@ -19,6 +19,12 @@ pillow>=10.0.0
 # Additional models for emotion analysis
 sentencepiece>=0.1.99
 
+# Redis for API caching
+redis>=5.0.0
+
+# Google Places API and location services
+googlemaps>=4.10.0
+
 # LangChain and RAG support
 langchain==0.0.340
 langchain-community==0.0.1
