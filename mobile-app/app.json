@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "PaiNaiDee AI Assistant",
+    "slug": "painaidee-ai-assistant",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1976D2"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "permissions": [
+        "ios.permission.MICROPHONE",
+        "ios.permission.LOCATION_WHEN_IN_USE",
+        "ios.permission.LOCATION_ALWAYS_AND_WHEN_IN_USE"
+      ]
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1976D2"
+      },
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.VIBRATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "This app needs access to location for nearby place recommendations.",
+          "locationAlwaysPermission": "This app needs access to location for nearby place recommendations.",
+          "locationWhenInUsePermission": "This app needs access to location for nearby place recommendations."
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "This app needs access to microphone for voice commands."
+        }
+      ]
+    ]
+  }
+}
