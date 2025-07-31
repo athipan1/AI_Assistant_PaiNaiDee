@@ -230,6 +230,19 @@
             margin-bottom: 15px;
             display: none;
         }
+
+        .webxr-controls {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .webxr-controls h4 {
+            color: #ffdd59;
+            margin: 0 0 10px 0;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -251,6 +264,14 @@
                 
                 <button class="btn" onclick="analyzeQuestion()" id="analyzeBtn">🔍 Analyze & Select Model</button>
                 <button class="btn" onclick="loadSelectedModel()" id="loadBtn" disabled>📦 Load 3D Model</button>
+                
+                <!-- WebXR Controls -->
+                <div class="webxr-controls">
+                    <h4>🥽 AR/VR Mode</h4>
+                    <button class="btn" onclick="enterAR()" id="arBtn" style="display: none;">📱 Enter AR</button>
+                    <button class="btn" onclick="enterVR()" id="vrBtn" style="display: none;">🥽 Enter VR</button>
+                    <p id="xrStatus" style="font-size: 12px; color: #ccc;">Checking XR support...</p>
+                </div>
             </div>
 
             <div class="model-info" id="modelInfo">
@@ -289,10 +310,12 @@
         </div>
     </div>
 
-    <!-- Three.js CDN -->
+    <!-- Three.js CDN with multiple loaders -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
 
     <script>
         // Global variables
@@ -358,14 +381,169 @@
                 hideLoading('viewerLoading');
                 showSuccess('3D Viewer initialized successfully!');
 
+                // Initialize WebXR support
+                initializeXR();
+
             } catch (error) {
                 console.error('Error initializing viewer:', error);
                 showError('Failed to initialize 3D viewer. Please refresh the page.');
             }
         }
 
+        // Global variables for animation and XR
+        let animationMixer = null;
+        const clock = new THREE.Clock();
+        let xrSupported = {
+            ar: false,
+            vr: false
+        };
+
+        // Initialize XR support checking
+        async function initializeXR() {
+            if ('xr' in navigator) {
+                try {
+                    // Check AR support
+                    const arSupported = await navigator.xr.isSessionSupported('immersive-ar');
+                    xrSupported.ar = arSupported;
+                    
+                    // Check VR support  
+                    const vrSupported = await navigator.xr.isSessionSupported('immersive-vr');
+                    xrSupported.vr = vrSupported;
+                    
+                    updateXRUI();
+                } catch (error) {
+                    console.log('WebXR not supported:', error);
+                    updateXRUI();
+                }
+            } else {
+                console.log('WebXR not available');
+                updateXRUI();
+            }
+        }
+
+        function updateXRUI() {
+            const arBtn = document.getElementById('arBtn');
+            const vrBtn = document.getElementById('vrBtn');
+            const xrStatus = document.getElementById('xrStatus');
+            
+            if (xrSupported.ar) {
+                arBtn.style.display = 'block';
+            }
+            
+            if (xrSupported.vr) {
+                vrBtn.style.display = 'block';
+            }
+            
+            if (xrSupported.ar || xrSupported.vr) {
+                xrStatus.textContent = `AR: ${xrSupported.ar ? '✅' : '❌'} | VR: ${xrSupported.vr ? '✅' : '❌'}`;
+                xrStatus.style.color = '#51cf66';
+            } else {
+                xrStatus.textContent = 'AR/VR not supported on this device';
+                xrStatus.style.color = '#ff6b6b';
+            }
+        }
+
+        async function enterAR() {
+            if (!xrSupported.ar) {
+                showError('AR not supported on this device');
+                return;
+            }
+            
+            try {
+                const session = await navigator.xr.requestSession('immersive-ar', {
+                    requiredFeatures: ['hit-test'],
+                    optionalFeatures: ['dom-overlay'],
+                    domOverlay: { root: document.body }
+                });
+                
+                // Enable XR for the renderer
+                renderer.xr.enabled = true;
+                await renderer.xr.setSession(session);
+                
+                showSuccess('Entered AR mode! Look around to place the 3D model.');
+                
+                // Setup AR-specific interactions
+                setupARInteractions(session);
+                
+            } catch (error) {
+                console.error('Failed to enter AR:', error);
+                showError('Failed to enter AR mode');
+            }
+        }
+
+        async function enterVR() {
+            if (!xrSupported.vr) {
+                showError('VR not supported on this device');
+                return;
+            }
+            
+            try {
+                const session = await navigator.xr.requestSession('immersive-vr');
+                
+                // Enable XR for the renderer
+                renderer.xr.enabled = true;
+                await renderer.xr.setSession(session);
+                
+                showSuccess('Entered VR mode! Use your controllers to interact.');
+                
+                // Setup VR-specific interactions
+                setupVRInteractions(session);
+                
+            } catch (error) {
+                console.error('Failed to enter VR:', error);
+                showError('Failed to enter VR mode');
+            }
+        }
+
+        function setupARInteractions(session) {
+            // Add hit-testing for AR
+            const hitTestSource = null;
+            const hitTestSourceRequested = false;
+            
+            session.addEventListener('select', (event) => {
+                if (currentModel && hitTestSource) {
+                    // Place model at hit-test location
+                    const frame = event.frame;
+                    const hitTestResults = frame.getHitTestResults(hitTestSource);
+                    
+                    if (hitTestResults.length > 0) {
+                        const hit = hitTestResults[0];
+                        const pose = hit.getPose(renderer.xr.getReferenceSpace());
+                        
+                        currentModel.position.setFromMatrixPosition(pose.transform.matrix);
+                        currentModel.visible = true;
+                    }
+                }
+            });
+        }
+
+        function setupVRInteractions(session) {
+            // Add VR controller support
+            const controller1 = renderer.xr.getController(0);
+            const controller2 = renderer.xr.getController(1);
+            
+            scene.add(controller1);
+            scene.add(controller2);
+            
+            // Add controller interaction
+            controller1.addEventListener('select', () => {
+                if (currentModel) {
+                    // Toggle model visibility or perform action
+                    currentModel.visible = !currentModel.visible;
+                }
+            });
+        }
+
         function animate() {
             requestAnimationFrame(animate);
+            
+            const delta = clock.getDelta();
+            
+            // Update animation mixer if present
+            if (animationMixer) {
+                animationMixer.update(delta);
+            }
+            
             if (controls) controls.update();
             if (renderer && scene && camera) {
                 renderer.render(scene, camera);
@@ -555,9 +733,8 @@
                     currentModel = null;
                 }
 
-                // For demonstration, create a simple geometry since we can't load actual FBX files
-                // In a real implementation, this would use FBXLoader
-                loadMockModel(selectedModelData);
+                // Load actual 3D model based on format
+                loadRealModel(selectedModelData);
 
             } catch (error) {
                 console.error('Error loading model:', error);
@@ -565,6 +742,170 @@
                 hideLoading('viewerLoading');
                 document.getElementById('loadBtn').disabled = false;
             }
+        }
+
+        function loadRealModel(modelData) {
+            const modelPath = `/models/${modelData.name}`;
+            const format = detectModelFormat(modelData.name);
+            
+            console.log(`Loading ${format} model: ${modelPath}`);
+
+            switch (format) {
+                case 'FBX':
+                    loadFBXModel(modelPath, modelData);
+                    break;
+                case 'GLTF':
+                case 'GLB':
+                    loadGLTFModel(modelPath, modelData);
+                    break;
+                case 'OBJ':
+                    loadOBJModel(modelPath, modelData);
+                    break;
+                default:
+                    console.warn(`Unsupported format: ${format}, falling back to mock model`);
+                    loadMockModel(modelData);
+            }
+        }
+
+        function detectModelFormat(filename) {
+            const extension = filename.toLowerCase().split('.').pop();
+            const formatMap = {
+                'fbx': 'FBX',
+                'glb': 'GLB',
+                'gltf': 'GLTF',
+                'obj': 'OBJ'
+            };
+            return formatMap[extension] || 'UNKNOWN';
+        }
+
+        function loadFBXModel(modelPath, modelData) {
+            const fbxLoader = new THREE.FBXLoader();
+            
+            fbxLoader.load(
+                modelPath,
+                (object) => {
+                    currentModel = object;
+                    setupLoadedModel(object, modelData);
+                },
+                (progress) => {
+                    console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
+                },
+                (error) => {
+                    console.error('FBX loading error:', error);
+                    // Fallback to mock model
+                    loadMockModel(modelData);
+                }
+            );
+        }
+
+        function loadGLTFModel(modelPath, modelData) {
+            const gltfLoader = new THREE.GLTFLoader();
+            
+            gltfLoader.load(
+                modelPath,
+                (gltf) => {
+                    currentModel = gltf.scene;
+                    setupLoadedModel(gltf.scene, modelData);
+                    
+                    // Handle animations if present
+                    if (gltf.animations && gltf.animations.length > 0) {
+                        // Clean up previous mixer
+                        if (animationMixer) {
+                            animationMixer.stopAllActions();
+                        }
+                        
+                        animationMixer = new THREE.AnimationMixer(gltf.scene);
+                        const action = animationMixer.clipAction(gltf.animations[0]);
+                        action.play();
+                        
+                        console.log(`Playing animation: ${gltf.animations[0].name || 'Unnamed'}`);
+                    } else {
+                        // No animations, clear mixer
+                        animationMixer = null;
+                    }
+                },
+                (progress) => {
+                    console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
+                },
+                (error) => {
+                    console.error('GLTF loading error:', error);
+                    // Fallback to mock model
+                    loadMockModel(modelData);
+                }
+            );
+        }
+
+        function loadOBJModel(modelPath, modelData) {
+            const objLoader = new THREE.OBJLoader();
+            
+            objLoader.load(
+                modelPath,
+                (object) => {
+                    currentModel = object;
+                    
+                    // OBJ files don't have materials, add default material
+                    object.traverse((child) => {
+                        if (child.isMesh) {
+                            child.material = new THREE.MeshLambertMaterial({ 
+                                color: 0x8844aa,
+                                side: THREE.DoubleSide 
+                            });
+                        }
+                    });
+                    
+                    setupLoadedModel(object, modelData);
+                },
+                (progress) => {
+                    console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
+                },
+                (error) => {
+                    console.error('OBJ loading error:', error);
+                    // Fallback to mock model
+                    loadMockModel(modelData);
+                }
+            );
+        }
+
+        function setupLoadedModel(object, modelData) {
+            // Scale and position the model appropriately
+            const box = new THREE.Box3().setFromObject(object);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            
+            // Scale model to fit in scene
+            const maxSize = Math.max(size.x, size.y, size.z);
+            const targetSize = 2.0; // Target size in scene units
+            const scale = targetSize / maxSize;
+            object.scale.setScalar(scale);
+            
+            // Center the model
+            object.position.sub(center.multiplyScalar(scale));
+            object.position.y = 0; // Place on ground
+            
+            // Add shadows
+            object.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+            
+            // Store model data
+            object.userData = modelData;
+            
+            scene.add(object);
+
+            // Focus camera on model
+            controls.target.set(0, size.y * scale / 2, 0);
+            camera.position.set(3, 3, 3);
+            controls.update();
+
+            hideLoading('viewerLoading');
+            document.getElementById('loadBtn').disabled = false;
+            showSuccess(`Loaded ${modelData.format || detectModelFormat(modelData.name)} model: ${modelData.name}`);
+
+            // Add click detection
+            addModelInteraction();
         }
 
         function loadMockModel(modelData) {

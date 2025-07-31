@@ -48,7 +48,7 @@ class IntegratedModelSelector:
         
         self.models_dir = None
         for path in possible_paths:
-            if path.exists() and any(path.glob("*.fbx")):
+            if path.exists() and any(path.glob("*.fbx")) or any(path.glob("*.glb")) or any(path.glob("*.gltf")) or any(path.glob("*.obj")):
                 self.models_dir = path
                 break
         
@@ -380,21 +380,35 @@ class IntegratedModelSelector:
             "path": str(model_path),
             "size": model_path.stat().st_size,
             "description": self.model_descriptions.get(model_name, "3D model"),
-            "format": "FBX",
+            "format": self.get_model_format(model_name),
             "interactions": ["rotate", "zoom", "pan", "click_info"],
             "characteristics": self.model_characteristics.get(model_name, {})
         }
 
     def list_available_models(self) -> List[Dict[str, Any]]:
-        """List all available 3D models"""
+        """List all available 3D models in supported formats"""
         models = []
-        for model_file in self.models_dir.glob("*.fbx"):
-            try:
-                model_info = self.get_model_info(model_file.name)
-                models.append(model_info)
-            except Exception as e:
-                logger.error(f"Error loading model {model_file.name}: {e}")
+        supported_formats = ["*.fbx", "*.glb", "*.gltf", "*.obj"]
+        
+        for format_pattern in supported_formats:
+            for model_file in self.models_dir.glob(format_pattern):
+                try:
+                    model_info = self.get_model_info(model_file.name)
+                    models.append(model_info)
+                except Exception as e:
+                    logger.error(f"Error loading model {model_file.name}: {e}")
         return models
+    
+    def get_model_format(self, model_name: str) -> str:
+        """Determine the format of a 3D model file"""
+        extension = Path(model_name).suffix.lower()
+        format_map = {
+            '.fbx': 'FBX',
+            '.glb': 'GLB',
+            '.gltf': 'GLTF',
+            '.obj': 'OBJ'
+        }
+        return format_map.get(extension, 'UNKNOWN')
 
 
 # Global instance for the integrated selector
