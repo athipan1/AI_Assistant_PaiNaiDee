@@ -166,6 +166,15 @@ if HAS_PUBLIC_API_ROUTES:
 if HAS_AI_ROUTES:
     app.include_router(ai_router, prefix="/ai", tags=["AI Assistant"])
 
+# Add Smart AI routes (OpenThaiGPT integration)
+try:
+    from api.smart_ai_routes import create_smart_ai_routes
+    smart_ai_router = create_smart_ai_routes()
+    app.include_router(smart_ai_router, prefix="/api/ai", tags=["Smart AI"])
+    print("INFO: Smart AI (OpenThaiGPT) routes added")
+except Exception as smart_ai_e:
+    print(f"Warning: Smart AI routes failed to load: {smart_ai_e}")
+
 # Add emotion analysis routes
 if HAS_EMOTION_ROUTES:
     app.include_router(emotion_router, prefix="/emotion", tags=["Emotion Analysis"])
