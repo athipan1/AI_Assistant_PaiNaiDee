@@ -1,0 +1,48 @@
+# Requirements for Hugging Face Spaces deployment
+# Based on painaidee_ai_assistant/requirements.txt with optimizations for HF Spaces
+
+# FastAPI and web server dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# AI and ML dependencies (optimized for HF Spaces)
+transformers==4.35.2
+torch>=2.1.1
+tokenizers==0.15.0
+accelerate==0.24.1
+scikit-learn>=1.3.0
+joblib>=1.3.0
+
+# Computer Vision (headless version for server environments)
+opencv-python-headless>=4.8.0
+mediapipe>=0.10.0
+pillow>=10.0.0
+
+# Additional models for emotion analysis
+sentencepiece>=0.1.99
+
+# Redis for API caching (may need to be optional in HF Spaces)
+redis>=5.0.0
+
+# Google Places API and location services
+googlemaps>=4.10.0
+
+# LangChain support (reduced dependencies for HF Spaces)
+langchain==0.0.340
+langchain-community==0.0.1
+
+# Web scraping and API requests
+requests==2.31.0
+beautifulsoup4==4.12.2
+wikipedia==1.4.0
+
+# Environment and configuration
+python-dotenv==1.0.0
+
+# JSON and data handling
+pydantic==2.5.0
+typing-extensions==4.8.0
+
+# Gradio for HF Spaces interface
+gradio>=4.7.1
