@@ -150,6 +150,53 @@ PaiNaiDee AI Assistant is an intelligent Thai tourism assistant that now feature
 
 **หมายเหตุ | Note:** เซิร์ฟเวอร์จะหยุดทำงานเมื่อปิด Colab หรือไม่ใช้งานเกิน 12 ชั่วโมง
 
+#### ▲ Deploy บน Vercel (แบบถาวร | Permanent)
+สำหรับการใช้งานจริงและ scalability สูง | For production use and high scalability
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fathipan1%2FAI_Assistant_PaiNaiDee)
+
+**ขั้นตอนการ Deploy | Deployment Steps:**
+1. คลิกปุ่ม "Deploy with Vercel" ด้านบน
+2. สร้างบัญชี Vercel (ฟรี) หากยังไม่มี - [สมัครที่นี่](https://vercel.com/signup)
+3. เชื่อมต่อกับ GitHub account ของคุณ
+4. ตั้งชื่อโปรเจกต์ เช่น "my-painaidee-assistant"
+5. ตั้งค่า Environment Variables ที่จำเป็น (ดูด้านล่าง)
+6. คลิก "Deploy" และรอการติดตั้งประมาณ 3-5 นาที
+
+**Environment Variables ที่จำเป็น | Required Environment Variables:**
+```bash
+# AI Model Configuration
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Database Configuration  
+DATABASE_URL=your_database_url_here
+
+# Vercel Project Configuration
+VERCEL_PROJECT_NAME=your_project_name_here
+```
+
+**วิธีตั้งค่า Environment Variables:**
+1. ใน Vercel Dashboard เข้าไปที่โปรเจกต์ของคุณ
+2. คลิก "Settings" > "Environment Variables"
+3. เพิ่มตัวแปรด้านบนทีละตัว
+4. คลิก "Redeploy" เพื่อให้การเปลี่ยนแปลงมีผล
+
+**วิธีใช้งานหลังจาก Deploy:**
+- เข้าใช้งานผ่าน URL ที่ Vercel ให้มา
+- ทดสอบ API endpoints ที่ `/docs`
+- ใช้งาน 3D model viewer และ AI features
+- รัน automated testing ด้วยคำสั่ง:
+  ```bash
+  python tests/run_all_tests.py
+  ```
+
+**ข้อดี | Benefits:**
+- ✅ Performance สูงและ global CDN
+- ✅ Auto-scaling ตามจำนวนผู้ใช้
+- ✅ HTTPS และ custom domain support
+- ✅ Continuous deployment จาก GitHub
+- ✅ Serverless functions สำหรับ AI processing
+
 ---
 
 ### 🔧 การติดตั้งในเครื่อง | Local Installation
