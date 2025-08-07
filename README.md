@@ -97,7 +97,49 @@ PaiNaiDee AI Assistant is an intelligent Thai tourism assistant that now feature
 
 ### 🌟 การทดลองใช้งานแบบง่าย | Easy Testing Options
 
-#### 🚀 Deploy บน Hugging Face Spaces (แบบถาวร | Permanent)
+#### 🚀 Deploy บน Vercel 🚀
+สำหรับการปรับใช้งานที่รวดเร็วและปรับขนาดได้ | For fast and scalable deployment
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fathipan1%2FAI_Assistant_PaiNaiDee)
+
+**ขั้นตอนการ Deploy | Deployment Steps:**
+1. คลิกปุ่ม "Deploy with Vercel" ด้านบน
+2. สร้างบัญชี Vercel (ฟรี) หากยังไม่มี - [สมัครที่นี่](https://vercel.com/signup)
+3. เชื่อมต่อบัญชี GitHub ของคุณ
+4. ตั้งชื่อโปรเจกต์ เช่น "my-painaidee-assistant"
+5. กำหนดตัวแปรสิ่งแวดล้อม (Environment Variables):
+   ```
+   OPENAI_API_KEY=your_openai_api_key_here
+   DATABASE_URL=your_database_url_here (optional)
+   NODE_ENV=production
+   API_BASE_URL=https://your-app-name.vercel.app
+   ```
+6. คลิก "Deploy" และรอการติดตั้งประมาณ 2-5 นาที
+7. เข้าใช้งานผ่าน URL ที่ได้รับ เช่น `https://my-painaidee-assistant.vercel.app`
+
+**การตั้งค่า Environment Variables:**
+- `OPENAI_API_KEY`: Required for AI model selection and emotion analysis
+- `DATABASE_URL`: Optional PostgreSQL/MongoDB connection string for user data
+- `NGROK_TOKEN`: Optional for development tunneling
+- `DEBUG`: Set to "false" for production
+- `LOG_LEVEL`: Set to "INFO" or "WARNING" for production
+
+**ข้อดี | Benefits:**
+- ⚡ ปรับใช้งานได้ภายใน 5 นาที
+- 🌍 Global CDN และ auto-scaling
+- 🔄 Auto-deployment จาก Git commits
+- 💰 Free tier รองรับผู้ใช้จำนวนมาก
+- 🔐 HTTPS และ custom domains
+- 📊 Built-in analytics และ monitoring
+
+**หมายเหตุ | Notes:**
+- Frontend จะใช้ static hosting ใน Vercel
+- Backend APIs อาจต้องปรับแต่งสำหรับ serverless functions
+- สำหรับ full-stack deployment ใช้ Next.js wrapper
+
+---
+
+#### 🤗 Deploy บน Hugging Face Spaces 🤗 (แบบถาวร | Permanent)
 สำหรับการใช้งานจริงและการแบ่งปันโปรเจกต์ | For production use and project sharing
 
 [![🤗 Deploy on Hugging Face Spaces](https://huggingface.co/datasets/huggingface/badges/raw/main/deploy-to-spaces-lg.svg)](https://huggingface.co/spaces/new?template=athipan1/AI_Assistant_PaiNaiDee)
@@ -110,6 +152,33 @@ PaiNaiDee AI Assistant is an intelligent Thai tourism assistant that now feature
 5. คลิก "Create Space" และรอการติดตั้งประมาณ 5-10 นาที
 6. เข้าใช้งานผ่าน URL ที่ได้รับ เช่น `https://huggingface.co/spaces/yourname/my-painaidee-assistant`
 
+**โครงสร้างไฟล์สำหรับ Hugging Face | Repository Structure for Hugging Face:**
+```
+your-space/
+├── app.py                    # Main Gradio app (entry point)
+├── requirements.txt          # Python dependencies  
+├── README.md                # Space description
+├── painaidee_ai_assistant/  # Core application code
+│   ├── main.py              # FastAPI backend
+│   ├── agents/              # AI agents
+│   ├── api/                 # API routes
+│   ├── models/              # Data models
+│   └── static/              # Frontend assets
+└── assets/                  # 3D models and resources
+    └── models/Fbx/          # 3D model files
+```
+
+**ไฟล์หลักที่ต้องมี | Required Files:**
+- `app.py`: Entry point ที่ Hugging Face จะเรียกใช้
+- `requirements.txt`: รายการ Python packages ที่ต้องติดตั้ง
+- `README.md`: คำอธิบาย Space และวิธีใช้งาน
+
+**การตั้งค่าพิเศษ | Special Configuration:**
+- เลือก Python version ที่เหมาะสม (3.9+ แนะนำ)
+- ตั้งค่า GPU หากต้องการประสิทธิภาพสูง
+- กำหนด Environment Variables ในหน้า Settings
+- ปรับแต่ง hardware tier ตามความต้องการ
+
 **วิธีใช้งานหลังจาก Deploy:**
 - เปิด Web interface ผ่าน Gradio
 - ทดสอบ AI model selection และ emotion analysis
@@ -121,6 +190,10 @@ PaiNaiDee AI Assistant is an intelligent Thai tourism assistant that now feature
 - ✅ แบ่งปันให้คนอื่นได้ง่าย
 - ✅ ไม่ต้องติดตั้งอะไรในเครื่อง
 - ✅ รองรับผู้ใช้หลายคนพร้อมกัน
+- ✅ มี GPU support สำหรับ AI models
+- ✅ Version control และ collaboration tools
+
+---
 
 #### 🐍 Run บน Google Colab (แบบชั่วคราว | Temporary)
 สำหรับการทดลองใช้งานและการพัฒนา | For testing and development
@@ -149,6 +222,140 @@ PaiNaiDee AI Assistant is an intelligent Thai tourism assistant that now feature
 - ✅ เหมาะสำหรับการเรียนรู้และทดสอบ
 
 **หมายเหตุ | Note:** เซิร์ฟเวอร์จะหยุดทำงานเมื่อปิด Colab หรือไม่ใช้งานเกิน 12 ชั่วโมง
+
+---
+
+## 🧪 ทดลอง API ทั้งหมดใน Google Colab ⚗️
+
+### Complete API Testing with Comprehensive Notebook
+
+[![🔬 Run API Tests in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/athipan1/AI_Assistant_PaiNaiDee/blob/main/tests/test_all_apis.ipynb)
+
+**📋 Comprehensive API Testing | การทดสอบ API ครบถ้วน**
+
+This specialized notebook provides complete testing of all PaiNaiDee AI Assistant APIs:
+
+**🚀 Setup Code | โค้ดตั้งค่าเริ่มต้น:**
+```bash
+# Clone repository and install dependencies
+!git clone https://github.com/athipan1/AI_Assistant_PaiNaiDee.git
+%cd AI_Assistant_PaiNaiDee/painaidee_ai_assistant
+!pip install -r requirements.txt
+
+# Setup ngrok tunnel for public access
+!pip install pyngrok
+NGROK_TOKEN = "your_token_here"  # Get from ngrok.com
+```
+
+**💬 Example API Usage with /api/talk | ตัวอย่างการใช้ API หลัก:**
+
+```python
+# Main API endpoint for complete interaction
+import requests
+
+response = requests.post("YOUR_SERVER_URL/api/talk", json={
+    "message": "I'm excited to see walking animations and get Bangkok recommendations!",
+    "language": "en",
+    "user_id": "demo_user",
+    "context": {
+        "location": "Bangkok",
+        "weather": "sunny", 
+        "time": "morning"
+    }
+})
+
+result = response.json()
+print("🤖 Selected Model:", result['model_selection']['selected_model'])
+print("😊 Detected Emotion:", result['emotion_analysis']['primary_emotion'])
+print("🌍 Tourism Suggestions:", result['tourism_recommendations'])
+```
+
+**📥 Sample Request and Response | ตัวอย่าง Request และ Response:**
+
+**Request:**
+```json
+{
+  "message": "Show me a walking person and recommend outdoor activities", 
+  "language": "en",
+  "user_id": "test_user",
+  "context": {
+    "location": "Bangkok",
+    "weather": "sunny",
+    "time": "morning"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "model_selection": {
+    "selected_model": "Walking.fbx",
+    "confidence": 0.85,
+    "description": "Character animation showing walking motion"
+  },
+  "emotion_analysis": {
+    "primary_emotion": "neutral",
+    "confidence": 0.7,
+    "suggested_gesture": "neutral_walking"
+  },
+  "tourism_recommendations": {
+    "activities": ["Lumpini Park walk", "Chatuchak Market"],
+    "reasoning": "Sunny morning perfect for outdoor activities"
+  },
+  "action_plan": {
+    "speech": "Here's a walking animation and some great outdoor activities!",
+    "gesture": "pointing_gesture",
+    "ui_updates": ["display_model", "show_recommendations"]
+  }
+}
+```
+
+**🎯 APIs Tested | API ที่ทดสอบ:**
+- 💬 **Core API** (`/api/talk`) - Main integrated endpoint
+- 🤖 **AI Model Selection** (`/ai/select_model`) - Natural language to 3D model
+- 😊 **Emotion Analysis** (`/emotion/analyze_emotion`) - Sentiment detection
+- 🌍 **Tourism Intelligence** (`/tourism/recommendations/*`) - Context-aware suggestions
+- 🎭 **Action Plans** (`/action_plan/generate_plan`) - Multimodal responses
+- 🔊 **Text-to-Speech** (`/tts/synthesize`) - Voice output (optional)
+- 📍 **Location Services** (`/location/recommendations`) - GPS-based features
+- ⚡ **Performance Monitoring** (`/performance/system_health`) - System status
+
+**🎤 Voice Input/Output Test (Optional) | การทดสอบเสียงเข้า/ออก:**
+```python
+# Test text-to-speech capabilities
+tts_response = requests.post("YOUR_SERVER_URL/tts/synthesize", json={
+    "text": "สวัสดีครับ ยินดีต้อนรับสู่ไปไหนดี",
+    "language": "th",
+    "voice_style": "friendly"
+})
+
+if tts_response.status_code == 200:
+    audio_url = tts_response.json()['audio_url']
+    print(f"🔊 Generated audio: {audio_url}")
+```
+
+**📊 Performance Testing | การทดสอบประสิทธิภาพ:**
+The notebook includes comprehensive performance testing:
+- Response time measurement for each API
+- Concurrent request handling
+- Memory usage monitoring
+- Error handling and recovery
+
+**🚀 Quick Start Guide:**
+1. Click the "Run API Tests in Colab" button above
+2. Follow setup instructions to get your ngrok token
+3. Run all cells to start the server and test all APIs
+4. Review the generated report with test results
+5. Use the public URL to access your running server
+
+**💡 Pro Tips:**
+- Use GPU runtime for better AI model performance
+- Save your ngrok token for quick setup
+- Test different languages (English/Thai) 
+- Try various emotional contexts and tourism scenarios
+- Monitor the performance metrics for optimization insights
 
 ---
 
